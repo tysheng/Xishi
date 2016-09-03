@@ -1,14 +1,9 @@
-package me.tysheng.xishi.swipeback.app;
+package me.tysheng.xishi.utils.swipeback;
 
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.view.LayoutInflater;
 import android.view.View;
-
-import me.tysheng.xishi.R;
-import me.tysheng.xishi.swipeback.SwipeBackLayout;
-import me.tysheng.xishi.swipeback.Utils;
 
 
 /**
@@ -27,25 +22,22 @@ public class SwipeBackActivityHelper {
     public void onActivityCreate() {
         mActivity.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         mActivity.getWindow().getDecorView().setBackgroundDrawable(null);
-        mSwipeBackLayout = (SwipeBackLayout) LayoutInflater.from(mActivity).inflate(
-               R.layout.sb_swipeback_layout, null);
-        mSwipeBackLayout.addSwipeListener(new SwipeBackLayout.SwipeListener() {
-            @Override
-            public void onScrollStateChange(int state, float scrollPercent) {
-            }
-
-            @Override
-            public void onEdgeTouch(int edgeFlag) {
-                Utils.convertActivityToTranslucent(mActivity);
-            }
-
-            @Override
-            public void onScrollOverThreshold() {
-
-            }
-        });
+        mSwipeBackLayout = new SwipeBackLayout(mActivity);
+//        mSwipeBackLayout.addSwipeListener(new SwipeBackLayout.SwipeListener() {
+//            @Override
+//            public void onScrollStateChange(int state, float scrollPercent) {
+//            }
+//
+//            @Override
+//            public void onEdgeTouch(int edgeFlag) {
+//            }
+//
+//            @Override
+//            public void onScrollOverThreshold() {
+//
+//            }
+//        });
     }
-
     public void onPostCreate() {
         mSwipeBackLayout.attachToActivity(mActivity);
     }

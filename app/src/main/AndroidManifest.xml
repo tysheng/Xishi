@@ -19,7 +19,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.AlbumActivity" />
+        <activity
+            android:name=".ui.AlbumActivity"
+            android:theme="@style/TranslucentTheme" />
     </application>
 
 </manifest>

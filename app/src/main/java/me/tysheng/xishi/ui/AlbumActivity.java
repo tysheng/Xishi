@@ -21,17 +21,18 @@ import java.util.Locale;
 
 import me.tysheng.xishi.R;
 import me.tysheng.xishi.adapter.AlbumAdapter;
-import me.tysheng.xishi.base.BaseActivity;
+import me.tysheng.xishi.base.BaseSwipeActivity;
 import me.tysheng.xishi.bean.DayAlbums;
 import me.tysheng.xishi.bean.Picture;
 import me.tysheng.xishi.net.XishiRetrofit;
 import me.tysheng.xishi.utils.ImageUtil;
 import me.tysheng.xishi.view.ViewPagerFixed;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
-public class AlbumActivity extends BaseActivity {
+public class AlbumActivity extends BaseSwipeActivity {
 
     private ViewPagerFixed mViewPager;
     private TextView mIndicator;
@@ -53,47 +54,60 @@ public class AlbumActivity extends BaseActivity {
         mIndicator = (TextView) findViewById(R.id.indicator);
         title = (TextView) findViewById(R.id.title);
         content = (TextView) findViewById(R.id.content);
+        mAdapter = new AlbumAdapter(mAlbums, AlbumActivity.this);
+        mViewPager.setAdapter(mAdapter);
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                if (position == mAmount - 1 && positionOffsetPixels == 0) {
+                    if (countForFinish++ > 8) {
+                        finish();
+                    }
+                } else countForFinish = 0;
+            }
 
-        XishiRetrofit.getQuanziApi().getDayAlbums(mId)
+            @Override
+            public void onPageSelected(int position) {
+                selected(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+
+        });
+
+        XishiRetrofit.get().getDayAlbums(mId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<DayAlbums>() {
+                .subscribe(new Subscriber<DayAlbums>() {
                     @Override
-                    public void call(DayAlbums dayAlbums) {
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(DayAlbums dayAlbums) {
                         mAlbums = dayAlbums.picture;
                         mAmount = mAlbums.size();
-                        mAdapter = new AlbumAdapter(mAlbums, AlbumActivity.this);
-                        mViewPager.setAdapter(mAdapter);
-                        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                            @Override
-                            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                                if (position == mAmount - 1 && positionOffsetPixels == 0) {
-                                    if (countForFinish++ > 8) {
-                                        finish();
-                                    }
-                                } else countForFinish = 0;
-                            }
-
-                            @Override
-                            public void onPageSelected(int position) {
-                                selected(position);
-                            }
-
-                            @Override
-                            public void onPageScrollStateChanged(int state) {
-
-                            }
-
-                        });
+                        mAdapter.setData(mAlbums);
                         selected(0);
                     }
                 });
     }
 
     private void selected(int position) {
-        mIndicator.setText(String.format(Locale.getDefault(), "%d/%d", 1 + position, mAlbums.size()));
-        title.setText(mAlbums.get(position).title);
-        content.setText(mAlbums.get(position).content + "\n摄影  " + mAlbums.get(position).author);
+        if (mAlbums.size()!=0){
+            mIndicator.setText(String.format(Locale.getDefault(), "%d/%d", 1 + position, mAlbums.size()));
+            title.setText(mAlbums.get(position).title);
+            content.setText(mAlbums.get(position).content + "\n摄影  " + mAlbums.get(position).author);
+        }
     }
 
     private AlphaAnimation mHideTopAnim, mShowTopAnim, mShowBottomAnim, mHideBottomAnim;
@@ -173,6 +187,6 @@ public class AlbumActivity extends BaseActivity {
     @Override
     public void finish() {
         super.finish();
-        overridePendingTransition(0, R.anim.zoom_out);
+        overridePendingTransition(0, R.anim.slide_right_out);
     }
 }

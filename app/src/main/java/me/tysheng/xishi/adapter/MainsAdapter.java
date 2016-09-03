@@ -6,8 +6,6 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.squareup.picasso.Picasso;
 
-import java.util.List;
-
 import me.tysheng.xishi.R;
 import me.tysheng.xishi.bean.Album;
 
@@ -16,14 +14,14 @@ import me.tysheng.xishi.bean.Album;
  * Date: 16/8/22 22:27.
  */
 public class MainsAdapter extends BaseQuickAdapter<Album> {
-    public MainsAdapter(List<Album> data) {
-        super(R.layout.item_mains,data);
+    public MainsAdapter() {
+        super(R.layout.item_mains,null);
     }
 
     @Override
     protected void convert(BaseViewHolder holder, Album album) {
         holder.setText(R.id.title,album.title)
-        .setOnClickListener(R.id.imageView,new OnItemChildClickListener());
+        .addOnClickListener(R.id.imageView);
         Picasso.with(mContext)
                 .load(album.url)
                 .into((ImageView) holder.getView(R.id.imageView));

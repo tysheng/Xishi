@@ -2,9 +2,7 @@ package me.tysheng.xishi.adapter;
 
 import android.app.Activity;
 import android.content.DialogInterface;
-import android.content.res.Resources;
 import android.support.v7.app.AlertDialog;
-import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.List;
@@ -23,16 +21,12 @@ public class AlbumAdapter extends BaseGalleryAdapter<Picture> {
         super(images, activity);
     }
 
-    public static int sVelocityY = 12000;
+
 
     @Override
     protected void initOtherView(View view, int position) {
 
 
-    }
-
-    public int dip2px(float dipValue) {
-        return (int) (dipValue * Resources.getSystem().getDisplayMetrics().density + 0.5f);
     }
 
     @Override
@@ -55,16 +49,6 @@ public class AlbumAdapter extends BaseGalleryAdapter<Picture> {
             @Override
             public void onViewTap(View view, float x, float y) {
                 ((AlbumActivity) mActivity).hideOrShow();
-            }
-        });
-        attacher.setOnSingleFlingListener(new PhotoViewAttacher.OnSingleFlingListener() {
-            @Override
-            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                if (velocityY > sVelocityY) {
-                    mActivity.finish();
-                    return true;
-                }
-                return false;
             }
         });
     }

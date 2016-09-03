@@ -1,8 +1,5 @@
 package me.tysheng.xishi.base;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -37,17 +34,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void startActivityForResult(Intent intent, int requestCode, @Nullable Bundle options) {
-        super.startActivityForResult(intent, requestCode, options);
-//        overridePendingTransition(R.anim.slide_right_in,R.anim.fade_out);
-    }
 
-    @Override
-    public void finish() {
-        super.finish();
-//        overridePendingTransition(0, R.anim.slide_right_out);
-    }
 
     /**
      * Fragment之间的切换

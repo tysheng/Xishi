@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package me.tysheng.xishi.swipeback;
+package me.tysheng.xishi.utils.swipeback;
 
 import android.content.Context;
 import android.support.v4.view.MotionEventCompat;

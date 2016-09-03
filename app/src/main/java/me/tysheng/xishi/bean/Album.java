@@ -22,6 +22,9 @@ public class Album implements Parcelable{
     public String timing;
     public String timingpublish;
 
+    public Album() {
+    }
+
     protected Album(Parcel in) {
         id = in.readString();
         title = in.readString();

@@ -35,7 +35,10 @@
  rx.internal.util.atomic.LinkedQueueNode consumerNode;
 }
 #gson
--keep class com.google.gson.** {*;}
+#-keep class com.google.gson.** {*;}
+
+#fastjson
+-dontwarn com.alibaba.fastjson.**
 
 #retrofit2
 # Platform calls Class.forName on types which do not exist on Android to determine platform.
@@ -62,11 +65,3 @@
 
 #picasso
 -dontwarn com.squareup.okhttp.**
-
--optimizationpasses 5
--dontskipnonpubliclibraryclassmembers
--printmapping proguardMapping.txt
--optimizations !code/simplification/cast,!field/*,!class/merging/*
--keepattributes *Annotation*,InnerClasses
--keepattributes Signature
--keepattributes SourceFile,LineNumberTable

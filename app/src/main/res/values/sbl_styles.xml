@@ -1,9 +1,0 @@
-<resources>
-
-    <style name="SwipeBackLayout">
-        <item name="edge_size">20dip</item>
-        <item name="shadow_left">@drawable/sb_shadow_left</item>
-        <item name="shadow_right">@drawable/sb_shadow_right</item>
-        <item name="shadow_bottom">@drawable/sb_shadow_bottom</item>
-    </style>
-</resources>

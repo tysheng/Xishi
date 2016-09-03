@@ -28,6 +28,11 @@ public abstract class BaseGalleryAdapter<T> extends PagerAdapter {
         mActivity = activity;
     }
 
+    public void setData(List<T> images) {
+        mImages = images;
+        notifyDataSetChanged();
+    }
+
     @Override
     public Object instantiateItem(ViewGroup container, final int position) {
         ViewGroup view = (ViewGroup) LayoutInflater.from(mActivity).inflate(setLayoutId(), container, false);
@@ -41,6 +46,7 @@ public abstract class BaseGalleryAdapter<T> extends PagerAdapter {
         initAttacher(mAttacher, position);
         Picasso.with(mActivity)
                 .load(setItemUrl(position))
+                .error(R.layout.item_loading_error)
                 .into(imageView, new Callback() {
                     @Override
                     public void onSuccess() {

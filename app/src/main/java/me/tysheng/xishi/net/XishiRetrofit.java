@@ -8,7 +8,7 @@ import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.fastjson.FastJsonConverterFactory;
 
 /**
  * Created by shengtianyang on 16/3/19.
@@ -36,14 +36,14 @@ public class XishiRetrofit {
 
         retrofit = new Retrofit.Builder()
                 .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(FastJsonConverterFactory.create())
                 .baseUrl(XishiService.BASE_URL)
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build();
 
     }
 
-    public static XishiService getQuanziApi() {
+    public static XishiService get() {
         if (sService == null) {
             synchronized (XishiRetrofit.class){
                 if (sService ==null)

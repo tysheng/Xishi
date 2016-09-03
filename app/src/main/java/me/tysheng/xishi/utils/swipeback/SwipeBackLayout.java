@@ -1,8 +1,9 @@
-package me.tysheng.xishi.swipeback;
+package me.tysheng.xishi.utils.swipeback;
 
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -19,7 +20,6 @@ import java.util.List;
 
 import me.tysheng.xishi.R;
 
-//import android.support.v4.view.ViewCompat;
 
 public class SwipeBackLayout extends FrameLayout {
     /**
@@ -131,38 +131,44 @@ public class SwipeBackLayout extends FrameLayout {
     }
 
     public SwipeBackLayout(Context context, AttributeSet attrs) {
-        this(context, attrs, R.attr.SwipeBackLayoutStyle);
+        this(context, attrs, 0);
     }
 
     public SwipeBackLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs);
         mDragHelper = ViewDragHelper.create(this, new ViewDragCallback());
 
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SwipeBackLayout, defStyle,
-                R.style.SwipeBackLayout);
+//        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SwipeBackLayout, defStyle,
+//                R.style.SwipeBackLayout);
 
-        int edgeSize = a.getDimensionPixelSize(R.styleable.SwipeBackLayout_edge_size, -1);
+//        int edgeSize = a.getDimensionPixelSize(R.styleable.SwipeBackLayout_edge_size, -1);
+        int edgeSize = dip2px(20);
         if (edgeSize > 0)
             setEdgeSize(edgeSize);
-        int mode = EDGE_FLAGS[a.getInt(R.styleable.SwipeBackLayout_edge_flag, 0)];
+//        int mode = EDGE_FLAGS[a.getInt(R.styleable.SwipeBackLayout_edge_flag, 0)];
+        int mode = EDGE_FLAGS[0];
         setEdgeTrackingEnabled(mode);
 
-        int shadowLeft = a.getResourceId(R.styleable.SwipeBackLayout_shadow_left,
-                R.drawable.sb_shadow_left);
-        int shadowRight = a.getResourceId(R.styleable.SwipeBackLayout_shadow_right,
-                R.drawable.sb_shadow_right);
-        int shadowBottom = a.getResourceId(R.styleable.SwipeBackLayout_shadow_bottom,
-                R.drawable.sb_shadow_bottom);
-        setShadow(shadowLeft, EDGE_LEFT);
-        setShadow(shadowRight, EDGE_RIGHT);
-        setShadow(shadowBottom, EDGE_BOTTOM);
-        a.recycle();
+//        int shadowLeft = a.getResourceId(R.styleable.SwipeBackLayout_shadow_left,
+//                R.drawable.sb_shadow_left);
+//        int shadowRight = a.getResourceId(R.styleable.SwipeBackLayout_shadow_right,
+//                R.drawable.sb_shadow_right);
+//        int shadowBottom = a.getResourceId(R.styleable.SwipeBackLayout_shadow_bottom,
+//                R.drawable.sb_shadow_bottom);
+
+        setShadow( R.drawable.sb_shadow_left, EDGE_LEFT);
+//        setShadow(R.drawable.sb_shadow_right, EDGE_RIGHT);
+//        setShadow(R.drawable.sb_shadow_bottom, EDGE_BOTTOM);
+//        a.recycle();
         final float density = getResources().getDisplayMetrics().density;
         final float minVel = MIN_FLING_VELOCITY * density;
         mDragHelper.setMinVelocity(minVel);
         mDragHelper.setMaxVelocity(minVel * 2f);
     }
-
+    private int dip2px(float dpValue) {
+        final float scale = Resources.getSystem().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
+    }
     /**
      * Sets the sensitivity of the NavigationLayout.
      *
@@ -226,18 +232,6 @@ public class SwipeBackLayout extends FrameLayout {
      */
     public void setEdgeSize(int size) {
         mDragHelper.setEdgeSize(size);
-    }
-
-    /**
-     * Register a callback to be invoked when a swipe event is sent to this
-     * view.
-     *
-     * @param listener the swipe listener to attach to this view
-     * @deprecated use {@link #addSwipeListener} instead
-     */
-    @Deprecated
-    public void setSwipeListener(SwipeListener listener) {
-        addSwipeListener(listener);
     }
 
     /**
@@ -308,8 +302,8 @@ public class SwipeBackLayout extends FrameLayout {
     /**
      * Set a drawable used for edge shadow.
      *
-     * @param shadow    Drawable to use
-     * @param edgeFlags Combination of edge flags describing the edge to set
+     * @param shadow   Drawable to use
+     * @param edgeFlag Combination of edge flags describing the edge to set
      * @see #EDGE_LEFT
      * @see #EDGE_RIGHT
      * @see #EDGE_BOTTOM
@@ -328,8 +322,8 @@ public class SwipeBackLayout extends FrameLayout {
     /**
      * Set a drawable used for edge shadow.
      *
-     * @param resId     Resource of drawable to use
-     * @param edgeFlags Combination of edge flags describing the edge to set
+     * @param resId    Resource of drawable to use
+     * @param edgeFlag Combination of edge flags describing the edge to set
      * @see #EDGE_LEFT
      * @see #EDGE_RIGHT
      * @see #EDGE_BOTTOM
@@ -341,25 +335,25 @@ public class SwipeBackLayout extends FrameLayout {
     /**
      * Scroll out contentView and finish the activity
      */
-    public void scrollToFinishActivity() {
-        final int childWidth = mContentView.getWidth();
-        final int childHeight = mContentView.getHeight();
-
-        int left = 0, top = 0;
-        if ((mEdgeFlag & EDGE_LEFT) != 0) {
-            left = childWidth + mShadowLeft.getIntrinsicWidth() + OVERSCROLL_DISTANCE;
-            mTrackingEdge = EDGE_LEFT;
-        } else if ((mEdgeFlag & EDGE_RIGHT) != 0) {
-            left = -childWidth - mShadowRight.getIntrinsicWidth() - OVERSCROLL_DISTANCE;
-            mTrackingEdge = EDGE_RIGHT;
-        } else if ((mEdgeFlag & EDGE_BOTTOM) != 0) {
-            top = -childHeight - mShadowBottom.getIntrinsicHeight() - OVERSCROLL_DISTANCE;
-            mTrackingEdge = EDGE_BOTTOM;
-        }
-
-        mDragHelper.smoothSlideViewTo(mContentView, left, top);
-        invalidate();
-    }
+//    public void scrollToFinishActivity() {
+//        final int childWidth = mContentView.getWidth();
+//        final int childHeight = mContentView.getHeight();
+//
+//        int left = 0, top = 0;
+//        if ((mEdgeFlag & EDGE_LEFT) != 0) {
+//            left = childWidth + mShadowLeft.getIntrinsicWidth() + OVERSCROLL_DISTANCE;
+//            mTrackingEdge = EDGE_LEFT;
+//        } else if ((mEdgeFlag & EDGE_RIGHT) != 0) {
+//            left = -childWidth - mShadowRight.getIntrinsicWidth() - OVERSCROLL_DISTANCE;
+//            mTrackingEdge = EDGE_RIGHT;
+//        } else if ((mEdgeFlag & EDGE_BOTTOM) != 0) {
+//            top = -childHeight - mShadowBottom.getIntrinsicHeight() - OVERSCROLL_DISTANCE;
+//            mTrackingEdge = EDGE_BOTTOM;
+//        }
+//
+//        mDragHelper.smoothSlideViewTo(mContentView, left, top);
+//        invalidate();
+//    }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
