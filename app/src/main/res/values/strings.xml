@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">西施</string>
+    <string name="picture_has_save_to">图片已保存至 %s 文件夹</string>
+    <string name="share_title">来自西施的图片分享</string>
+</resources>
