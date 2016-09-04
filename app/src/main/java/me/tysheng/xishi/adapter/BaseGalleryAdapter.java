@@ -46,7 +46,7 @@ public abstract class BaseGalleryAdapter<T> extends PagerAdapter {
         initAttacher(mAttacher, position);
         Picasso.with(mActivity)
                 .load(setItemUrl(position))
-                .error(R.layout.item_loading_error)
+                .error(R.layout.item_loading)
                 .into(imageView, new Callback() {
                     @Override
                     public void onSuccess() {

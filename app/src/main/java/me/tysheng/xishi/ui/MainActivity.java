@@ -16,8 +16,10 @@ import me.tysheng.xishi.adapter.MainsAdapter;
 import me.tysheng.xishi.base.BaseMainActivity;
 import me.tysheng.xishi.bean.Mains;
 import me.tysheng.xishi.net.XishiRetrofit;
+import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func0;
 import rx.schedulers.Schedulers;
 
 public class MainActivity extends BaseMainActivity {
@@ -75,7 +77,8 @@ public class MainActivity extends BaseMainActivity {
                 });
             }
         });
-
+        View view = getLayoutInflater().inflate(R.layout.item_loading, (ViewGroup) mRecyclerView.getParent(), false);
+        mAdapter.setLoadingView(view);
 
         getMains(page, 0);
 //        Display display = MainActivity.this.getWindowManager().getDefaultDisplay();
@@ -112,8 +115,14 @@ public class MainActivity extends BaseMainActivity {
         mRecyclerView.stopScroll();
     }
 
-    private void getMains(int page, final int type) {
-        add(XishiRetrofit.get().getMains(page)
+    private void getMains(final int page, final int type) {
+        add(Observable
+                .defer(new Func0<Observable<Mains>>() {
+                    @Override
+                    public Observable<Mains> call() {
+                        return XishiRetrofit.get().getMains(page);
+                    }
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<Mains>() {
@@ -124,7 +133,7 @@ public class MainActivity extends BaseMainActivity {
 
                     @Override
                     public void onError(Throwable e) {
-                        final View failView = getLayoutInflater().inflate(R.layout.item_loading_error, (ViewGroup) mRecyclerView.getParent(), false);
+                        View failView = getLayoutInflater().inflate(R.layout.item_loading_error, (ViewGroup) mRecyclerView.getParent(), false);
                         mAdapter.setLoadMoreFailedView(failView);
                         mAdapter.showLoadMoreFailedView();
 //                        mAdapter.addFooterView(failView);

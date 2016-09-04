@@ -110,7 +110,7 @@ public class AlbumActivity extends BaseSwipeActivity {
         }
     }
 
-    private AlphaAnimation mHideTopAnim, mShowTopAnim, mShowBottomAnim, mHideBottomAnim;
+    private AlphaAnimation mShowBottomAnim, mHideBottomAnim;
     private boolean mVisible = true;
 
     public void hideOrShow() {
