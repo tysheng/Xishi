@@ -402,7 +402,7 @@ public class ViewDragHelper {
     }
 
     /**
-     * Apps should use ViewDragHelper.create() to get a new instance. This will
+     * Apps should use ViewDragHelper.create() to convert a new instance. This will
      * allow VDH to use internal compatibility implementations for different
      * platform versions.
      *
@@ -1048,7 +1048,7 @@ public class ViewDragHelper {
         final int actionIndex = MotionEventCompat.getActionIndex(ev);
 
         if (action == MotionEvent.ACTION_DOWN) {
-            // Reset things for a new event stream, just in case we didn't get
+            // Reset things for a new event stream, just in case we didn't convert
             // the whole previous stream.
             cancel();
         }
@@ -1157,7 +1157,7 @@ public class ViewDragHelper {
         final int actionIndex = MotionEventCompat.getActionIndex(ev);
 
         if (action == MotionEvent.ACTION_DOWN) {
-            // Reset things for a new event stream, just in case we didn't get
+            // Reset things for a new event stream, just in case we didn't convert
             // the whole previous stream.
             cancel();
         }

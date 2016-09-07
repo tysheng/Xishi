@@ -21,6 +21,7 @@ public class StySwipeBackViewPager extends ViewPager {
     private boolean swipe;
     float x_tmp1, x_tmp2;
     private boolean b;
+
     @Override
     protected void onPageScrolled(int position, float offset, int offsetPixels) {
         swipe = position == 0 && offsetPixels == 0;

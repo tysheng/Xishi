@@ -7,13 +7,13 @@ import android.view.MotionEvent;
 /**
  * Created by shengtianyang on 16/4/30.
  */
-public class ViewPagerFixed extends android.support.v4.view.ViewPager {
+public class HackyViewPager extends android.support.v4.view.ViewPager {
 
-    public ViewPagerFixed(Context context) {
+    public HackyViewPager(Context context) {
         super(context);
     }
 
-    public ViewPagerFixed(Context context, AttributeSet attrs) {
+    public HackyViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 

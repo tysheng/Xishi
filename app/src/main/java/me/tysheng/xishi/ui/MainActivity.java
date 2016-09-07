@@ -1,12 +1,15 @@
 package me.tysheng.xishi.ui;
 
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.listener.OnItemChildClickListener;
@@ -16,11 +19,8 @@ import me.tysheng.xishi.adapter.MainsAdapter;
 import me.tysheng.xishi.base.BaseMainActivity;
 import me.tysheng.xishi.bean.Mains;
 import me.tysheng.xishi.net.XishiRetrofit;
-import rx.Observable;
+import me.tysheng.xishi.utils.HttpUtil;
 import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func0;
-import rx.schedulers.Schedulers;
 
 public class MainActivity extends BaseMainActivity {
     private RecyclerView mRecyclerView;
@@ -29,6 +29,8 @@ public class MainActivity extends BaseMainActivity {
     private Toolbar mToolBar;
     private StaggeredGridLayoutManager mLayoutManager;
     private int y, x;
+    private AppBarLayout mAppBarLayout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +38,7 @@ public class MainActivity extends BaseMainActivity {
         setContentView(R.layout.activity_main);
         mToolBar = (Toolbar) findViewById(R.id.toolBar);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        mAppBarLayout = (AppBarLayout) findViewById(R.id.appBarLayout);
         mToolBar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         mToolBar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,6 +49,17 @@ public class MainActivity extends BaseMainActivity {
                         scrollToTop();
                     }
                 });
+            }
+        });
+        mToolBar.inflateMenu(R.menu.menu_toolbar);
+        mToolBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId()==R.id.action_send){
+                    EmailDialog dialog = new EmailDialog();
+                    dialog.show(getSupportFragmentManager(), "");
+                }
+                return false;
             }
         });
         mAdapter = new MainsAdapter();
@@ -105,6 +119,7 @@ public class MainActivity extends BaseMainActivity {
         mLayoutManager.findFirstCompletelyVisibleItemPositions(pos);
         if (pos[1] > 60) {
             mLayoutManager.scrollToPosition(12);
+            mAppBarLayout.setExpanded(true, true);
         }
         mRecyclerView.smoothScrollToPosition(0);
     }
@@ -116,15 +131,7 @@ public class MainActivity extends BaseMainActivity {
     }
 
     private void getMains(final int page, final int type) {
-        add(Observable
-                .defer(new Func0<Observable<Mains>>() {
-                    @Override
-                    public Observable<Mains> call() {
-                        return XishiRetrofit.get().getMains(page);
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+        HttpUtil.convert(XishiRetrofit.get().getMains(page))
                 .subscribe(new Subscriber<Mains>() {
                     @Override
                     public void onCompleted() {
@@ -134,16 +141,13 @@ public class MainActivity extends BaseMainActivity {
                     @Override
                     public void onError(Throwable e) {
                         View failView = getLayoutInflater().inflate(R.layout.item_loading_error, (ViewGroup) mRecyclerView.getParent(), false);
+
+                        if (TextUtils.equals("HTTP 404 Not Found",e.getMessage())){
+                            TextView textView = (TextView) failView.findViewById(R.id.textView);
+                            textView.setText("已到末尾,无更多内容");
+                        }
                         mAdapter.setLoadMoreFailedView(failView);
                         mAdapter.showLoadMoreFailedView();
-//                        mAdapter.addFooterView(failView);
-//                        failView.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                mAdapter.removeFooterView(failView);
-//                                mAdapter.openLoadMore(10);
-//                            }
-//                        });
                     }
 
                     @Override
@@ -154,7 +158,47 @@ public class MainActivity extends BaseMainActivity {
                             mAdapter.addData(mains.album);
                         }
                     }
-                }));
+                });
+
+//        add(Observable
+//                .defer(new Func0<Observable<Mains>>() {
+//                    @Override
+//                    public Observable<Mains> call() {
+//                        return XishiRetrofit.get().getMains(page);
+//                    }
+//                })
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Subscriber<Mains>() {
+//                    @Override
+//                    public void onCompleted() {
+//
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable e) {
+//                        View failView = getLayoutInflater().inflate(R.layout.item_loading_error, (ViewGroup) mRecyclerView.getParent(), false);
+//                        mAdapter.setLoadMoreFailedView(failView);
+//                        mAdapter.showLoadMoreFailedView();
+////                        mAdapter.addFooterView(failView);
+////                        failView.setOnClickListener(new View.OnClickListener() {
+////                            @Override
+////                            public void onClick(View v) {
+////                                mAdapter.removeFooterView(failView);
+////                                mAdapter.openLoadMore(10);
+////                            }
+////                        });
+//                    }
+//
+//                    @Override
+//                    public void onNext(Mains mains) {
+//                        if (type == 0)
+//                            mAdapter.setNewData(mains.album);
+//                        else {
+//                            mAdapter.addData(mains.album);
+//                        }
+//                    }
+//                }));
     }
 
     @Override

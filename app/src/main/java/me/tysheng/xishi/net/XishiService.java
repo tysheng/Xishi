@@ -11,7 +11,7 @@ import rx.Observable;
  * Date: 16/8/22 22:18.
  */
 public interface XishiService {
-    String BASE_URL = "http://dili.bdatu.com/jiekou/";
+
 
     @GET("mains/p{page}.html")
     Observable<Mains> getMains(@Path("page") int page);

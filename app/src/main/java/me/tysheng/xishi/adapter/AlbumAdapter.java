@@ -63,11 +63,6 @@ public class AlbumAdapter extends BaseGalleryAdapter<Picture> {
         return R.layout.item_album;
     }
 
-    @Override
-    protected int setImageViewId() {
-        return R.id.imageView;
-    }
-
 
     @Override
     protected CharSequence setPageTitle(int position) {

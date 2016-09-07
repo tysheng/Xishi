@@ -3,4 +3,5 @@
     <string name="picture_has_save_to">图片已保存至 %s 文件夹</string>
     <string name="share_title">来自西施的图片分享</string>
     <string name="loading_error_message">加载失败,点击重试</string>
+    <string name="email_me">问题反馈请发邮件(长按复制):\n\n 353491983@qq.com\n\n捐赠点击下方按钮</string>
 </resources>

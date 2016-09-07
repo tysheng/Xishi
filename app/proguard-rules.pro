@@ -34,8 +34,6 @@
 -keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueConsumerNodeRef {
  rx.internal.util.atomic.LinkedQueueNode consumerNode;
 }
-#gson
-#-keep class com.google.gson.** {*;}
 
 #fastjson
 -dontwarn com.alibaba.fastjson.**

@@ -2,37 +2,43 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:fitsSystemWindows="true"
     android:background="@android:color/black"
-    android:layout_height="match_parent"
-    tools:context=".ui.AlbumActivity">
-    <me.tysheng.xishi.view.ViewPagerFixed
+    android:layout_height="match_parent">
+    <me.tysheng.xishi.view.HackyViewPager
         android:id="@+id/viewPager"
         tools:targetApi="lollipop"
         android:transitionName="scaledImage"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </me.tysheng.xishi.view.ViewPagerFixed>
+    </me.tysheng.xishi.view.HackyViewPager>
 
-    <TextView
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
-        android:id="@+id/indicator"
-        android:gravity="center"
-        tools:title="1/9"
-        android:padding="@dimen/activity_horizontal_margin"
-        android:textColor="@android:color/white"/>
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
         android:layout_above="@+id/scrollView"
-        android:gravity="center_vertical"
-        android:padding="10dp"
-        android:textColor="@android:color/white"
-        android:textSize="20sp"
-        tools:text="dasd" />
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|left"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            tools:text="dasd" />
+        <TextView
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/indicator"
+            android:gravity="center_vertical|right"
+            tools:title="1/9"
+            android:textSize="15sp"
+            android:textColor="@android:color/white"/>
+    </LinearLayout>
+
 
     <ScrollView
         android:id="@+id/scrollView"
