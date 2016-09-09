@@ -30,8 +30,18 @@ public class EmailDialog extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 //                        https://qr.alipay.com/aex07650apwol9ijoslnm39
-                        if (AlipayZeroSdk.hasInstalledAlipayClient(App.get()))
-                            AlipayZeroSdk.startAlipayClient(getActivity(), "aex07650apwol9ijoslnm39");
+                        if (AlipayZeroSdk.hasInstalledAlipayClient(App.get())) {
+                            if (!AlipayZeroSdk.startAlipayClient(getActivity(), "aex07650apwol9ijoslnm39")){
+                                ((MainActivity) getContext()).showAlipayFail();
+                            }
+                        } else
+                            ((MainActivity) getContext()).showAlipayFail();
+                    }
+                })
+                .setNegativeButton("检查更新", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ((MainActivity) getContext()).checkVersionByBaidu();
                     }
                 })
                 .create();

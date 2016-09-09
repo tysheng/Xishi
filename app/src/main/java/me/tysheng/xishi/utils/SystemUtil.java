@@ -50,6 +50,19 @@ public class SystemUtil {
         }
         return "x.x";
     }
+    public static int getVersionCode() {
+        Context context = App.get();
+        PackageManager packageManager = context.getPackageManager();
+        // getPackageName()是你当前类的包名，0代表是获取版本信息
+        PackageInfo packInfo;
+        try {
+            packInfo = packageManager.getPackageInfo(context.getPackageName(), 0);
+            return packInfo.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return 1;
+    }
     /**
      * 判断网络连接是否打开,包括移动数据连接
      *

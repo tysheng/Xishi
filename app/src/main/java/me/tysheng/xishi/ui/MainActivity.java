@@ -1,7 +1,10 @@
 package me.tysheng.xishi.ui;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -11,6 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.baidu.autoupdatesdk.AppUpdateInfo;
+import com.baidu.autoupdatesdk.AppUpdateInfoForInstall;
+import com.baidu.autoupdatesdk.BDAutoUpdateSDK;
+import com.baidu.autoupdatesdk.CPCheckUpdateCallback;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.listener.OnItemChildClickListener;
 
@@ -20,7 +27,11 @@ import me.tysheng.xishi.base.BaseMainActivity;
 import me.tysheng.xishi.bean.Mains;
 import me.tysheng.xishi.net.XishiRetrofit;
 import me.tysheng.xishi.utils.HttpUtil;
+import me.tysheng.xishi.utils.LogUtil;
+import me.tysheng.xishi.utils.SystemUtil;
+import me.tysheng.xishi.utils.fastcache.FastCache;
 import rx.Subscriber;
+import rx.functions.Action0;
 
 public class MainActivity extends BaseMainActivity {
     private RecyclerView mRecyclerView;
@@ -55,7 +66,7 @@ public class MainActivity extends BaseMainActivity {
         mToolBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId()==R.id.action_send){
+                if (item.getItemId() == R.id.action_send) {
                     EmailDialog dialog = new EmailDialog();
                     dialog.show(getSupportFragmentManager(), "");
                 }
@@ -94,16 +105,61 @@ public class MainActivity extends BaseMainActivity {
         View view = getLayoutInflater().inflate(R.layout.item_loading, (ViewGroup) mRecyclerView.getParent(), false);
         mAdapter.setLoadingView(view);
 
-        getMains(page, 0);
+        mRecyclerView.post(new Runnable() {
+            @Override
+            public void run() {
+                getMains(page, 0);
+            }
+        });
+
 //        Display display = MainActivity.this.getWindowManager().getDefaultDisplay();
 //        Point point = new Point();
 //        display.getSize(point);
 //        y = point.y;
 //        x = point.x;
+//        RxPermissions.getInstance(this)
+//                .request(Manifest.permission.READ_PHONE_STATE,
+//                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Action1<Boolean>() {
+//                    @Override
+//                    public void call(Boolean aBoolean) {
+//
+//                    }
+//                });
+    }
+
+    public void showAlipayFail() {
+        Snackbar.make(mToolBar, "支付宝账号已复制到剪贴板", Snackbar.LENGTH_SHORT).show();
+        ClipboardManager c = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        c.setPrimaryClip(ClipData.newPlainText("email", "353491983@qq.com"));//设置Clipboard 的内容
+    }
+
+    public void checkVersionByBaidu() {
+        BDAutoUpdateSDK.cpUpdateCheck(this, new CPCheckUpdateCallback() {
+            @Override
+            public void onCheckUpdateCallback(AppUpdateInfo appUpdateInfo, AppUpdateInfoForInstall appUpdateInfoForInstall) {
+                if (appUpdateInfo != null && appUpdateInfo.getAppVersionCode() > SystemUtil.getVersionCode()) {
+                    BDAutoUpdateSDK.uiUpdateAction(MainActivity.this,
+                            new com.baidu.autoupdatesdk.UICheckUpdateCallback() {
+
+                                @Override
+                                public void onCheckComplete() {
+                                }
+                            });
+                } else {
+                    Snackbar.make(mToolBar, "当前版本已是最新版", Snackbar.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     @Override
     public void onBackPressed() {
+        if (mAdapter.getData() == null || mAdapter.getData().size() == 0) {
+            super.onBackPressed();
+            return;
+        }
         mRecyclerView.stopScroll();
         int[] pos = new int[2];
         mLayoutManager.findFirstCompletelyVisibleItemPositions(pos);
@@ -131,7 +187,44 @@ public class MainActivity extends BaseMainActivity {
     }
 
     private void getMains(final int page, final int type) {
-        HttpUtil.convert(XishiRetrofit.get().getMains(page))
+        final boolean[] flags = new boolean[1];
+        flags[0]= true;
+        FastCache.getAsync("page" + page, Mains.class)
+                .doAfterTerminate(new Action0() {
+                    @Override
+                    public void call() {
+                        if (flags[0])
+                        HttpUtil.convert(XishiRetrofit.get().getMains(page))
+                                .subscribe(new Subscriber<Mains>() {
+                                    @Override
+                                    public void onCompleted() {
+
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        LogUtil.d(e.getMessage());
+                                        View failView = getLayoutInflater().inflate(R.layout.item_loading_error, (ViewGroup) mRecyclerView.getParent(), false);
+                                        if (TextUtils.equals("HTTP 404 Not Found", e.getMessage())) {
+                                            TextView textView = (TextView) failView.findViewById(R.id.textView);
+                                            textView.setText("已到末尾,无更多内容");
+                                        }
+                                        mAdapter.setLoadMoreFailedView(failView);
+                                        mAdapter.showLoadMoreFailedView();
+                                    }
+
+                                    @Override
+                                    public void onNext(Mains mains) {
+                                        if (type == 0) {
+                                            mAdapter.setNewData(mains.album);
+                                        } else {
+                                            mAdapter.addData(mains.album);
+                                        }
+                                        FastCache.putAsync("page" + page, mains, null);
+                                    }
+                                });
+                    }
+                })
                 .subscribe(new Subscriber<Mains>() {
                     @Override
                     public void onCompleted() {
@@ -140,65 +233,23 @@ public class MainActivity extends BaseMainActivity {
 
                     @Override
                     public void onError(Throwable e) {
-                        View failView = getLayoutInflater().inflate(R.layout.item_loading_error, (ViewGroup) mRecyclerView.getParent(), false);
+                        LogUtil.d(e.getMessage());
 
-                        if (TextUtils.equals("HTTP 404 Not Found",e.getMessage())){
-                            TextView textView = (TextView) failView.findViewById(R.id.textView);
-                            textView.setText("已到末尾,无更多内容");
-                        }
-                        mAdapter.setLoadMoreFailedView(failView);
-                        mAdapter.showLoadMoreFailedView();
                     }
 
                     @Override
                     public void onNext(Mains mains) {
-                        if (type == 0)
-                            mAdapter.setNewData(mains.album);
-                        else {
-                            mAdapter.addData(mains.album);
+                        if (mains != null) {
+                            flags[0]=false;
+                            if (type == 0) {
+                                mAdapter.setNewData(mains.album);
+                            } else {
+                                mAdapter.addData(mains.album);
+                            }
                         }
                     }
                 });
 
-//        add(Observable
-//                .defer(new Func0<Observable<Mains>>() {
-//                    @Override
-//                    public Observable<Mains> call() {
-//                        return XishiRetrofit.get().getMains(page);
-//                    }
-//                })
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(new Subscriber<Mains>() {
-//                    @Override
-//                    public void onCompleted() {
-//
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable e) {
-//                        View failView = getLayoutInflater().inflate(R.layout.item_loading_error, (ViewGroup) mRecyclerView.getParent(), false);
-//                        mAdapter.setLoadMoreFailedView(failView);
-//                        mAdapter.showLoadMoreFailedView();
-////                        mAdapter.addFooterView(failView);
-////                        failView.setOnClickListener(new View.OnClickListener() {
-////                            @Override
-////                            public void onClick(View v) {
-////                                mAdapter.removeFooterView(failView);
-////                                mAdapter.openLoadMore(10);
-////                            }
-////                        });
-//                    }
-//
-//                    @Override
-//                    public void onNext(Mains mains) {
-//                        if (type == 0)
-//                            mAdapter.setNewData(mains.album);
-//                        else {
-//                            mAdapter.addData(mains.album);
-//                        }
-//                    }
-//                }));
     }
 
     @Override

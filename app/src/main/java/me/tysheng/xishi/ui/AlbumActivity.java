@@ -183,11 +183,7 @@ public class AlbumActivity extends BaseSwipeActivity {
         return intent;
     }
 
-    public void saveImageToGallery(int position, int i) {
-        requestPermission(position, i);
-    }
-
-    private void requestPermission(final int position, final int i) {
+    public void saveImageToGallery(final int position, final int i) {
         RxPermissions.getInstance(this)
                 .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -217,7 +213,6 @@ public class AlbumActivity extends BaseSwipeActivity {
                     }
                 });
     }
-
 
     @Override
     public void finish() {

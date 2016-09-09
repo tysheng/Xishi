@@ -63,3 +63,8 @@
 
 #picasso
 -dontwarn com.squareup.okhttp.**
+
+#百度sdk
+-keep class com.baidu.** {*;}
+-keep class vi.com.** {*;}
+-dontwarn com.baidu.**

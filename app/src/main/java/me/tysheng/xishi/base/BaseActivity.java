@@ -8,6 +8,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
+import com.baidu.mobstat.StatService;
+
 import me.tysheng.xishi.utils.LogUtil;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
@@ -31,8 +33,15 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        StatService.onPause(this);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
+        StatService.onResume(this);
         LogUtil.d("onResume  "+getClass().getSimpleName());
     }
 
