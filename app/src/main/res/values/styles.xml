@@ -6,9 +6,12 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-
     </style>
     <style name="TranslucentTheme" parent="AppTheme">
         <item name="android:windowIsTranslucent">true</item>
+    </style>
+    <style name="BlackTheme" parent="AppTheme">
+        <item name="colorPrimary">#202020</item>
+        <item name="colorPrimaryDark">#202020</item>
     </style>
 </resources>

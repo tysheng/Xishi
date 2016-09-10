@@ -3,6 +3,7 @@ package me.tysheng.xishi.ui;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -13,6 +14,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.RelativeSizeSpan;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -33,6 +35,7 @@ import me.tysheng.xishi.bean.Picture;
 import me.tysheng.xishi.net.XishiRetrofit;
 import me.tysheng.xishi.utils.HttpUtil;
 import me.tysheng.xishi.utils.ImageUtil;
+import me.tysheng.xishi.utils.ScreenUtil;
 import me.tysheng.xishi.view.HackyViewPager;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -54,6 +57,19 @@ public class AlbumActivity extends BaseSwipeActivity {
     private boolean mVisible = true;
     private ScrollView mScrollView;
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            ViewGroup.LayoutParams params = mScrollView.getLayoutParams();
+            params.height = ScreenUtil.dip2px(60);
+            mScrollView.setLayoutParams(params);
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            ViewGroup.LayoutParams params = mScrollView.getLayoutParams();
+            params.height = ScreenUtil.dip2px(120);
+            mScrollView.setLayoutParams(params);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +81,7 @@ public class AlbumActivity extends BaseSwipeActivity {
             decorView.setSystemUiVisibility(option);
             getWindow().setStatusBarColor(Color.TRANSPARENT); //也可以设置成灰色透明的，比较符合Material Design的风格
         }
+
         setContentView(R.layout.activity_album);
         parseIntent();
         mViewPager = (HackyViewPager) findViewById(R.id.viewPager);
@@ -72,6 +89,14 @@ public class AlbumActivity extends BaseSwipeActivity {
         title = (TextView) findViewById(R.id.title);
         content = (TextView) findViewById(R.id.content);
         mScrollView = (ScrollView) findViewById(R.id.scrollView);
+        /**
+         * 横屏
+         */
+        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            ViewGroup.LayoutParams params = mScrollView.getLayoutParams();
+            params.height = ScreenUtil.dip2px(60);
+            mScrollView.setLayoutParams(params);
+        }
 
         mAlbums = new ArrayList<>();
         mAdapter = new AlbumAdapter(mAlbums, AlbumActivity.this);
@@ -124,18 +149,18 @@ public class AlbumActivity extends BaseSwipeActivity {
         if (mAlbums.size() != 0) {
             SpannableString string = new SpannableString(String.format(Locale.getDefault(), "%d/%d", 1 + position, mAlbums.size()));
             RelativeSizeSpan sizeSpan0 = new RelativeSizeSpan(1.4f);
-            RelativeSizeSpan sizeSpan1 = new RelativeSizeSpan(1.0f);
+
             RelativeSizeSpan sizeSpan2 = new RelativeSizeSpan(0.7f);
             if (position >= 9) {
                 string.setSpan(sizeSpan0, 0, 2, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-                string.setSpan(sizeSpan1, 2, string.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
             } else {
                 string.setSpan(sizeSpan0, 0, 1, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-                string.setSpan(sizeSpan1, 1, string.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
             }
             mIndicator.setText(string);
             SpannableString string1 = new SpannableString(mAlbums.get(position).title + "    " + mAlbums.get(position).author);
-            string1.setSpan(sizeSpan1, 0, mAlbums.get(position).title.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
             string1.setSpan(sizeSpan2, mAlbums.get(position).title.length(), string1.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             title.setText(string1);
             content.setText(mAlbums.get(position).content);
@@ -217,6 +242,6 @@ public class AlbumActivity extends BaseSwipeActivity {
     @Override
     public void finish() {
         super.finish();
-        overridePendingTransition(0, R.anim.slide_right_out);
+        overridePendingTransition(0, R.anim.zoom_out);
     }
 }

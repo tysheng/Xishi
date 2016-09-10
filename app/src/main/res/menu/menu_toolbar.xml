@@ -5,8 +5,10 @@
 
     <item
         android:id="@+id/action_send"
+android:title="@string/more"
         android:icon="@drawable/ic_more_vert_white_24dp"
         android:orderInCategory="100"
         app:showAsAction="ifRoom"
         tools:ignore="MenuTitle" />
+
 </menu>

@@ -3,13 +3,18 @@ package me.tysheng.xishi.ui;
 import android.Manifest;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.Display;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +47,7 @@ public class MainActivity extends BaseMainActivity {
     private MainsAdapter mAdapter;
     private int page = 1;
     private Toolbar mToolBar;
-    private StaggeredGridLayoutManager mLayoutManager;
+    private LinearLayoutManager mLayoutManager;
     private int y, x;
     private AppBarLayout mAppBarLayout;
 
@@ -78,20 +83,19 @@ public class MainActivity extends BaseMainActivity {
             }
         });
         mAdapter = new MainsAdapter();
-        mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        mLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+        mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addOnItemTouchListener(new OnItemChildClickListener() {
             @Override
             public void SimpleOnItemChildClick(BaseQuickAdapter baseQuickAdapter, View view, int i) {
                 String id = mAdapter.getData().get(i).id;
-                if (!TextUtils.isEmpty(id))
-                    startActivity(AlbumActivity.newIntent(MainActivity.this, id));
-//                startActivity(AlbumActivity.newIntent(MainActivity.this, mAdapter.getData().get(i).id),
-//                        ActivityOptionsCompat.makeScaleUpAnimation(view, 0, y / 5, x, y / 2).toBundle());
-//                ActivityCompat.startActivity(MainActivity.this,AlbumActivity.newIntent(MainActivity.this, mAdapter.getData().get(i).id),
-//                        ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this,view,"scaledImage").toBundle());
+                if (!TextUtils.isEmpty(id)){
+                    Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.black);
+                    startActivity(AlbumActivity.newIntent(MainActivity.this, mAdapter.getData().get(i).id),
+                            ActivityOptionsCompat.makeThumbnailScaleUpAnimation(view,bitmap, x/2, y / 2).toBundle());
+                    bitmap.recycle();
+                }
             }
         });
         mAdapter.openLoadMore(10);
@@ -109,6 +113,7 @@ public class MainActivity extends BaseMainActivity {
         View view = getLayoutInflater().inflate(R.layout.item_loading, (ViewGroup) mRecyclerView.getParent(), false);
         mAdapter.setLoadingView(view);
 
+
         mRecyclerView.post(new Runnable() {
             @Override
             public void run() {
@@ -116,11 +121,11 @@ public class MainActivity extends BaseMainActivity {
             }
         });
 
-//        Display display = MainActivity.this.getWindowManager().getDefaultDisplay();
-//        Point point = new Point();
-//        display.getSize(point);
-//        y = point.y;
-//        x = point.x;
+        Display display = MainActivity.this.getWindowManager().getDefaultDisplay();
+        Point point = new Point();
+        display.getSize(point);
+        y = point.y;
+        x = point.x;
         RxPermissions.getInstance(this)
                 .request(Manifest.permission.READ_PHONE_STATE,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -164,9 +169,8 @@ public class MainActivity extends BaseMainActivity {
             return;
         }
         mRecyclerView.stopScroll();
-        int[] pos = new int[2];
-        mLayoutManager.findFirstCompletelyVisibleItemPositions(pos);
-        if (pos[0] == 0) {
+        int pos = mLayoutManager.findFirstCompletelyVisibleItemPosition();
+        if (pos == 0) {
             super.onBackPressed();
         } else {
             scrollToTop();
@@ -174,12 +178,11 @@ public class MainActivity extends BaseMainActivity {
     }
 
     private void scrollToTop() {
-        int[] pos = new int[2];
-        mLayoutManager.findFirstCompletelyVisibleItemPositions(pos);
-        if (pos[1] > 60) {
-            mLayoutManager.scrollToPosition(12);
-            mAppBarLayout.setExpanded(true, true);
+        int pos = mLayoutManager.findFirstCompletelyVisibleItemPosition();
+        if (pos > 15) {
+            mLayoutManager.scrollToPosition(5);
         }
+        mAppBarLayout.setExpanded(true, true);
         mRecyclerView.smoothScrollToPosition(0);
     }
 
