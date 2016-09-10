@@ -36,6 +36,7 @@ import me.tysheng.xishi.net.XishiRetrofit;
 import me.tysheng.xishi.utils.HttpUtil;
 import me.tysheng.xishi.utils.SystemUtil;
 import me.tysheng.xishi.utils.fastcache.FastCache;
+import me.tysheng.xishi.view.RecycleViewDivider;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
@@ -59,7 +60,6 @@ public class MainActivity extends BaseMainActivity {
         mToolBar = (Toolbar) findViewById(R.id.toolBar);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mAppBarLayout = (AppBarLayout) findViewById(R.id.appBarLayout);
-        mToolBar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         mToolBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -114,6 +114,7 @@ public class MainActivity extends BaseMainActivity {
         mAdapter.setLoadingView(view);
 
 
+
         mRecyclerView.post(new Runnable() {
             @Override
             public void run() {
@@ -126,6 +127,7 @@ public class MainActivity extends BaseMainActivity {
         display.getSize(point);
         y = point.y;
         x = point.x;
+        mRecyclerView.addItemDecoration(new RecycleViewDivider(this));
         RxPermissions.getInstance(this)
                 .request(Manifest.permission.READ_PHONE_STATE,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)

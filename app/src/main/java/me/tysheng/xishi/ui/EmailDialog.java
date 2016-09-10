@@ -23,7 +23,7 @@ public class EmailDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View view = View.inflate(getActivity(), R.layout.dialog_email, null);
-        AlertDialog dialog = new AlertDialog.Builder(getActivity())
+        AlertDialog dialog = new AlertDialog.Builder(getActivity(),R.style.BlackDialog)
                 .setView(view)
                 .setTitle(String.format("关于-Ver.%s", SystemUtil.getVersionName()))
                 .setPositiveButton("捐赠", new DialogInterface.OnClickListener() {

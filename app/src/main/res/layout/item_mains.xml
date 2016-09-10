@@ -5,7 +5,6 @@
     android:id="@+id/cardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
     app:cardCornerRadius="0dp">
 
     <LinearLayout
@@ -20,12 +19,12 @@
             android:paddingBottom="10dp"
             android:paddingLeft="22dp"
             android:paddingRight="22dp"
+            android:background="@color/grey_900"
             android:paddingTop="10dp">
             <ImageView
                 android:layout_width="15dp"
                 android:id="@+id/tag"
                 android:layout_height="match_parent"
-
                 android:src="@drawable/arrow_right" />
             <TextView
                 android:id="@+id/title"
@@ -33,10 +32,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:layout_toRightOf="@+id/tag"
-                android:textColor="@android:color/primary_text_light"
                 tools:text="12313" />
-
-
 
             <TextView
                 android:id="@+id/time"
@@ -52,6 +48,7 @@
             android:id="@+id/imageView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/grey_700"
             android:foreground="@drawable/sb_shadow_top"
             android:minHeight="300dp"
             android:scaleType="centerCrop" />
