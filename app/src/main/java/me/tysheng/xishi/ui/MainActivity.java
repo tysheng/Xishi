@@ -1,5 +1,6 @@
 package me.tysheng.xishi.ui;
 
+import android.Manifest;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import com.baidu.autoupdatesdk.BDAutoUpdateSDK;
 import com.baidu.autoupdatesdk.CPCheckUpdateCallback;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.listener.OnItemChildClickListener;
+import com.tbruyelle.rxpermissions.RxPermissions;
 
 import me.tysheng.xishi.R;
 import me.tysheng.xishi.adapter.MainsAdapter;
@@ -27,11 +29,13 @@ import me.tysheng.xishi.base.BaseMainActivity;
 import me.tysheng.xishi.bean.Mains;
 import me.tysheng.xishi.net.XishiRetrofit;
 import me.tysheng.xishi.utils.HttpUtil;
-import me.tysheng.xishi.utils.LogUtil;
 import me.tysheng.xishi.utils.SystemUtil;
 import me.tysheng.xishi.utils.fastcache.FastCache;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 public class MainActivity extends BaseMainActivity {
     private RecyclerView mRecyclerView;
@@ -117,16 +121,16 @@ public class MainActivity extends BaseMainActivity {
 //        display.getSize(point);
 //        y = point.y;
 //        x = point.x;
-//        RxPermissions.getInstance(this)
-//                .request(Manifest.permission.READ_PHONE_STATE,
-//                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(new Action1<Boolean>() {
-//                    @Override
-//                    public void call(Boolean aBoolean) {
-//
-//                    }
-//                });
+        RxPermissions.getInstance(this)
+                .request(Manifest.permission.READ_PHONE_STATE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Boolean>() {
+                    @Override
+                    public void call(Boolean aBoolean) {
+
+                    }
+                });
     }
 
     public void showAlipayFail() {
@@ -142,7 +146,6 @@ public class MainActivity extends BaseMainActivity {
                 if (appUpdateInfo != null && appUpdateInfo.getAppVersionCode() > SystemUtil.getVersionCode()) {
                     BDAutoUpdateSDK.uiUpdateAction(MainActivity.this,
                             new com.baidu.autoupdatesdk.UICheckUpdateCallback() {
-
                                 @Override
                                 public void onCheckComplete() {
                                 }
@@ -188,41 +191,47 @@ public class MainActivity extends BaseMainActivity {
 
     private void getMains(final int page, final int type) {
         final boolean[] flags = new boolean[1];
-        flags[0]= true;
-        FastCache.getAsync("page" + page, Mains.class)
+        flags[0] = true;
+        add(FastCache.getAsync("page" + page, Mains.class)
                 .doAfterTerminate(new Action0() {
                     @Override
                     public void call() {
                         if (flags[0])
-                        HttpUtil.convert(XishiRetrofit.get().getMains(page))
-                                .subscribe(new Subscriber<Mains>() {
-                                    @Override
-                                    public void onCompleted() {
+                            HttpUtil.convert(XishiRetrofit.get().getMains(page))
+                                    .subscribe(new Subscriber<Mains>() {
+                                        @Override
+                                        public void onCompleted() {
 
-                                    }
-
-                                    @Override
-                                    public void onError(Throwable e) {
-                                        LogUtil.d(e.getMessage());
-                                        View failView = getLayoutInflater().inflate(R.layout.item_loading_error, (ViewGroup) mRecyclerView.getParent(), false);
-                                        if (TextUtils.equals("HTTP 404 Not Found", e.getMessage())) {
-                                            TextView textView = (TextView) failView.findViewById(R.id.textView);
-                                            textView.setText("已到末尾,无更多内容");
                                         }
-                                        mAdapter.setLoadMoreFailedView(failView);
-                                        mAdapter.showLoadMoreFailedView();
-                                    }
 
-                                    @Override
-                                    public void onNext(Mains mains) {
-                                        if (type == 0) {
-                                            mAdapter.setNewData(mains.album);
-                                        } else {
-                                            mAdapter.addData(mains.album);
+                                        @Override
+                                        public void onError(Throwable e) {
+                                            View failView = getLayoutInflater().inflate(R.layout.item_loading_error, (ViewGroup) mRecyclerView.getParent(), false);
+                                            if (TextUtils.equals("HTTP 404 Not Found", e.getMessage())) {
+                                                TextView textView = (TextView) failView.findViewById(R.id.textView);
+                                                textView.setText("已到末尾,无更多内容");
+                                            }
+                                            mAdapter.setLoadMoreFailedView(failView);
+                                            mAdapter.showLoadMoreFailedView();
                                         }
-                                        FastCache.putAsync("page" + page, mains, null);
-                                    }
-                                });
+
+                                        @Override
+                                        public void onNext(Mains mains) {
+                                            if (type == 0) {
+                                                mAdapter.setNewData(mains.album);
+                                            } else {
+                                                mAdapter.addData(mains.album);
+                                            }
+                                            FastCache.putAsync("page" + page, mains)
+                                                    .subscribeOn(Schedulers.io())
+                                                    .subscribe(new Action1<Boolean>() {
+                                                        @Override
+                                                        public void call(Boolean aBoolean) {
+
+                                                        }
+                                                    });
+                                        }
+                                    });
                     }
                 })
                 .subscribe(new Subscriber<Mains>() {
@@ -233,14 +242,13 @@ public class MainActivity extends BaseMainActivity {
 
                     @Override
                     public void onError(Throwable e) {
-                        LogUtil.d(e.getMessage());
 
                     }
 
                     @Override
                     public void onNext(Mains mains) {
                         if (mains != null) {
-                            flags[0]=false;
+                            flags[0] = false;
                             if (type == 0) {
                                 mAdapter.setNewData(mains.album);
                             } else {
@@ -248,8 +256,7 @@ public class MainActivity extends BaseMainActivity {
                             }
                         }
                     }
-                });
-
+                }));
     }
 
     @Override

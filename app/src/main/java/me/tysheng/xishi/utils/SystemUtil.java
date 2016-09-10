@@ -4,8 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.net.Uri;
 import android.text.TextUtils;
 
 import java.io.File;
@@ -23,14 +22,14 @@ import rx.schedulers.Schedulers;
  * Date: 16/8/19 09:36.
  */
 public class SystemUtil {
-    public static void share(Context context, String text, String title) {
+    public static void share(Context context, String text, String title, Uri path) {
         Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("text/plain");
+        intent.setType("image/png");
         intent.putExtra(Intent.EXTRA_TEXT, text);
         intent.putExtra(Intent.EXTRA_SUBJECT, title);
+        intent.putExtra(Intent.EXTRA_STREAM, path);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(Intent.createChooser(intent, title));
-
     }
 
     /**
@@ -63,44 +62,7 @@ public class SystemUtil {
         }
         return 1;
     }
-    /**
-     * 判断网络连接是否打开,包括移动数据连接
-     *
-     * @return 是否联网
-     */
-    public static boolean isNetworkAvailable() {
-        boolean netState = false;
-        ConnectivityManager connectivity = (ConnectivityManager) App.get()
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivity != null) {
 
-            NetworkInfo[] info = connectivity.getAllNetworkInfo();
-            if (info != null) {
-                for (int i = 0; i < info.length; i++) {
-
-                    if (info[i].getState() == NetworkInfo.State.CONNECTED) {
-
-                        netState = true;
-                        break;
-                    }
-                }
-            }
-        }
-        return netState;
-    }
-    /**
-     * 检测当前打开的网络类型是否WIFI
-     *
-     * @param context 上下文
-     * @return 是否是Wifi上网
-     */
-    public static boolean isWifi(Context context) {
-        ConnectivityManager connectivityManager = (ConnectivityManager) context
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetInfo != null
-                && activeNetInfo.getType() == ConnectivityManager.TYPE_WIFI;
-    }
     public static boolean deleteFile(String path) {
         if (TextUtils.isEmpty(path)) {
             return true;
