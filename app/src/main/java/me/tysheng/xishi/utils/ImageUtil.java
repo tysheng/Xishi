@@ -68,15 +68,15 @@ public class ImageUtil {
 
     }
 
-    public static void shareImage(Context context, Uri path, int flag) {
+    public static void shareImage(Context context, Uri path) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("image/png");
         intent.putExtra(Intent.EXTRA_STREAM, path);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        if (flag == 1)
+//        if (flag == 1)
             intent.setComponent(new ComponentName("com.tencent.mm", "com.tencent.mm.ui.tools.ShareImgUI"));
-        else if (flag == 2)
-            intent.setComponent(new ComponentName("com.tencent.mm", "com.tencent.mm.ui.tools.ShareToTimeLineUI"));
+//        else if (flag == 2)
+//            intent.setComponent(new ComponentName("com.tencent.mm", "com.tencent.mm.ui.tools.ShareToTimeLineUI"));
         context.startActivity(Intent.createChooser(intent, context.getString(R.string.share_title)));
         if (context instanceof Activity)
             ((Activity) context).overridePendingTransition(R.anim.fade_in, 0);

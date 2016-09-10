@@ -35,7 +35,7 @@ public class AlbumAdapter extends BaseGalleryAdapter<Picture> {
             @Override
             public boolean onLongClick(View view) {
                 new AlertDialog.Builder(mActivity)
-                        .setItems(new String[]{"保存", "分享", "分享到朋友圈"}, new DialogInterface.OnClickListener() {
+                        .setItems(new String[]{"保存", "分享", "分享给微信好友"}, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 dialogInterface.dismiss();

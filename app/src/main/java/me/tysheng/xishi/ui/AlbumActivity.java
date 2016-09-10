@@ -36,6 +36,7 @@ import me.tysheng.xishi.net.XishiRetrofit;
 import me.tysheng.xishi.utils.HttpUtil;
 import me.tysheng.xishi.utils.ImageUtil;
 import me.tysheng.xishi.utils.ScreenUtil;
+import me.tysheng.xishi.utils.SystemUtil;
 import me.tysheng.xishi.view.HackyViewPager;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -225,11 +226,19 @@ public class AlbumActivity extends BaseSwipeActivity {
                                             File appDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
                                             String msg = String.format(getString(R.string.picture_has_save_to),
                                                     appDir.getAbsolutePath());
-                                            if (0 != i) {
-                                                ImageUtil.shareImage(AlbumActivity.this, uri, i);
-                                            } else
-                                                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-
+                                            switch(i){
+                                                case 0:
+                                                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                                                    break;
+                                                case 1:
+                                                    SystemUtil.share(AlbumActivity.this,"来自\"西施App\"的图片分享","分享到",uri);
+                                                    break;
+                                                case 2:
+                                                    ImageUtil.shareImage(AlbumActivity.this, uri);
+                                                    break;
+                                                default:
+                                                    break;
+                                            }
                                         }
                                     });
                         } else {
