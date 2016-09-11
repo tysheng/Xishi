@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -51,6 +52,7 @@ public class MainActivity extends BaseMainActivity {
     private LinearLayoutManager mLayoutManager;
     private int y, x;
     private AppBarLayout mAppBarLayout;
+    private CoordinatorLayout mCoordinatorLayout;
 
 
     @Override
@@ -60,6 +62,8 @@ public class MainActivity extends BaseMainActivity {
         mToolBar = (Toolbar) findViewById(R.id.toolBar);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mAppBarLayout = (AppBarLayout) findViewById(R.id.appBarLayout);
+        mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+
         mToolBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -112,9 +116,7 @@ public class MainActivity extends BaseMainActivity {
         });
         View view = getLayoutInflater().inflate(R.layout.item_loading, (ViewGroup) mRecyclerView.getParent(), false);
         mAdapter.setLoadingView(view);
-
-
-
+        mRecyclerView.addItemDecoration(new RecycleViewDivider(this));
         mRecyclerView.post(new Runnable() {
             @Override
             public void run() {
@@ -122,12 +124,17 @@ public class MainActivity extends BaseMainActivity {
             }
         });
 
+
+        /**
+         * Height and Width
+         */
         Display display = MainActivity.this.getWindowManager().getDefaultDisplay();
         Point point = new Point();
         display.getSize(point);
         y = point.y;
         x = point.x;
-        mRecyclerView.addItemDecoration(new RecycleViewDivider(this));
+
+
         RxPermissions.getInstance(this)
                 .request(Manifest.permission.READ_PHONE_STATE,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -135,13 +142,15 @@ public class MainActivity extends BaseMainActivity {
                 .subscribe(new Action1<Boolean>() {
                     @Override
                     public void call(Boolean aBoolean) {
-
+                        if (!aBoolean){
+                            Snackbar.make(mCoordinatorLayout,"没有这些权限可能会出现问题:(",Snackbar.LENGTH_LONG);
+                        }
                     }
                 });
     }
 
     public void showAlipayFail() {
-        Snackbar.make(mToolBar, "支付宝账号已复制到剪贴板", Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(mCoordinatorLayout, "支付宝账号已复制到剪贴板", Snackbar.LENGTH_SHORT).show();
         ClipboardManager c = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         c.setPrimaryClip(ClipData.newPlainText("email", "353491983@qq.com"));//设置Clipboard 的内容
     }
@@ -158,7 +167,7 @@ public class MainActivity extends BaseMainActivity {
                                 }
                             });
                 } else {
-                    Snackbar.make(mToolBar, "当前版本已是最新版", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(mCoordinatorLayout, "当前版本已是最新版", Snackbar.LENGTH_SHORT).show();
                 }
             }
         });
@@ -201,42 +210,7 @@ public class MainActivity extends BaseMainActivity {
                 .doAfterTerminate(new Action0() {
                     @Override
                     public void call() {
-                        if (flags[0])
-                            HttpUtil.convert(XishiRetrofit.get().getMains(page))
-                                    .subscribe(new Subscriber<Mains>() {
-                                        @Override
-                                        public void onCompleted() {
-
-                                        }
-
-                                        @Override
-                                        public void onError(Throwable e) {
-                                            View failView = getLayoutInflater().inflate(R.layout.item_loading_error, (ViewGroup) mRecyclerView.getParent(), false);
-                                            if (TextUtils.equals("HTTP 404 Not Found", e.getMessage())) {
-                                                TextView textView = (TextView) failView.findViewById(R.id.textView);
-                                                textView.setText("已到末尾,无更多内容");
-                                            }
-                                            mAdapter.setLoadMoreFailedView(failView);
-                                            mAdapter.showLoadMoreFailedView();
-                                        }
-
-                                        @Override
-                                        public void onNext(Mains mains) {
-                                            if (type == 0) {
-                                                mAdapter.setNewData(mains.album);
-                                            } else {
-                                                mAdapter.addData(mains.album);
-                                            }
-                                            FastCache.putAsync("page" + page, mains)
-                                                    .subscribeOn(Schedulers.io())
-                                                    .subscribe(new Action1<Boolean>() {
-                                                        @Override
-                                                        public void call(Boolean aBoolean) {
-
-                                                        }
-                                                    });
-                                        }
-                                    });
+                        doAfterTerminate(flags[0], page, type);
                     }
                 })
                 .subscribe(new Subscriber<Mains>() {
@@ -262,6 +236,45 @@ public class MainActivity extends BaseMainActivity {
                         }
                     }
                 }));
+    }
+
+    private void doAfterTerminate(boolean flag, final int page, final int type) {
+        if (flag)
+            HttpUtil.convert(XishiRetrofit.get().getMains(page))
+                    .subscribe(new Subscriber<Mains>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            View failView = getLayoutInflater().inflate(R.layout.item_loading_error, (ViewGroup) mRecyclerView.getParent(), false);
+                            if (TextUtils.equals("HTTP 404 Not Found", e.getMessage())) {
+                                TextView textView = (TextView) failView.findViewById(R.id.textView);
+                                textView.setText("已到末尾,无更多内容");
+                            }
+                            mAdapter.setLoadMoreFailedView(failView);
+                            mAdapter.showLoadMoreFailedView();
+                        }
+
+                        @Override
+                        public void onNext(Mains mains) {
+                            if (type == 0) {
+                                mAdapter.setNewData(mains.album);
+                            } else {
+                                mAdapter.addData(mains.album);
+                            }
+                            FastCache.putAsync("page" + page, mains)
+                                    .subscribeOn(Schedulers.io())
+                                    .subscribe(new Action1<Boolean>() {
+                                        @Override
+                                        public void call(Boolean aBoolean) {
+
+                                        }
+                                    });
+                        }
+                    });
     }
 
     @Override

@@ -34,7 +34,7 @@ dependencies {
     compile rootProject.ext.dependencies["converter-fastjson-android"]
     compile rootProject.ext.dependencies["adapter-rxjava"]
     compile rootProject.ext.dependencies["picasso"]
-    compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:v2.0.5'
+    compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:v2.1.2'
     compile rootProject.ext.dependencies["photoview"]
     compile rootProject.ext.dependencies["rxpermissions"]
     compile files('src/main/jniLibs/Baidu_Mtj_3.7.4.5.jar')
