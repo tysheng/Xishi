@@ -15,40 +15,34 @@ import retrofit2.converter.fastjson.FastJsonConverterFactory;
  */
 public class XishiRetrofit {
 
-    private static Retrofit retrofit = null;
-    private static XishiService sService = null;
-    private static final int TIME_MAX = 6;
+    private static volatile Retrofit retrofit = null;
+    private static volatile XishiService sService = null;
+    private static final int TIME_MAX = 12;
     private static String BASE_URL = "http://dili.bdatu.com/jiekou/";
 
     private static void init() {
         final File baseDir = App.get().getCacheDir();
         Cache cache = null;
         if (baseDir != null) {
-            final File cacheDir = new File(baseDir, "HttpResponseCache");
+            final File cacheDir = new File(baseDir, "HttpCache");
             //设置缓存 10M
-            cache = new Cache(cacheDir, 10 * 1024 * 1024);
+            cache = new Cache(cacheDir, 100 * 1024 * 1024);
         }
 
 //        Interceptor interceptor = new Interceptor() {
 //            @Override
 //            public Response intercept(Chain chain) throws IOException {
 //                Request request = chain.request();
-//                if (!SystemUtil.isNetworkAvailable()) {//如果网络不可用或者设置只用缓存
 //                    request = request.newBuilder()
-//                            .cacheControl(CacheControl.FORCE_CACHE)
+//                            .cacheControl(CacheControl.FORCE_NETWORK)
 //                            .build();
-////                    Log.d("OkHttp", "网络不可用请求拦截");
-//                }
-////                else if(SystemUtil.isNetworkAvailable()&&!isUseCache){//网络可用
-////                    request = request.newBuilder()
-////                            .cacheControl(CacheControl.FORCE_NETWORK)
-////                            .build();
-//////                    Log.d("OkHttp", "网络可用请求拦截");
-////                }
 //                Response response = chain.proceed(request);
+//                LogUtil.d(response.toString());
 //                return response;
 //            }
 //        };
+
+
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         //设置超时
         builder.readTimeout(TIME_MAX, TimeUnit.SECONDS);

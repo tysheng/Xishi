@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import me.tysheng.xishi.App;
 import me.tysheng.xishi.R;
@@ -22,7 +24,7 @@ public class EmailDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        View view = View.inflate(getActivity(), R.layout.dialog_email, null);
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_email, (ViewGroup) getView(),false);
         AlertDialog dialog = new AlertDialog.Builder(getActivity(),R.style.BlackDialog)
                 .setView(view)
                 .setTitle(String.format("关于-Ver.%s", SystemUtil.getVersionName()))

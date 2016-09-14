@@ -231,7 +231,7 @@ public class AlbumActivity extends BaseSwipeActivity {
                                                     Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
                                                     break;
                                                 case 1:
-                                                    SystemUtil.share(AlbumActivity.this,"来自\"西施App\"的图片分享","分享到",uri);
+                                                    SystemUtil.share(AlbumActivity.this,"来自西施App的图片分享","分享到",uri);
                                                     break;
                                                 case 2:
                                                     ImageUtil.shareImage(AlbumActivity.this, uri);

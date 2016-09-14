@@ -35,6 +35,7 @@ import me.tysheng.xishi.base.BaseMainActivity;
 import me.tysheng.xishi.bean.Mains;
 import me.tysheng.xishi.net.XishiRetrofit;
 import me.tysheng.xishi.utils.HttpUtil;
+import me.tysheng.xishi.utils.LogUtil;
 import me.tysheng.xishi.utils.SystemUtil;
 import me.tysheng.xishi.utils.fastcache.FastCache;
 import me.tysheng.xishi.view.RecycleViewDivider;
@@ -42,7 +43,6 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
-import rx.schedulers.Schedulers;
 
 public class MainActivity extends BaseMainActivity {
     private RecyclerView mRecyclerView;
@@ -94,10 +94,10 @@ public class MainActivity extends BaseMainActivity {
             @Override
             public void SimpleOnItemChildClick(BaseQuickAdapter baseQuickAdapter, View view, int i) {
                 String id = mAdapter.getData().get(i).id;
-                if (!TextUtils.isEmpty(id)){
+                if (!TextUtils.isEmpty(id)) {
                     Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.black);
                     startActivity(AlbumActivity.newIntent(MainActivity.this, mAdapter.getData().get(i).id),
-                            ActivityOptionsCompat.makeThumbnailScaleUpAnimation(view,bitmap, x/2, y / 2).toBundle());
+                            ActivityOptionsCompat.makeThumbnailScaleUpAnimation(view, bitmap, x / 2, y / 2).toBundle());
                     bitmap.recycle();
                 }
             }
@@ -117,13 +117,6 @@ public class MainActivity extends BaseMainActivity {
         View view = getLayoutInflater().inflate(R.layout.item_loading, (ViewGroup) mRecyclerView.getParent(), false);
         mAdapter.setLoadingView(view);
         mRecyclerView.addItemDecoration(new RecycleViewDivider(this));
-        mRecyclerView.post(new Runnable() {
-            @Override
-            public void run() {
-                getMains(page, 0);
-            }
-        });
-
 
         /**
          * Height and Width
@@ -142,9 +135,10 @@ public class MainActivity extends BaseMainActivity {
                 .subscribe(new Action1<Boolean>() {
                     @Override
                     public void call(Boolean aBoolean) {
-                        if (!aBoolean){
-                            Snackbar.make(mCoordinatorLayout,"没有这些权限可能会出现问题:(",Snackbar.LENGTH_LONG);
-                        }
+                        if (!aBoolean) {
+                            Snackbar.make(mCoordinatorLayout, "没有这些权限可能会出现问题:(", Snackbar.LENGTH_LONG);
+                        }else
+                            getMains(page, 0);
                     }
                 });
     }
@@ -206,10 +200,11 @@ public class MainActivity extends BaseMainActivity {
     private void getMains(final int page, final int type) {
         final boolean[] flags = new boolean[1];
         flags[0] = true;
-        add(FastCache.getAsync("page" + page, Mains.class)
+        FastCache.getAsync("page" + page, Mains.class)
                 .doAfterTerminate(new Action0() {
                     @Override
                     public void call() {
+                        LogUtil.d("doAfterTerminate");
                         doAfterTerminate(flags[0], page, type);
                     }
                 })
@@ -221,7 +216,7 @@ public class MainActivity extends BaseMainActivity {
 
                     @Override
                     public void onError(Throwable e) {
-
+                        LogUtil.d(e.getMessage());
                     }
 
                     @Override
@@ -235,7 +230,7 @@ public class MainActivity extends BaseMainActivity {
                             }
                         }
                     }
-                }));
+                });
     }
 
     private void doAfterTerminate(boolean flag, final int page, final int type) {
@@ -249,6 +244,7 @@ public class MainActivity extends BaseMainActivity {
 
                         @Override
                         public void onError(Throwable e) {
+                            LogUtil.d(e.getMessage());
                             View failView = getLayoutInflater().inflate(R.layout.item_loading_error, (ViewGroup) mRecyclerView.getParent(), false);
                             if (TextUtils.equals("HTTP 404 Not Found", e.getMessage())) {
                                 TextView textView = (TextView) failView.findViewById(R.id.textView);
@@ -260,19 +256,20 @@ public class MainActivity extends BaseMainActivity {
 
                         @Override
                         public void onNext(Mains mains) {
+                            LogUtil.d(mains.album.size() + "");
                             if (type == 0) {
                                 mAdapter.setNewData(mains.album);
                             } else {
                                 mAdapter.addData(mains.album);
                             }
                             FastCache.putAsync("page" + page, mains)
-                                    .subscribeOn(Schedulers.io())
                                     .subscribe(new Action1<Boolean>() {
                                         @Override
                                         public void call(Boolean aBoolean) {
 
                                         }
                                     });
+
                         }
                     });
     }

@@ -73,9 +73,7 @@ public class ImageUtil {
         intent.setType("image/png");
         intent.putExtra(Intent.EXTRA_STREAM, path);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//        if (flag == 1)
-            intent.setComponent(new ComponentName("com.tencent.mm", "com.tencent.mm.ui.tools.ShareImgUI"));
-//        else if (flag == 2)
+        intent.setComponent(new ComponentName("com.tencent.mm", "com.tencent.mm.ui.tools.ShareImgUI"));
 //            intent.setComponent(new ComponentName("com.tencent.mm", "com.tencent.mm.ui.tools.ShareToTimeLineUI"));
         context.startActivity(Intent.createChooser(intent, context.getString(R.string.share_title)));
         if (context instanceof Activity)
