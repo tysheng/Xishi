@@ -37,11 +37,9 @@ import me.tysheng.xishi.net.XishiRetrofit;
 import me.tysheng.xishi.utils.HttpUtil;
 import me.tysheng.xishi.utils.LogUtil;
 import me.tysheng.xishi.utils.SystemUtil;
-import me.tysheng.xishi.utils.fastcache.FastCache;
 import me.tysheng.xishi.view.RecycleViewDivider;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action0;
 import rx.functions.Action1;
 
 public class MainActivity extends BaseMainActivity {
@@ -198,16 +196,7 @@ public class MainActivity extends BaseMainActivity {
     }
 
     private void getMains(final int page, final int type) {
-        final boolean[] flags = new boolean[1];
-        flags[0] = true;
-        FastCache.getAsync("page" + page, Mains.class)
-                .doAfterTerminate(new Action0() {
-                    @Override
-                    public void call() {
-                        LogUtil.d("doAfterTerminate");
-                        doAfterTerminate(flags[0], page, type);
-                    }
-                })
+        HttpUtil.convert(XishiRetrofit.get().getMains(page))
                 .subscribe(new Subscriber<Mains>() {
                     @Override
                     public void onCompleted() {
@@ -217,62 +206,27 @@ public class MainActivity extends BaseMainActivity {
                     @Override
                     public void onError(Throwable e) {
                         LogUtil.d(e.getMessage());
+                        View failView = getLayoutInflater().inflate(R.layout.item_loading_error, (ViewGroup) mRecyclerView.getParent(), false);
+                        if (TextUtils.equals("HTTP 404 Not Found", e.getMessage())) {
+                            TextView textView = (TextView) failView.findViewById(R.id.textView);
+                            textView.setText("已到末尾,无更多内容");
+                        }
+                        mAdapter.setLoadMoreFailedView(failView);
+                        mAdapter.showLoadMoreFailedView();
                     }
 
                     @Override
                     public void onNext(Mains mains) {
-                        if (mains != null) {
-                            flags[0] = false;
-                            if (type == 0) {
-                                mAdapter.setNewData(mains.album);
-                            } else {
-                                mAdapter.addData(mains.album);
-                            }
+                        LogUtil.d(mains.album.size() + "");
+                        if (type == 0) {
+                            mAdapter.setNewData(mains.album);
+                        } else {
+                            mAdapter.addData(mains.album);
                         }
                     }
                 });
     }
 
-    private void doAfterTerminate(boolean flag, final int page, final int type) {
-        if (flag)
-            HttpUtil.convert(XishiRetrofit.get().getMains(page))
-                    .subscribe(new Subscriber<Mains>() {
-                        @Override
-                        public void onCompleted() {
-
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            LogUtil.d(e.getMessage());
-                            View failView = getLayoutInflater().inflate(R.layout.item_loading_error, (ViewGroup) mRecyclerView.getParent(), false);
-                            if (TextUtils.equals("HTTP 404 Not Found", e.getMessage())) {
-                                TextView textView = (TextView) failView.findViewById(R.id.textView);
-                                textView.setText("已到末尾,无更多内容");
-                            }
-                            mAdapter.setLoadMoreFailedView(failView);
-                            mAdapter.showLoadMoreFailedView();
-                        }
-
-                        @Override
-                        public void onNext(Mains mains) {
-                            LogUtil.d(mains.album.size() + "");
-                            if (type == 0) {
-                                mAdapter.setNewData(mains.album);
-                            } else {
-                                mAdapter.addData(mains.album);
-                            }
-                            FastCache.putAsync("page" + page, mains)
-                                    .subscribe(new Action1<Boolean>() {
-                                        @Override
-                                        public void call(Boolean aBoolean) {
-
-                                        }
-                                    });
-
-                        }
-                    });
-    }
 
     @Override
     public void finish() {
