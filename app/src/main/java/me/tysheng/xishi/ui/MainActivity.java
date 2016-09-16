@@ -29,6 +29,7 @@ import com.baidu.autoupdatesdk.CPCheckUpdateCallback;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.listener.OnItemChildClickListener;
 import com.tbruyelle.rxpermissions.RxPermissions;
+import com.trello.rxlifecycle.android.ActivityEvent;
 
 import me.tysheng.xishi.R;
 import me.tysheng.xishi.adapter.MainsAdapter;
@@ -137,7 +138,7 @@ public class MainActivity extends BaseMainActivity {
                     @Override
                     public void call(Boolean aBoolean) {
                         if (!aBoolean) {
-                            Snackbar.make(mCoordinatorLayout, "没有这些权限可能会出现问题:(", Snackbar.LENGTH_LONG);
+                            Snackbar.make(mCoordinatorLayout, "没有这些权限可能会出现问题:(", Snackbar.LENGTH_LONG).show();
                         } else {
                             mRecyclerView.post(new Runnable() {
                                 @Override
@@ -207,6 +208,7 @@ public class MainActivity extends BaseMainActivity {
 
     private void getMains(final int page, final int type) {
         XishiRetrofit.get().getMains(page)
+                .compose(this.<Mains>bindUntilEvent(ActivityEvent.DESTROY))
                 .compose(RxHelper.<Mains>ioToMain())
                 .subscribe(new StySubscriber<Mains>() {
                     @Override

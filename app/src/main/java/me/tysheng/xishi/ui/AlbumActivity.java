@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tbruyelle.rxpermissions.RxPermissions;
+import com.trello.rxlifecycle.android.ActivityEvent;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -130,7 +131,8 @@ public class AlbumActivity extends BaseSwipeActivity {
 
         });
 
-        add(XishiRetrofit.get().getDayAlbums(mId)
+        XishiRetrofit.get().getDayAlbums(mId)
+                .compose(this.<DayAlbums>bindUntilEvent(ActivityEvent.DESTROY))
                 .compose(RxHelper.<DayAlbums>ioToMain())
                 .subscribe(new StySubscriber<DayAlbums>() {
                     @Override
@@ -140,7 +142,7 @@ public class AlbumActivity extends BaseSwipeActivity {
                         mAdapter.setData(mAlbums);
                         selected(0);
                     }
-                }));
+                });
     }
 
     private void selected(int position) {

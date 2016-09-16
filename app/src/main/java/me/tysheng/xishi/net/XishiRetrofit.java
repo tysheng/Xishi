@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import me.tysheng.xishi.App;
 import me.tysheng.xishi.utils.LogUtil;
 import okhttp3.Cache;
+import okhttp3.CacheControl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -34,12 +35,18 @@ public class XishiRetrofit {
             cache = new Cache(cacheDir, 10 * 1024 * 1024);
         }
 
+        CacheControl.Builder cacheBuilder = new CacheControl.Builder();
+        cacheBuilder.maxAge(2, TimeUnit.SECONDS);//表示当访问此网页后的max-age秒内再次访问不会去服务器请求
+        cacheBuilder.maxStale(1, TimeUnit.DAYS);//允许读取过期时间必须小于max-stale 值的缓存对象
+
+        final CacheControl cacheControl = cacheBuilder.build();
+
         Interceptor interceptor = new Interceptor() {
             @Override
             public Response intercept(Chain chain) throws IOException {
                 Request request = chain.request();
                 request = request.newBuilder()
-//                            .cacheControl(CacheControl.FORCE_NETWORK)
+                        .cacheControl(cacheControl)
                         .build();
                 LogUtil.d(request.toString());
                 Response response = chain.proceed(request);
@@ -56,9 +63,9 @@ public class XishiRetrofit {
         builder.writeTimeout(TIME_MAX, TimeUnit.SECONDS);
         //错误重连
         builder.retryOnConnectionFailure(true);
-        //网络拦截 没有网络用本地缓存
-//        builder.addInterceptor(interceptor);
-
+        //网络拦截
+        builder.addInterceptor(interceptor);
+        //缓存设置
         builder.cache(cache);
 
         OkHttpClient client = builder.build();

@@ -1,36 +1,16 @@
 package me.tysheng.xishi.base;
 
-import android.content.res.Configuration;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 
 import com.baidu.mobstat.StatService;
-
-import me.tysheng.xishi.utils.LogUtil;
-import rx.Subscription;
-import rx.subscriptions.CompositeSubscription;
+import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
 /**
  * Created by shengtianyang on 16/7/11.
  */
-public abstract class BaseActivity extends AppCompatActivity {
-    private CompositeSubscription mSubscription;
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        LogUtil.d("onCreate  "+String.valueOf(savedInstanceState==null)+getClass().getSimpleName());
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        LogUtil.d("onRestart  "+getClass().getSimpleName());
-    }
+public abstract class BaseActivity extends RxAppCompatActivity {
 
     @Override
     protected void onPause() {
@@ -42,43 +22,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         StatService.onResume(this);
-        LogUtil.d("onResume  "+getClass().getSimpleName());
     }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        LogUtil.d("onConfigurationChanged  "+this.getClass().getSimpleName());
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        LogUtil.d("onRestoreInstanceState  "+this.getClass().getSimpleName());
-    }
-
-    @Override
-    protected void onDestroy() {
-        LogUtil.d("onDestroy  "+this.getClass().getSimpleName());
-        super.onDestroy();
-        clear();
-    }
-
-    protected void add(Subscription s) {
-        if (mSubscription == null) {
-            mSubscription = new CompositeSubscription();
-        }
-
-        this.mSubscription.add(s);
-    }
-
-    protected void clear() {
-        if (mSubscription != null) {
-            mSubscription.unsubscribe();
-        }
-    }
-
-
 
     /**
      * Fragment之间的切换

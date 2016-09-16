@@ -42,5 +42,6 @@ dependencies {
     compile files('src/main/jniLibs/need_lib.jar')
     compile files('src/main/jniLibs/patchupdate.jar')
     compile 'com.jakewharton:disklrucache:2.0.2'
-    compile 'com.squareup.okhttp3:okhttp:3.4.1'
+    compile 'com.trello:rxlifecycle:0.7.0'
+    compile 'com.trello:rxlifecycle-components:0.7.0'
 }
