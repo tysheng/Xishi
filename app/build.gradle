@@ -8,8 +8,8 @@ android {
         applicationId "me.tysheng.xishi"
         minSdkVersion 14
         targetSdkVersion 24
-        versionCode 11
-        versionName "2.1"
+        versionCode 12
+        versionName "2.2.dev"
         resConfigs "zh"
     }
     buildTypes {
@@ -42,4 +42,5 @@ dependencies {
     compile files('src/main/jniLibs/need_lib.jar')
     compile files('src/main/jniLibs/patchupdate.jar')
     compile 'com.jakewharton:disklrucache:2.0.2'
+    compile 'com.squareup.okhttp3:okhttp:3.4.1'
 }

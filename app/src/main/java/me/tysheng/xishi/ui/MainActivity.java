@@ -6,6 +6,7 @@ import android.content.ClipboardManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -34,12 +35,11 @@ import me.tysheng.xishi.adapter.MainsAdapter;
 import me.tysheng.xishi.base.BaseMainActivity;
 import me.tysheng.xishi.bean.Mains;
 import me.tysheng.xishi.net.XishiRetrofit;
-import me.tysheng.xishi.utils.HttpUtil;
 import me.tysheng.xishi.utils.LogUtil;
+import me.tysheng.xishi.utils.RxHelper;
+import me.tysheng.xishi.utils.StySubscriber;
 import me.tysheng.xishi.utils.SystemUtil;
 import me.tysheng.xishi.view.RecycleViewDivider;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
 public class MainActivity extends BaseMainActivity {
@@ -94,8 +94,12 @@ public class MainActivity extends BaseMainActivity {
                 String id = mAdapter.getData().get(i).id;
                 if (!TextUtils.isEmpty(id)) {
                     Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.black);
-                    startActivity(AlbumActivity.newIntent(MainActivity.this, mAdapter.getData().get(i).id),
-                            ActivityOptionsCompat.makeThumbnailScaleUpAnimation(view, bitmap, x / 2, y / 2).toBundle());
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        startActivity(AlbumActivity.newIntent(MainActivity.this, mAdapter.getData().get(i).id),
+                                ActivityOptionsCompat.makeThumbnailScaleUpAnimation(view, bitmap, x / 2, y / 2).toBundle());
+                    } else {
+                        startActivity(AlbumActivity.newIntent(MainActivity.this, mAdapter.getData().get(i).id));
+                    }
                     bitmap.recycle();
                 }
             }
@@ -129,14 +133,20 @@ public class MainActivity extends BaseMainActivity {
         RxPermissions.getInstance(this)
                 .request(Manifest.permission.READ_PHONE_STATE,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Boolean>() {
                     @Override
                     public void call(Boolean aBoolean) {
                         if (!aBoolean) {
                             Snackbar.make(mCoordinatorLayout, "没有这些权限可能会出现问题:(", Snackbar.LENGTH_LONG);
-                        }else
-                            getMains(page, 0);
+                        } else {
+                            mRecyclerView.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    getMains(page, 0);
+                                }
+                            });
+                        }
+
                     }
                 });
     }
@@ -196,13 +206,9 @@ public class MainActivity extends BaseMainActivity {
     }
 
     private void getMains(final int page, final int type) {
-        HttpUtil.convert(XishiRetrofit.get().getMains(page))
-                .subscribe(new Subscriber<Mains>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
+        XishiRetrofit.get().getMains(page)
+                .compose(RxHelper.<Mains>ioToMain())
+                .subscribe(new StySubscriber<Mains>() {
                     @Override
                     public void onError(Throwable e) {
                         LogUtil.d(e.getMessage());
@@ -216,7 +222,7 @@ public class MainActivity extends BaseMainActivity {
                     }
 
                     @Override
-                    public void onNext(Mains mains) {
+                    public void next(Mains mains) {
                         LogUtil.d(mains.album.size() + "");
                         if (type == 0) {
                             mAdapter.setNewData(mains.album);

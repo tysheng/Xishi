@@ -33,12 +33,12 @@ import me.tysheng.xishi.base.BaseSwipeActivity;
 import me.tysheng.xishi.bean.DayAlbums;
 import me.tysheng.xishi.bean.Picture;
 import me.tysheng.xishi.net.XishiRetrofit;
-import me.tysheng.xishi.utils.HttpUtil;
 import me.tysheng.xishi.utils.ImageUtil;
+import me.tysheng.xishi.utils.RxHelper;
 import me.tysheng.xishi.utils.ScreenUtil;
+import me.tysheng.xishi.utils.StySubscriber;
 import me.tysheng.xishi.utils.SystemUtil;
 import me.tysheng.xishi.view.HackyViewPager;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
@@ -57,6 +57,12 @@ public class AlbumActivity extends BaseSwipeActivity {
     private AlphaAnimation mShowBottomAnim, mHideBottomAnim;
     private boolean mVisible = true;
     private ScrollView mScrollView;
+
+    public static Intent newIntent(Context context, String id) {
+        Intent intent = new Intent(context, AlbumActivity.class);
+        intent.putExtra("albums", Integer.valueOf(id));
+        return intent;
+    }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -124,20 +130,11 @@ public class AlbumActivity extends BaseSwipeActivity {
 
         });
 
-        add(HttpUtil.convert(XishiRetrofit.get().getDayAlbums(mId))
-                .subscribe(new Subscriber<DayAlbums>() {
+        add(XishiRetrofit.get().getDayAlbums(mId)
+                .compose(RxHelper.<DayAlbums>ioToMain())
+                .subscribe(new StySubscriber<DayAlbums>() {
                     @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onNext(DayAlbums dayAlbums) {
+                    public void next(DayAlbums dayAlbums) {
                         mAlbums = dayAlbums.picture;
                         mAmount = mAlbums.size();
                         mAdapter.setData(mAlbums);
@@ -203,19 +200,13 @@ public class AlbumActivity extends BaseSwipeActivity {
         mId = getIntent().getIntExtra("albums", 1322);
     }
 
-    public static Intent newIntent(Context context, String id) {
-        Intent intent = new Intent(context, AlbumActivity.class);
-        intent.putExtra("albums", Integer.valueOf(id));
-        return intent;
-    }
-
     public void saveImageToGallery(final int position, final int i) {
         RxPermissions.getInstance(this)
                 .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Boolean>() {
+                .subscribe(new StySubscriber<Boolean>() {
                     @Override
-                    public void call(Boolean aBoolean) {
+                    public void next(Boolean aBoolean) {
                         if (aBoolean) {
                             ImageUtil.saveImageToGallery(AlbumActivity.this, mAlbums.get(position).url)
                                     .observeOn(AndroidSchedulers.mainThread())
