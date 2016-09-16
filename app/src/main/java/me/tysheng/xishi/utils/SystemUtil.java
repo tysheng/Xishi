@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.text.TextUtils;
 
@@ -22,6 +24,8 @@ import rx.schedulers.Schedulers;
  * Date: 16/8/19 09:36.
  */
 public class SystemUtil {
+    public static final long MB = 1048576; // 1024 * 1024
+
     public static void share(Context context, String text, String title, Uri path) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("image/png");
@@ -49,6 +53,7 @@ public class SystemUtil {
         }
         return "x.x";
     }
+
     public static int getVersionCode() {
         Context context = App.get();
         PackageManager packageManager = context.getPackageManager();
@@ -61,6 +66,12 @@ public class SystemUtil {
             e.printStackTrace();
         }
         return 1;
+    }
+
+    public static boolean isNetworkAvailable() {
+        ConnectivityManager cm = (ConnectivityManager) App.get().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo info = cm.getActiveNetworkInfo();
+        return info != null && info.isAvailable();
     }
 
     public static boolean deleteFile(String path) {
@@ -88,9 +99,6 @@ public class SystemUtil {
         return file.delete();
     }
 
-
-    public static final long MB = 1048576; // 1024 * 1024
-
     /**
      * 文件大小获取
      *
@@ -106,6 +114,7 @@ public class SystemUtil {
 
     /**
      * 遍历文件大小
+     *
      * @param dir file
      * @return file size
      */
@@ -128,6 +137,7 @@ public class SystemUtil {
         }
         return dirSize;
     }
+
     public static void clearCache() {
         Single.just(null)
                 .map(new Func1<Object, Boolean>() {

@@ -12,6 +12,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -41,17 +42,19 @@ import me.tysheng.xishi.utils.RxHelper;
 import me.tysheng.xishi.utils.StySubscriber;
 import me.tysheng.xishi.utils.SystemUtil;
 import me.tysheng.xishi.view.RecycleViewDivider;
+import rx.functions.Action0;
 import rx.functions.Action1;
 
 public class MainActivity extends BaseMainActivity {
     private RecyclerView mRecyclerView;
     private MainsAdapter mAdapter;
-    private int page = 1;
+    private int page;
     private Toolbar mToolBar;
     private LinearLayoutManager mLayoutManager;
     private int y, x;
     private AppBarLayout mAppBarLayout;
     private CoordinatorLayout mCoordinatorLayout;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
 
     @Override
@@ -62,6 +65,7 @@ public class MainActivity extends BaseMainActivity {
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mAppBarLayout = (AppBarLayout) findViewById(R.id.appBarLayout);
         mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
 
         mToolBar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -120,7 +124,13 @@ public class MainActivity extends BaseMainActivity {
         View view = getLayoutInflater().inflate(R.layout.item_loading, (ViewGroup) mRecyclerView.getParent(), false);
         mAdapter.setLoadingView(view);
         mRecyclerView.addItemDecoration(new RecycleViewDivider(this));
-
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getMains(page = 1, 0);
+            }
+        });
         /**
          * Height and Width
          */
@@ -140,10 +150,11 @@ public class MainActivity extends BaseMainActivity {
                         if (!aBoolean) {
                             Snackbar.make(mCoordinatorLayout, "没有这些权限可能会出现问题:(", Snackbar.LENGTH_LONG).show();
                         } else {
-                            mRecyclerView.post(new Runnable() {
+                            mSwipeRefreshLayout.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    getMains(page, 0);
+                                    mSwipeRefreshLayout.setRefreshing(true);
+                                    getMains(page = 1, 0);
                                 }
                             });
                         }
@@ -209,6 +220,13 @@ public class MainActivity extends BaseMainActivity {
     private void getMains(final int page, final int type) {
         XishiRetrofit.get().getMains(page)
                 .compose(this.<Mains>bindUntilEvent(ActivityEvent.DESTROY))
+                .doAfterTerminate(new Action0() {
+                    @Override
+                    public void call() {
+                        if (mSwipeRefreshLayout.isRefreshing())
+                            mSwipeRefreshLayout.setRefreshing(false);
+                    }
+                })
                 .compose(RxHelper.<Mains>ioToMain())
                 .subscribe(new StySubscriber<Mains>() {
                     @Override
