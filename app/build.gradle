@@ -8,8 +8,8 @@ android {
         applicationId "me.tysheng.xishi"
         minSdkVersion 14
         targetSdkVersion 24
-        versionCode 12
-        versionName "2.2.dev"
+        versionCode 13
+        versionName "2.2"
         resConfigs "zh"
     }
     buildTypes {

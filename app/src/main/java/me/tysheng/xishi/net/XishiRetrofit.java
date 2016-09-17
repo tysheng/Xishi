@@ -38,7 +38,6 @@ public class XishiRetrofit {
                 request = request.newBuilder()
                         .cacheControl(cacheControl)
                         .build();
-
             }
             Response originalResponse = chain.proceed(request);
             if (SystemUtil.isNetworkAvailable()) {

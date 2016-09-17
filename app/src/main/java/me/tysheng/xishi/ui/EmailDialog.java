@@ -6,9 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import me.tysheng.xishi.App;
 import me.tysheng.xishi.R;
@@ -24,28 +21,37 @@ public class EmailDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_email, (ViewGroup) getView(),false);
+//        View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_email, (ViewGroup) getView(),false);
         AlertDialog dialog = new AlertDialog.Builder(getActivity(),R.style.BlackDialog)
-                .setView(view)
-                .setTitle(String.format("关于-Ver.%s", SystemUtil.getVersionName()))
-                .setPositiveButton("捐赠", new DialogInterface.OnClickListener() {
+//                .setView(view)
+                .setItems(new String[]{"邮件反馈", "检查更新", "捐赠", "复制邮箱"}, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-//                        https://qr.alipay.com/aex07650apwol9ijoslnm39
-                        if (AlipayZeroSdk.hasInstalledAlipayClient(App.get())) {
-                            if (!AlipayZeroSdk.startAlipayClient(getActivity(), "aex07650apwol9ijoslnm39")){
-                                ((MainActivity) getContext()).showAlipayFail();
-                            }
-                        } else
-                            ((MainActivity) getContext()).showAlipayFail();
+                        switch (which) {
+                            case 0:
+                                SystemUtil.sendEmail(getContext());
+                                break;
+                            case 1:
+                                ((MainActivity) getContext()).checkVersionByBaidu();
+                                break;
+                            case 2:
+                                //                        https://qr.alipay.com/aex07650apwol9ijoslnm39
+                                if (AlipayZeroSdk.hasInstalledAlipayClient(App.get())) {
+                                    if (!AlipayZeroSdk.startAlipayClient(getActivity(), "aex07650apwol9ijoslnm39")) {
+                                        ((MainActivity) getContext()).showAlipayFail();
+                                    }
+                                } else
+                                    ((MainActivity) getContext()).showAlipayFail();
+                                break;
+                            case 3:
+                                ((MainActivity) getContext()).copyEmailAddress();
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 })
-                .setNegativeButton("检查更新", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ((MainActivity) getContext()).checkVersionByBaidu();
-                    }
-                })
+                .setTitle(String.format("版本 %s", SystemUtil.getVersionName()))
                 .create();
         dialog.show();
         return dialog;

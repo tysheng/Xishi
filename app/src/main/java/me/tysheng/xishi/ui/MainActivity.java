@@ -166,6 +166,12 @@ public class MainActivity extends BaseMainActivity {
     public void showAlipayFail() {
         Snackbar.make(mCoordinatorLayout, "支付宝账号已复制到剪贴板", Snackbar.LENGTH_SHORT).show();
         ClipboardManager c = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        c.setPrimaryClip(ClipData.newPlainText("alipay", "353491983@qq.com"));//设置Clipboard 的内容
+    }
+
+    public void copyEmailAddress() {
+        Snackbar.make(mCoordinatorLayout, "邮箱地址已复制到剪贴板", Snackbar.LENGTH_SHORT).show();
+        ClipboardManager c = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         c.setPrimaryClip(ClipData.newPlainText("email", "353491983@qq.com"));//设置Clipboard 的内容
     }
 

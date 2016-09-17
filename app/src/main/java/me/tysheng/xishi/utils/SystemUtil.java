@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import java.io.File;
+import java.io.IOException;
 
 import me.tysheng.xishi.App;
 import rx.Single;
@@ -68,12 +69,33 @@ public class SystemUtil {
         return 1;
     }
 
+    /**
+     * 检测网络是否连接,不管是否可以上网
+     *
+     * @return
+     */
     public static boolean isNetworkAvailable() {
         ConnectivityManager cm = (ConnectivityManager) App.get().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo info = cm.getActiveNetworkInfo();
         return info != null && info.isAvailable();
     }
 
+    /**
+     * 是否可以上网
+     *
+     * @return
+     */
+    public static boolean isNetworkOnline() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            Process ipProcess = runtime.exec("ping -c 1 114.114.114.114");
+            int exitValue = ipProcess.waitFor();
+            return (exitValue == 0);
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
     public static boolean deleteFile(String path) {
         if (TextUtils.isEmpty(path)) {
             return true;
@@ -99,6 +121,14 @@ public class SystemUtil {
         return file.delete();
     }
 
+    public static void sendEmail(Context context) {
+        Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+                "mailto", "353491983@qq.com", null));
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "关于西施的问题反馈");
+//        emailIntent.putExtra(Intent.EXTRA_TEXT, "Body");
+//        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"353491983@qq.com"});
+        context.startActivity(Intent.createChooser(emailIntent, "发送邮件..."));
+    }
     /**
      * 文件大小获取
      *
