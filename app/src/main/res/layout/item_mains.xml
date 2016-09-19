@@ -15,23 +15,23 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:background="@color/backgroundColor"
             android:orientation="horizontal"
             android:paddingBottom="10dp"
             android:paddingLeft="22dp"
             android:paddingRight="22dp"
-            android:background="@color/grey_900"
             android:paddingTop="10dp">
             <ImageView
-                android:layout_width="15dp"
                 android:id="@+id/tag"
+                android:layout_width="15dp"
                 android:layout_height="match_parent"
                 android:src="@drawable/arrow_right" />
             <TextView
                 android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:gravity="center_vertical"
                 android:layout_toRightOf="@+id/tag"
+                android:gravity="center_vertical"
                 tools:text="12313" />
 
             <TextView
@@ -48,7 +48,7 @@
             android:id="@+id/imageView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/grey_700"
+            android:background="@color/backgroundColor"
             android:foreground="@drawable/sb_shadow_top"
             android:minHeight="300dp"
             android:scaleType="centerCrop" />

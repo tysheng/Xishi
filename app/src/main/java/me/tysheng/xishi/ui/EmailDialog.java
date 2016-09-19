@@ -24,7 +24,7 @@ public class EmailDialog extends DialogFragment {
 //        View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_email, (ViewGroup) getView(),false);
         AlertDialog dialog = new AlertDialog.Builder(getActivity(),R.style.BlackDialog)
 //                .setView(view)
-                .setItems(new String[]{"邮件反馈", "检查更新", "捐赠", "复制邮箱"}, new DialogInterface.OnClickListener() {
+                .setItems(new String[]{"邮件反馈", "检查更新", "捐赠", "复制邮箱", "主题切换"}, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
@@ -35,7 +35,6 @@ public class EmailDialog extends DialogFragment {
                                 ((MainActivity) getContext()).checkVersionByBaidu();
                                 break;
                             case 2:
-                                //                        https://qr.alipay.com/aex07650apwol9ijoslnm39
                                 if (AlipayZeroSdk.hasInstalledAlipayClient(App.get())) {
                                     if (!AlipayZeroSdk.startAlipayClient(getActivity(), "aex07650apwol9ijoslnm39")) {
                                         ((MainActivity) getContext()).showAlipayFail();
@@ -45,6 +44,10 @@ public class EmailDialog extends DialogFragment {
                                 break;
                             case 3:
                                 ((MainActivity) getContext()).copyEmailAddress();
+                                break;
+                            case 4:
+                                dismiss();
+                                ((MainActivity) getContext()).setDayNightMode();
                                 break;
                             default:
                                 break;

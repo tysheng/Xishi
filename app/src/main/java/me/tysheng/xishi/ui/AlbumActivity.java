@@ -16,6 +16,7 @@ import android.text.style.RelativeSizeSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,6 +59,8 @@ public class AlbumActivity extends BaseSwipeActivity {
     private AlphaAnimation mShowBottomAnim, mHideBottomAnim;
     private boolean mVisible = true;
     private ScrollView mScrollView;
+    private LinearLayout mLl;
+
 
     public static Intent newIntent(Context context, String id) {
         Intent intent = new Intent(context, AlbumActivity.class);
@@ -97,6 +100,8 @@ public class AlbumActivity extends BaseSwipeActivity {
         title = (TextView) findViewById(R.id.title);
         content = (TextView) findViewById(R.id.content);
         mScrollView = (ScrollView) findViewById(R.id.scrollView);
+        mLl = (LinearLayout) findViewById(R.id.ll);
+
         /**
          * 横屏
          */
@@ -169,30 +174,30 @@ public class AlbumActivity extends BaseSwipeActivity {
 
     public void hideOrShow() {
         if (mVisible) {
-            if (mHideBottomAnim == null) {
-                mHideBottomAnim = new AlphaAnimation((float) 1.0, (float) 0.0);
-                mHideBottomAnim.setDuration(300);
-//                mHideBottomAnim.setFillAfter(true);
-            }
+//            if (mHideBottomAnim == null) {
+//                mHideBottomAnim = new AlphaAnimation((float) 1.0, (float) 0.0);
+//                mHideBottomAnim.setDuration(300);
+////                mHideBottomAnim.setFillAfter(true);
+//            }
             mVisible = false;
-            mIndicator.startAnimation(mHideBottomAnim);
-            title.startAnimation(mHideBottomAnim);
-            content.startAnimation(mHideBottomAnim);
-            mIndicator.setVisibility(View.GONE);
-            title.setVisibility(View.GONE);
+//            mIndicator.startAnimation(mHideBottomAnim);
+//            title.startAnimation(mHideBottomAnim);
+//            content.startAnimation(mHideBottomAnim);
+//            mIndicator.setVisibility(View.GONE);
+            mLl.setVisibility(View.GONE);
             mScrollView.setVisibility(View.GONE);
         } else {
-            if (mShowBottomAnim == null) {
-                mShowBottomAnim = new AlphaAnimation((float) 0.0, (float) 1.0);
-                mShowBottomAnim.setDuration(300);
-//                mShowBottomAnim.setFillAfter(true);
-            }
+//            if (mShowBottomAnim == null) {
+//                mShowBottomAnim = new AlphaAnimation((float) 0.0, (float) 1.0);
+//                mShowBottomAnim.setDuration(300);
+////                mShowBottomAnim.setFillAfter(true);
+//            }
             mVisible = true;
-            mIndicator.startAnimation(mShowBottomAnim);
-            title.startAnimation(mShowBottomAnim);
-            content.startAnimation(mShowBottomAnim);
-            mIndicator.setVisibility(View.VISIBLE);
-            title.setVisibility(View.VISIBLE);
+//            mIndicator.startAnimation(mShowBottomAnim);
+//            title.startAnimation(mShowBottomAnim);
+//            content.startAnimation(mShowBottomAnim);
+//            mIndicator.setVisibility(View.VISIBLE);
+            mLl.setVisibility(View.VISIBLE);
             mScrollView.setVisibility(View.VISIBLE);
         }
 

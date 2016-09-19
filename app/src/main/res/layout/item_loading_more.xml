@@ -4,12 +4,10 @@
     android:layout_height="wrap_content"
     android:background="@color/backgroundColor">
 
-    <TextView
-        android:id="@+id/textView"
+    <ProgressBar
+        style="@style/Widget.AppCompat.ProgressBar"
         android:layout_width="match_parent"
-        android:layout_height="72dp"
+        android:layout_height="48dp"
         android:layout_gravity="center"
-        android:gravity="center"
-        android:text="@string/loading_error_message"
-        android:textSize="16sp" />
+        android:layout_margin="8dp" />
 </RelativeLayout>

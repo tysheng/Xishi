@@ -10,9 +10,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -20,8 +20,6 @@ import android.text.TextUtils;
 import android.view.Display;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.baidu.autoupdatesdk.AppUpdateInfo;
 import com.baidu.autoupdatesdk.AppUpdateInfoForInstall;
@@ -39,6 +37,7 @@ import me.tysheng.xishi.bean.Mains;
 import me.tysheng.xishi.net.XishiRetrofit;
 import me.tysheng.xishi.utils.LogUtil;
 import me.tysheng.xishi.utils.RxHelper;
+import me.tysheng.xishi.utils.SnackBarUtil;
 import me.tysheng.xishi.utils.StySubscriber;
 import me.tysheng.xishi.utils.SystemUtil;
 import me.tysheng.xishi.view.RecycleViewDivider;
@@ -56,6 +55,14 @@ public class MainActivity extends BaseMainActivity {
     private CoordinatorLayout mCoordinatorLayout;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
+    public void setDayNightMode() {
+        if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES)
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        else
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+//        getWindow().setWindowAnimations(R.style.WindowAnimationFadeInOut);
+        recreate();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,9 +96,10 @@ public class MainActivity extends BaseMainActivity {
                 return false;
             }
         });
-        mAdapter = new MainsAdapter();
+        mAdapter = new MainsAdapter(this, 10);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
+
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addOnItemTouchListener(new OnItemChildClickListener() {
             @Override
@@ -109,7 +117,6 @@ public class MainActivity extends BaseMainActivity {
                 }
             }
         });
-        mAdapter.openLoadMore(10);
         mAdapter.setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
             @Override
             public void onLoadMoreRequested() {
@@ -121,8 +128,6 @@ public class MainActivity extends BaseMainActivity {
                 });
             }
         });
-        View view = getLayoutInflater().inflate(R.layout.item_loading, (ViewGroup) mRecyclerView.getParent(), false);
-        mAdapter.setLoadingView(view);
         mRecyclerView.addItemDecoration(new RecycleViewDivider(this));
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -148,7 +153,7 @@ public class MainActivity extends BaseMainActivity {
                     @Override
                     public void call(Boolean aBoolean) {
                         if (!aBoolean) {
-                            Snackbar.make(mCoordinatorLayout, "没有这些权限可能会出现问题:(", Snackbar.LENGTH_LONG).show();
+                            SnackBarUtil.show(mCoordinatorLayout, "没有这些权限可能会出现问题:(");
                         } else {
                             mSwipeRefreshLayout.post(new Runnable() {
                                 @Override
@@ -164,13 +169,13 @@ public class MainActivity extends BaseMainActivity {
     }
 
     public void showAlipayFail() {
-        Snackbar.make(mCoordinatorLayout, "支付宝账号已复制到剪贴板", Snackbar.LENGTH_SHORT).show();
+        SnackBarUtil.show(mCoordinatorLayout, "支付宝账号已复制到剪贴板");
         ClipboardManager c = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         c.setPrimaryClip(ClipData.newPlainText("alipay", "353491983@qq.com"));//设置Clipboard 的内容
     }
 
     public void copyEmailAddress() {
-        Snackbar.make(mCoordinatorLayout, "邮箱地址已复制到剪贴板", Snackbar.LENGTH_SHORT).show();
+        SnackBarUtil.show(mCoordinatorLayout, "邮箱地址已复制到剪贴板");
         ClipboardManager c = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         c.setPrimaryClip(ClipData.newPlainText("email", "353491983@qq.com"));//设置Clipboard 的内容
     }
@@ -187,7 +192,7 @@ public class MainActivity extends BaseMainActivity {
                                 }
                             });
                 } else {
-                    Snackbar.make(mCoordinatorLayout, "当前版本已是最新版", Snackbar.LENGTH_SHORT).show();
+                    SnackBarUtil.show(mCoordinatorLayout, "当前版本已是最新版");
                 }
             }
         });
@@ -225,7 +230,6 @@ public class MainActivity extends BaseMainActivity {
 
     private void getMains(final int page, final int type) {
         XishiRetrofit.get().getMains(page)
-                .compose(this.<Mains>bindUntilEvent(ActivityEvent.DESTROY))
                 .doAfterTerminate(new Action0() {
                     @Override
                     public void call() {
@@ -233,18 +237,17 @@ public class MainActivity extends BaseMainActivity {
                             mSwipeRefreshLayout.setRefreshing(false);
                     }
                 })
+                .compose(this.<Mains>bindUntilEvent(ActivityEvent.DESTROY))
                 .compose(RxHelper.<Mains>ioToMain())
                 .subscribe(new StySubscriber<Mains>() {
                     @Override
                     public void onError(Throwable e) {
                         LogUtil.d(e.getMessage());
-                        View failView = getLayoutInflater().inflate(R.layout.item_loading_error, (ViewGroup) mRecyclerView.getParent(), false);
                         if (TextUtils.equals("HTTP 404 Not Found", e.getMessage())) {
-                            TextView textView = (TextView) failView.findViewById(R.id.textView);
-                            textView.setText("已到末尾,无更多内容");
+                            mAdapter.onEnd();
+                        } else {
+                            mAdapter.onError();
                         }
-                        mAdapter.setLoadMoreFailedView(failView);
-                        mAdapter.showLoadMoreFailedView();
                     }
 
                     @Override
