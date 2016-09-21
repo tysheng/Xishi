@@ -234,7 +234,6 @@ public class FastCache {
      * Clears the cache. Deletes all the stored key-value pairs synchronously.
      */
     public static void clear(Context context) throws Exception {
-
         long maxSize = cache.getMaxSize();
         cache.destroy();
         init(context, maxSize);

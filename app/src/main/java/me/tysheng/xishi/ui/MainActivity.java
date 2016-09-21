@@ -233,8 +233,13 @@ public class MainActivity extends BaseMainActivity {
                 .doAfterTerminate(new Action0() {
                     @Override
                     public void call() {
-                        if (mSwipeRefreshLayout.isRefreshing())
-                            mSwipeRefreshLayout.setRefreshing(false);
+                        mSwipeRefreshLayout.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (mSwipeRefreshLayout.isRefreshing())
+                                    mSwipeRefreshLayout.setRefreshing(false);
+                            }
+                        });
                     }
                 })
                 .compose(this.<Mains>bindUntilEvent(ActivityEvent.DESTROY))
