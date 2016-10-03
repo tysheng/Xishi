@@ -15,7 +15,6 @@ import android.text.Spanned;
 import android.text.style.RelativeSizeSpan;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -41,12 +40,9 @@ import me.tysheng.xishi.utils.ScreenUtil;
 import me.tysheng.xishi.utils.StySubscriber;
 import me.tysheng.xishi.utils.SystemUtil;
 import me.tysheng.xishi.view.HackyViewPager;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
-import rx.schedulers.Schedulers;
 
 public class AlbumActivity extends BaseSwipeActivity {
-
     private HackyViewPager mViewPager;
     private TextView mIndicator;
     private AlbumAdapter mAdapter;
@@ -56,7 +52,6 @@ public class AlbumActivity extends BaseSwipeActivity {
     private TextView content;
     private int mAmount;
     private int countForFinish;
-    private AlphaAnimation mShowBottomAnim, mHideBottomAnim;
     private boolean mVisible = true;
     private ScrollView mScrollView;
     private LinearLayout mLl;
@@ -114,7 +109,7 @@ public class AlbumActivity extends BaseSwipeActivity {
         mAlbums = new ArrayList<>();
         mAdapter = new AlbumAdapter(mAlbums, AlbumActivity.this);
         mViewPager.setAdapter(mAdapter);
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 if (position == mAmount - 1 && positionOffsetPixels == 0) {
@@ -128,12 +123,6 @@ public class AlbumActivity extends BaseSwipeActivity {
             public void onPageSelected(int position) {
                 selected(position);
             }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-
         });
 
         XishiRetrofit.get().getDayAlbums(mId)
@@ -174,29 +163,11 @@ public class AlbumActivity extends BaseSwipeActivity {
 
     public void hideOrShow() {
         if (mVisible) {
-//            if (mHideBottomAnim == null) {
-//                mHideBottomAnim = new AlphaAnimation((float) 1.0, (float) 0.0);
-//                mHideBottomAnim.setDuration(300);
-////                mHideBottomAnim.setFillAfter(true);
-//            }
             mVisible = false;
-//            mIndicator.startAnimation(mHideBottomAnim);
-//            title.startAnimation(mHideBottomAnim);
-//            content.startAnimation(mHideBottomAnim);
-//            mIndicator.setVisibility(View.GONE);
             mLl.setVisibility(View.GONE);
             mScrollView.setVisibility(View.GONE);
         } else {
-//            if (mShowBottomAnim == null) {
-//                mShowBottomAnim = new AlphaAnimation((float) 0.0, (float) 1.0);
-//                mShowBottomAnim.setDuration(300);
-////                mShowBottomAnim.setFillAfter(true);
-//            }
             mVisible = true;
-//            mIndicator.startAnimation(mShowBottomAnim);
-//            title.startAnimation(mShowBottomAnim);
-//            content.startAnimation(mShowBottomAnim);
-//            mIndicator.setVisibility(View.VISIBLE);
             mLl.setVisibility(View.VISIBLE);
             mScrollView.setVisibility(View.VISIBLE);
         }
@@ -210,14 +181,12 @@ public class AlbumActivity extends BaseSwipeActivity {
     public void saveImageToGallery(final int position, final int i) {
         RxPermissions.getInstance(this)
                 .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new StySubscriber<Boolean>() {
                     @Override
                     public void next(Boolean aBoolean) {
                         if (aBoolean) {
                             ImageUtil.saveImageToGallery(AlbumActivity.this, mAlbums.get(position).url)
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribeOn(Schedulers.io())
+                                    .compose(RxHelper.<Uri>ioToMain())
                                     .subscribe(new Action1<Uri>() {
                                         @Override
                                         public void call(Uri uri) {
@@ -244,11 +213,5 @@ public class AlbumActivity extends BaseSwipeActivity {
                         }
                     }
                 });
-    }
-
-    @Override
-    public void finish() {
-        super.finish();
-        overridePendingTransition(0, R.anim.zoom_out);
     }
 }

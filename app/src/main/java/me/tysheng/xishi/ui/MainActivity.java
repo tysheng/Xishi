@@ -3,13 +3,11 @@ package me.tysheng.xishi.ui;
 import android.Manifest;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Point;
-import android.os.Build;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatDelegate;
@@ -17,7 +15,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.view.Display;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -50,7 +47,6 @@ public class MainActivity extends BaseMainActivity {
     private int page;
     private Toolbar mToolBar;
     private LinearLayoutManager mLayoutManager;
-    private int y, x;
     private AppBarLayout mAppBarLayout;
     private CoordinatorLayout mCoordinatorLayout;
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -106,14 +102,10 @@ public class MainActivity extends BaseMainActivity {
             public void SimpleOnItemChildClick(BaseQuickAdapter baseQuickAdapter, View view, int i) {
                 String id = mAdapter.getData().get(i).id;
                 if (!TextUtils.isEmpty(id)) {
-                    Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.black);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                        startActivity(AlbumActivity.newIntent(MainActivity.this, mAdapter.getData().get(i).id),
-                                ActivityOptionsCompat.makeThumbnailScaleUpAnimation(view, bitmap, x / 2, y / 2).toBundle());
-                    } else {
-                        startActivity(AlbumActivity.newIntent(MainActivity.this, mAdapter.getData().get(i).id));
-                    }
-                    bitmap.recycle();
+                    Intent intent = AlbumActivity.newIntent(MainActivity.this, mAdapter.getData().get(i).id);
+                    ActivityOptionsCompat options =
+                            ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this, view, getString(R.string.app_name));
+                    ActivityCompat.startActivity(MainActivity.this, intent, options.toBundle());
                 }
             }
         });
@@ -136,15 +128,6 @@ public class MainActivity extends BaseMainActivity {
                 getMains(page = 1, 0);
             }
         });
-        /**
-         * Height and Width
-         */
-        Display display = MainActivity.this.getWindowManager().getDefaultDisplay();
-        Point point = new Point();
-        display.getSize(point);
-        y = point.y;
-        x = point.x;
-
 
         RxPermissions.getInstance(this)
                 .request(Manifest.permission.READ_PHONE_STATE,

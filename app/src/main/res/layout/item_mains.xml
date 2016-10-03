@@ -51,7 +51,8 @@
             android:background="@color/backgroundColor"
             android:foreground="@drawable/sb_shadow_top"
             android:minHeight="300dp"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            android:tag="@string/app_name" />
     </LinearLayout>
 
 </android.support.v7.widget.CardView>

@@ -8,7 +8,8 @@
     <me.tysheng.xishi.view.HackyViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:tag="@string/app_name">
 
     </me.tysheng.xishi.view.HackyViewPager>
 
@@ -18,6 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/scrollView"
+        android:background="@color/transparent_background"
         android:orientation="horizontal"
         android:padding="16dp">
 
@@ -45,8 +47,9 @@
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="80dp"
         android:layout_alignParentBottom="true"
+        android:background="@color/transparent_background"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:scrollbars="vertical">

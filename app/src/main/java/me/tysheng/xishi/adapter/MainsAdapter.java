@@ -17,7 +17,7 @@ import me.tysheng.xishi.utils.ImageLoadHelper;
  * Date: 16/8/22 22:27.
  */
 public class MainsAdapter extends BaseLoadMoreRecyclerViewAdapter<Album> {
-    RelativeSizeSpan span1 = new RelativeSizeSpan(1.4f);
+    private RelativeSizeSpan span = new RelativeSizeSpan(1.4f);
 
     public MainsAdapter(Context context, int count) {
         super(R.layout.item_mains, null, context, count);
@@ -26,25 +26,23 @@ public class MainsAdapter extends BaseLoadMoreRecyclerViewAdapter<Album> {
     @Override
     protected void convert(BaseViewHolder holder, Album album) {
         holder.setText(R.id.title, titleConvert(album.title))
-                .setText(R.id.time, timeConvert(album.addtime.substring(0,10)))
+                .setText(R.id.time, timeConvert(album.addtime.substring(0, 10)))
                 .addOnClickListener(R.id.imageView);
         ImageLoadHelper.get()
                 .load(album.url)
                 .into((ImageView) holder.getView(R.id.imageView));
     }
 
-    SpannableString timeConvert(String s) {
+    private SpannableString timeConvert(String s) {
         int month = Integer.valueOf(s.substring(5, 7));
         int day = Integer.valueOf(s.substring(8));
         SpannableString string = new SpannableString(day + "/" + month);
-        string.setSpan(span1,0,String.valueOf(day).length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        string.setSpan(span, 0, String.valueOf(day).length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 
         return string;
     }
-    String titleConvert(String s){
-        if (s.startsWith("20"))
-            return s.substring(10).trim();
-        else
-            return s;
+
+    private String titleConvert(String s) {
+        return s.startsWith("20") ? s.substring(10).trim() : s;
     }
 }
