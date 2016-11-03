@@ -65,24 +65,6 @@ public class XishiRetrofit {
             cache = new Cache(cacheDir, 10 * 1024 * 1024);
         }
 
-//        CacheControl.Builder cacheBuilder = new CacheControl.Builder();
-//        cacheBuilder.maxAge(2, TimeUnit.SECONDS);//表示当访问此网页后的max-age秒内再次访问不会去服务器请求
-//        cacheBuilder.maxStale(1, TimeUnit.DAYS);//允许读取过期时间必须小于max-stale 值的缓存对象
-//        final CacheControl cacheControl = cacheBuilder.build();
-//        Interceptor interceptor = new Interceptor() {
-//            @Override
-//            public Response intercept(Chain chain) throws IOException {
-//                Request request = chain.request();
-//                request = request.newBuilder()
-//                        .cacheControl(cacheControl)
-//                        .build();
-//                LogUtil.d(request.toString());
-//                Response response = chain.proceed(request);
-//                LogUtil.d(response.cacheControl().toString());
-//                return response;
-//            }
-//        };
-
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         //设置超时
         final int TIME_MAX = 12;
