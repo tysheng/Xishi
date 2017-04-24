@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -15,47 +16,35 @@ import android.text.Spanned;
 import android.text.style.RelativeSizeSpan;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.trello.rxlifecycle.android.ActivityEvent;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
+
+import javax.inject.Inject;
 
 import me.tysheng.xishi.R;
 import me.tysheng.xishi.adapter.AlbumAdapter;
 import me.tysheng.xishi.base.BaseSwipeActivity;
 import me.tysheng.xishi.bean.DayAlbums;
-import me.tysheng.xishi.bean.Picture;
-import me.tysheng.xishi.net.XishiRetrofit;
+import me.tysheng.xishi.databinding.ActivityAlbumBinding;
+import me.tysheng.xishi.net.XishiService;
 import me.tysheng.xishi.utils.ImageUtil;
 import me.tysheng.xishi.utils.RxHelper;
 import me.tysheng.xishi.utils.ScreenUtil;
 import me.tysheng.xishi.utils.StySubscriber;
 import me.tysheng.xishi.utils.SystemUtil;
-import me.tysheng.xishi.view.HackyViewPager;
 import rx.functions.Action1;
 
 public class AlbumActivity extends BaseSwipeActivity {
-    private HackyViewPager mViewPager;
-    private TextView mIndicator;
-    private AlbumAdapter mAdapter;
-    private int mId;
-    private List<Picture> mAlbums;
-    private TextView title;
-    private TextView content;
-    private int mAmount;
-    private int countForFinish;
-    private boolean mVisible = true;
-    private ScrollView mScrollView;
-    private LinearLayout mLl;
-
+    @Inject
+    public XishiService mXishiService;
+    @Inject
+    AlbumAdapter mAdapter;
+    private ActivityAlbumBinding binding;
 
     public static Intent newIntent(Context context, String id) {
         Intent intent = new Intent(context, AlbumActivity.class);
@@ -66,15 +55,13 @@ public class AlbumActivity extends BaseSwipeActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            ViewGroup.LayoutParams params = mScrollView.getLayoutParams();
-            params.height = ScreenUtil.dip2px(60);
-            mScrollView.setLayoutParams(params);
-        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            ViewGroup.LayoutParams params = mScrollView.getLayoutParams();
-            params.height = ScreenUtil.dip2px(120);
-            mScrollView.setLayoutParams(params);
-        }
+        setScrollViewParams(newConfig.orientation);
+    }
+
+    private void setScrollViewParams(int orientation) {
+        ViewGroup.LayoutParams params = binding.scrollView.getLayoutParams();
+        params.height = ScreenUtil.dip2px(orientation == Configuration.ORIENTATION_LANDSCAPE ? 60 : 120);
+        binding.scrollView.setLayoutParams(params);
     }
 
     @Override
@@ -88,35 +75,27 @@ public class AlbumActivity extends BaseSwipeActivity {
             getWindow().setStatusBarColor(Color.TRANSPARENT); //也可以设置成灰色透明的，比较符合Material Design的风格
         }
 
-        setContentView(R.layout.activity_album);
+        injectAppComponent().inject(this);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_album);
+        binding.setVisible(true);
         parseIntent();
-        mViewPager = (HackyViewPager) findViewById(R.id.viewPager);
-        mIndicator = (TextView) findViewById(R.id.indicator);
-        title = (TextView) findViewById(R.id.title);
-        content = (TextView) findViewById(R.id.content);
-        mScrollView = (ScrollView) findViewById(R.id.scrollView);
-        mLl = (LinearLayout) findViewById(R.id.ll);
 
         /**
          * 横屏
          */
-        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            ViewGroup.LayoutParams params = mScrollView.getLayoutParams();
-            params.height = ScreenUtil.dip2px(60);
-            mScrollView.setLayoutParams(params);
-        }
-
-        mAlbums = new ArrayList<>();
-        mAdapter = new AlbumAdapter(mAlbums, AlbumActivity.this);
-        mViewPager.setAdapter(mAdapter);
-        mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+        setScrollViewParams(this.getResources().getConfiguration().orientation);
+        binding.viewPager.setAdapter(mAdapter);
+        binding.viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                if (position == mAmount - 1 && positionOffsetPixels == 0) {
-                    if (countForFinish++ > 8) {
+                if (position == binding.getAmount() - 1 && positionOffsetPixels == 0) {
+                    binding.setCountForFinish(binding.getCountForFinish() + 1);
+                    if (binding.getCountForFinish() > 8) {
                         finish();
                     }
-                } else countForFinish = 0;
+                } else {
+                    binding.setCountForFinish(0);
+                }
             }
 
             @Override
@@ -125,57 +104,44 @@ public class AlbumActivity extends BaseSwipeActivity {
             }
         });
 
-        XishiRetrofit.get().getDayAlbums(mId)
+        mXishiService.getDayAlbums(binding.getId())
                 .compose(this.<DayAlbums>bindUntilEvent(ActivityEvent.DESTROY))
                 .compose(RxHelper.<DayAlbums>ioToMain())
                 .subscribe(new StySubscriber<DayAlbums>() {
                     @Override
                     public void next(DayAlbums dayAlbums) {
-                        mAlbums = dayAlbums.picture;
-                        mAmount = mAlbums.size();
-                        mAdapter.setData(mAlbums);
+                        binding.setAmount(dayAlbums.picture.size());
+                        mAdapter.setData(dayAlbums.picture);
                         selected(0);
                     }
                 });
     }
 
     private void selected(int position) {
-        if (mAlbums.size() != 0) {
-            SpannableString string = new SpannableString(String.format(Locale.getDefault(), "%d/%d", 1 + position, mAlbums.size()));
+        if (binding.getAmount() != 0) {
+            SpannableString string = new SpannableString(String.format(Locale.getDefault(), "%d/%d", 1 + position, binding.getAmount()));
             RelativeSizeSpan sizeSpan0 = new RelativeSizeSpan(1.4f);
-
             RelativeSizeSpan sizeSpan2 = new RelativeSizeSpan(0.7f);
             if (position >= 9) {
                 string.setSpan(sizeSpan0, 0, 2, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-
             } else {
                 string.setSpan(sizeSpan0, 0, 1, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 
             }
-            mIndicator.setText(string);
-            SpannableString string1 = new SpannableString(mAlbums.get(position).title + "    " + mAlbums.get(position).author);
-
-            string1.setSpan(sizeSpan2, mAlbums.get(position).title.length(), string1.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-            title.setText(string1);
-            content.setText(mAlbums.get(position).content);
+            binding.indicator.setText(string);
+            SpannableString spannableString = new SpannableString(mAdapter.getData().get(position).title + "    " + mAdapter.getData().get(position).author);
+            spannableString.setSpan(sizeSpan2, mAdapter.getData().get(position).title.length(), spannableString.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            binding.title.setText(spannableString);
+            binding.content.setText(mAdapter.getData().get(position).content);
         }
     }
 
     public void hideOrShow() {
-        if (mVisible) {
-            mVisible = false;
-            mLl.setVisibility(View.GONE);
-            mScrollView.setVisibility(View.GONE);
-        } else {
-            mVisible = true;
-            mLl.setVisibility(View.VISIBLE);
-            mScrollView.setVisibility(View.VISIBLE);
-        }
-
+        binding.setVisible(!binding.getVisible());
     }
 
     private void parseIntent() {
-        mId = getIntent().getIntExtra("albums", 1322);
+        binding.setId(getIntent().getIntExtra("albums", 1322));
     }
 
     public void saveImageToGallery(final int position, final int i) {
@@ -185,7 +151,7 @@ public class AlbumActivity extends BaseSwipeActivity {
                     @Override
                     public void next(Boolean aBoolean) {
                         if (aBoolean) {
-                            ImageUtil.saveImageToGallery(AlbumActivity.this, mAlbums.get(position).url)
+                            ImageUtil.saveImageToGallery(AlbumActivity.this, mAdapter.getData().get(position).url)
                                     .compose(RxHelper.<Uri>ioToMain())
                                     .subscribe(new Action1<Uri>() {
                                         @Override
@@ -193,12 +159,12 @@ public class AlbumActivity extends BaseSwipeActivity {
                                             File appDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
                                             String msg = String.format(getString(R.string.picture_has_save_to),
                                                     appDir.getAbsolutePath());
-                                            switch(i){
+                                            switch (i) {
                                                 case 0:
                                                     Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
                                                     break;
                                                 case 1:
-                                                    SystemUtil.share(AlbumActivity.this,"来自西施App的图片分享","分享到",uri);
+                                                    SystemUtil.share(AlbumActivity.this, "来自西施App的图片分享", "分享到", uri);
                                                     break;
                                                 case 2:
                                                     ImageUtil.shareImage(AlbumActivity.this, uri);

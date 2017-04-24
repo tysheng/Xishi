@@ -8,8 +8,12 @@ import android.widget.ImageView;
 
 import com.chad.library.adapter.base.BaseViewHolder;
 
+import javax.inject.Inject;
+
+import me.tysheng.xishi.App;
 import me.tysheng.xishi.R;
 import me.tysheng.xishi.bean.Album;
+import me.tysheng.xishi.dagger.component.DaggerAdapterComponent;
 import me.tysheng.xishi.utils.ImageLoadHelper;
 
 /**
@@ -17,10 +21,16 @@ import me.tysheng.xishi.utils.ImageLoadHelper;
  * Date: 16/8/22 22:27.
  */
 public class MainsAdapter extends BaseLoadMoreRecyclerViewAdapter<Album> {
+    @Inject
+    ImageLoadHelper mHelper;
     private RelativeSizeSpan span = new RelativeSizeSpan(1.4f);
 
-    public MainsAdapter(Context context, int count) {
-        super(R.layout.item_mains, null, context, count);
+    @Inject
+    public MainsAdapter(Context context) {
+        super(R.layout.item_mains, null, context, 10);
+        DaggerAdapterComponent.builder()
+                .applicationComponent(((App) context.getApplicationContext()).getApplicationComponent())
+                .build().inject(this);
     }
 
     @Override
@@ -28,7 +38,7 @@ public class MainsAdapter extends BaseLoadMoreRecyclerViewAdapter<Album> {
         holder.setText(R.id.title, titleConvert(album.title))
                 .setText(R.id.time, timeConvert(album.addtime.substring(0, 10)))
                 .addOnClickListener(R.id.imageView);
-        ImageLoadHelper.get()
+        mHelper
                 .load(album.url)
                 .into((ImageView) holder.getView(R.id.imageView));
     }

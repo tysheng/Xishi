@@ -2,8 +2,6 @@ package me.tysheng.xishi.utils;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -12,7 +10,7 @@ import android.text.TextUtils;
 import java.io.File;
 import java.io.IOException;
 
-import me.tysheng.xishi.App;
+import me.tysheng.xishi.BuildConfig;
 import rx.Single;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -42,31 +40,12 @@ public class SystemUtil {
      * @throws Exception
      */
     public static String getVersionName() {
-        Context context = App.get();
-        PackageManager packageManager = context.getPackageManager();
-        // getPackageName()是你当前类的包名，0代表是获取版本信息
-        PackageInfo packInfo;
-        try {
-            packInfo = packageManager.getPackageInfo(context.getPackageName(), 0);
-            return packInfo.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return "x.x";
+        return BuildConfig.VERSION_NAME;
     }
 
     public static int getVersionCode() {
-        Context context = App.get();
-        PackageManager packageManager = context.getPackageManager();
-        // getPackageName()是你当前类的包名，0代表是获取版本信息
-        PackageInfo packInfo;
-        try {
-            packInfo = packageManager.getPackageInfo(context.getPackageName(), 0);
-            return packInfo.versionCode;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return 1;
+
+        return BuildConfig.VERSION_CODE;
     }
 
     /**
@@ -74,8 +53,8 @@ public class SystemUtil {
      *
      * @return
      */
-    public static boolean isNetworkAvailable() {
-        ConnectivityManager cm = (ConnectivityManager) App.get().getSystemService(Context.CONNECTIVITY_SERVICE);
+    public static boolean isNetworkAvailable(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo info = cm.getActiveNetworkInfo();
         return info != null && info.isAvailable();
     }
@@ -96,6 +75,7 @@ public class SystemUtil {
         }
         return false;
     }
+
     public static boolean deleteFile(String path) {
         if (TextUtils.isEmpty(path)) {
             return true;
@@ -129,6 +109,32 @@ public class SystemUtil {
 //        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"353491983@qq.com"});
         context.startActivity(Intent.createChooser(emailIntent, "发送邮件..."));
     }
+
+    /**
+     * 根据应用包名，跳转到应用市场
+     *
+     * @param context     承载跳转的Activity
+     * @param packageName 所需下载（评论）的应用包名
+     */
+    public static void shareAppShop(Context context, String packageName) {
+        try {
+//            Uri uri = Uri.parse("market://details?id=" + packageName);
+//            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            //跳转酷市场
+//            intent.setClassName("com.coolapk.market", "com.coolapk.market.activity.AppViewActivity");
+//            context.startActivity(intent);
+            //从其他浏览器打开
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_VIEW);
+            Uri content_url = Uri.parse("http://www.coolapk.com/apk/me.tysheng.xishi");
+            intent.setData(content_url);
+            context.startActivity(Intent.createChooser(intent, "请选择浏览器"));
+        } catch (Exception e) {
+
+        }
+    }
+
     /**
      * 文件大小获取
      *
@@ -168,12 +174,12 @@ public class SystemUtil {
         return dirSize;
     }
 
-    public static void clearCache() {
-        Single.just(null)
-                .map(new Func1<Object, Boolean>() {
+    public static void clearCache(Context context) {
+        Single.just(context)
+                .map(new Func1<Context, Boolean>() {
                     @Override
-                    public Boolean call(Object o) {
-                        return SystemUtil.deleteFile(App.get().getCacheDir().getPath());
+                    public Boolean call(Context o) {
+                        return SystemUtil.deleteFile(o.getCacheDir().getPath());
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())

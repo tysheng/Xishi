@@ -11,6 +11,12 @@ import android.view.Window;
 import com.baidu.mobstat.StatService;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
+import me.tysheng.xishi.App;
+import me.tysheng.xishi.dagger.component.ActivityComponent;
+import me.tysheng.xishi.dagger.component.ApplicationComponent;
+import me.tysheng.xishi.dagger.component.DaggerActivityComponent;
+import me.tysheng.xishi.dagger.module.ActivityModule;
+
 /**
  * Created by shengtianyang on 16/7/11.
  */
@@ -34,6 +40,21 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     protected void onResume() {
         super.onResume();
         StatService.onResume(this);
+    }
+
+    protected ApplicationComponent getApplicationComponent() {
+        return ((App) getApplication()).getApplicationComponent();
+    }
+
+    protected ActivityComponent injectAppComponent() {
+        return DaggerActivityComponent.builder()
+                .applicationComponent(getApplicationComponent())
+                .activityModule(getActivityModule())
+                .build();
+    }
+
+    protected ActivityModule getActivityModule() {
+        return new ActivityModule(this);
     }
 
     /**

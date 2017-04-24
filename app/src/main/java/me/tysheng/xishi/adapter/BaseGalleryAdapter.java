@@ -12,6 +12,9 @@ import com.squareup.picasso.Callback;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.Lazy;
 import me.tysheng.xishi.R;
 import me.tysheng.xishi.utils.ImageLoadHelper;
 import uk.co.senab.photoview.PhotoViewAttacher;
@@ -22,10 +25,16 @@ import uk.co.senab.photoview.PhotoViewAttacher;
 public abstract class BaseGalleryAdapter<T> extends PagerAdapter {
     protected List<T> mImages;
     protected Activity mActivity;
+    @Inject
+    Lazy<ImageLoadHelper> mHelper;
 
     public BaseGalleryAdapter(List<T> images, Activity activity) {
         mImages = images;
         mActivity = activity;
+    }
+
+    public List<T> getData() {
+        return mImages;
     }
 
     public void setData(List<T> images) {
@@ -44,7 +53,7 @@ public abstract class BaseGalleryAdapter<T> extends PagerAdapter {
         mAttacher.setScaleType(ImageView.ScaleType.FIT_CENTER);
         mAttacher.setMinimumScale(1);
         initAttacher(mAttacher, position);
-        ImageLoadHelper.get()
+        mHelper.get()
                 .load(setItemUrl(position))
                 .into(imageView, new Callback() {
                     @Override

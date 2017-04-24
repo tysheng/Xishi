@@ -5,10 +5,14 @@ import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 
-import java.util.List;
+import java.util.ArrayList;
 
+import javax.inject.Inject;
+
+import me.tysheng.xishi.App;
 import me.tysheng.xishi.R;
 import me.tysheng.xishi.bean.Picture;
+import me.tysheng.xishi.dagger.component.DaggerAdapterComponent;
 import me.tysheng.xishi.ui.AlbumActivity;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
@@ -17,10 +21,13 @@ import uk.co.senab.photoview.PhotoViewAttacher;
  * Date: 16/8/23 20:17.
  */
 public class AlbumAdapter extends BaseGalleryAdapter<Picture> {
-    public AlbumAdapter(List<Picture> images, Activity activity) {
-        super(images, activity);
+    @Inject
+    public AlbumAdapter(Activity activity) {
+        super(new ArrayList<Picture>(), activity);
+        DaggerAdapterComponent.builder()
+                .applicationComponent(((App) activity.getApplicationContext()).getApplicationComponent())
+                .build().inject(this);
     }
-
 
 
     @Override

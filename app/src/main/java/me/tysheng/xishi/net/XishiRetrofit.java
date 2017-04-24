@@ -1,10 +1,11 @@
 package me.tysheng.xishi.net;
 
+import android.content.Context;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import me.tysheng.xishi.App;
 import me.tysheng.xishi.utils.SystemUtil;
 import okhttp3.Cache;
 import okhttp3.CacheControl;
@@ -21,11 +22,11 @@ import retrofit2.converter.fastjson.FastJsonConverterFactory;
  */
 public class XishiRetrofit {
 
-
-    private static volatile Retrofit retrofit = null;
-    private static volatile XishiService sService = null;
     private static String BASE_URL = "http://dili.bdatu.com/jiekou/";
-    private static Interceptor REWRITE_CACHE_CONTROL_INTERCEPTOR = new Interceptor() {
+    private Context mContext;
+    private volatile Retrofit retrofit = null;
+    private volatile XishiService sService = null;
+    private Interceptor REWRITE_CACHE_CONTROL_INTERCEPTOR = new Interceptor() {
         @Override
         public Response intercept(Chain chain) throws IOException {
             CacheControl.Builder cacheBuilder = new CacheControl.Builder();
@@ -34,13 +35,13 @@ public class XishiRetrofit {
             CacheControl cacheControl = cacheBuilder.build();
 
             Request request = chain.request();
-            if (!SystemUtil.isNetworkAvailable()) {
+            if (!SystemUtil.isNetworkAvailable(mContext)) {
                 request = request.newBuilder()
                         .cacheControl(cacheControl)
                         .build();
             }
             Response originalResponse = chain.proceed(request);
-            if (SystemUtil.isNetworkAvailable()) {
+            if (SystemUtil.isNetworkAvailable(mContext)) {
                 int maxAge = 0; // read from cache
                 return originalResponse.newBuilder()
                         .removeHeader("Pragma")
@@ -56,8 +57,12 @@ public class XishiRetrofit {
         }
     };
 
-    private static void init() {
-        final File baseDir = App.get().getCacheDir();
+    public XishiRetrofit(Context context) {
+        mContext = context;
+    }
+
+    private void init() {
+        final File baseDir = mContext.getCacheDir();
         Cache cache = null;
         if (baseDir != null) {
             final File cacheDir = new File(baseDir, "HttpCache");
@@ -89,14 +94,15 @@ public class XishiRetrofit {
 
     }
 
-    public static XishiService get() {
-        if (sService == null) {
-            synchronized (XishiRetrofit.class) {
-                if (sService == null)
-                    init();
-                sService = retrofit.create(XishiService.class);
-            }
-        }
+    public XishiService get() {
+//        if (sService == null) {
+//            synchronized (XishiRetrofit.class) {
+//                if (sService == null)
+//
+//            }
+//        }
+        init();
+        sService = retrofit.create(XishiService.class);
         return sService;
     }
 

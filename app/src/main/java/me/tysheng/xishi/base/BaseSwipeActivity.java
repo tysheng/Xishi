@@ -2,7 +2,6 @@ package me.tysheng.xishi.base;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.View;
 
 import me.tysheng.xishi.R;
@@ -29,8 +28,8 @@ public abstract class BaseSwipeActivity extends BaseActivity {
     }
 
     @Override
-    public void startActivityForResult(Intent intent, int requestCode, @Nullable Bundle options) {
-        super.startActivityForResult(intent, requestCode, options);
+    public void startActivityForResult(Intent intent, int requestCode) {
+        super.startActivityForResult(intent, requestCode);
         overridePendingTransition(R.anim.slide_right_in, 0);
     }
 

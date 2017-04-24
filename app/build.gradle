@@ -1,15 +1,17 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "25.0.0"
-
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+    dataBinding {
+        enabled = true
+    }
     defaultConfig {
         applicationId "me.tysheng.xishi"
         minSdkVersion 14
-        targetSdkVersion 24
-        versionCode 15
-        versionName "2.3"
+        targetSdkVersion 25
+        versionCode 16
+        versionName "2.4"
         resConfigs "zh"
     }
     buildTypes {
@@ -33,15 +35,14 @@ dependencies {
     compile rootProject.ext.dependencies["retrofit"]
     compile rootProject.ext.dependencies["converter-fastjson-android"]
     compile rootProject.ext.dependencies["adapter-rxjava"]
-    compile rootProject.ext.dependencies["picasso"]
+    compile 'com.squareup.picasso:picasso:2.4.0'
     compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:v2.1.2'
-    compile rootProject.ext.dependencies["photoview"]
-    compile rootProject.ext.dependencies["rxpermissions"]
-    compile files('src/main/jniLibs/Baidu_Mtj_3.7.4.5.jar')
-    compile files('src/main/jniLibs/BDAutoUpdateSDK_20150605_V1.2.0.jar')
-    compile files('src/main/jniLibs/need_lib.jar')
-    compile files('src/main/jniLibs/patchupdate.jar')
+    compile 'com.github.chrisbanes:PhotoView:1.2.7'
+    compile 'com.tbruyelle.rxpermissions:rxpermissions:0.7.0@aar'
+    compile files('src/main/jniLibs/Baidu_Mtj_3.7.6.1.jar')
     compile 'com.jakewharton:disklrucache:2.0.2'
     compile 'com.trello:rxlifecycle:0.7.0'
     compile 'com.trello:rxlifecycle-components:0.7.0'
+    compile 'com.google.dagger:dagger:2.10'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.10'
 }

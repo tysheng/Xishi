@@ -1,7 +1,10 @@
 package me.tysheng.xishi;
 
 import android.app.Application;
-import android.content.Context;
+
+import me.tysheng.xishi.dagger.component.ApplicationComponent;
+import me.tysheng.xishi.dagger.component.DaggerApplicationComponent;
+import me.tysheng.xishi.dagger.module.ApplicationModule;
 
 
 /**
@@ -9,15 +12,18 @@ import android.content.Context;
  * Date: 16/8/22 22:17.
  */
 public class App extends Application {
-    private static Context sContext;
 
-    public static Context get() {
-        return sContext;
-    }
+    private ApplicationComponent mApplicationComponent;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        sContext = this;
+        mApplicationComponent =
+                DaggerApplicationComponent.builder().applicationModule(new ApplicationModule(this)).build();
+        mApplicationComponent.inject(this);
+    }
+
+    public ApplicationComponent getApplicationComponent() {
+        return mApplicationComponent;
     }
 }
