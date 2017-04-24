@@ -1,6 +1,5 @@
 package me.tysheng.xishi.utils;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -76,8 +75,6 @@ public class ImageUtil {
         intent.setComponent(new ComponentName("com.tencent.mm", "com.tencent.mm.ui.tools.ShareImgUI"));
 //            intent.setComponent(new ComponentName("com.tencent.mm", "com.tencent.mm.ui.tools.ShareToTimeLineUI"));
         context.startActivity(Intent.createChooser(intent, context.getString(R.string.share_title)));
-        if (context instanceof Activity)
-            ((Activity) context).overridePendingTransition(R.anim.fade_in, 0);
     }
 
 }

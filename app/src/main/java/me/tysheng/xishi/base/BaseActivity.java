@@ -1,12 +1,10 @@
 package me.tysheng.xishi.base;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.view.Window;
 
 import com.baidu.mobstat.StatService;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
@@ -24,10 +22,8 @@ public abstract class BaseActivity extends RxAppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
-        }
         super.onCreate(savedInstanceState);
+
     }
 
     @Override

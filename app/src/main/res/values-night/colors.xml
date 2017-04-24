@@ -12,7 +12,7 @@
     <color name="grey_900">#212121</color>
     <color name="divider">#aaaaaa</color>
     <color name="grey_700">#616161</color>
-    <color name="transparent_background">#75000000</color>
+    <color name="transparent_background">#cc000000</color>
     <color name="textColor">#000000</color>
     <color name="backgroundColor">#ffffff</color>
 </resources>

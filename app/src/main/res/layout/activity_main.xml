@@ -26,7 +26,6 @@
                 android:id="@+id/toolBar"
                 android:layout_width="match_parent"
                 android:layout_height="?actionBarSize"
-                app:layout_collapseMode="pin"
                 app:layout_scrollFlags="scroll|enterAlways|snap"
                 app:title="@string/app_name"
                 app:titleTextColor="@color/white">
@@ -39,6 +38,7 @@
             android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <android.support.v7.widget.RecyclerView

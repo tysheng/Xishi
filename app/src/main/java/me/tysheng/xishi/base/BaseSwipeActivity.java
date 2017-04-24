@@ -1,10 +1,8 @@
 package me.tysheng.xishi.base;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import me.tysheng.xishi.R;
 import me.tysheng.xishi.utils.swipeback.SwipeBackActivityHelper;
 
 /**
@@ -27,11 +25,6 @@ public abstract class BaseSwipeActivity extends BaseActivity {
         mHelper.onPostCreate();
     }
 
-    @Override
-    public void startActivityForResult(Intent intent, int requestCode) {
-        super.startActivityForResult(intent, requestCode);
-        overridePendingTransition(R.anim.slide_right_in, 0);
-    }
 
     @Override
     public View findViewById(int id) {
@@ -45,9 +38,4 @@ public abstract class BaseSwipeActivity extends BaseActivity {
         mHelper.getSwipeBackLayout().setEnableGesture(enable);
     }
 
-    @Override
-    public void finish() {
-        super.finish();
-        overridePendingTransition(0, R.anim.slide_right_out);
-    }
 }

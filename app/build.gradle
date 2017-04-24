@@ -35,7 +35,7 @@ dependencies {
     compile rootProject.ext.dependencies["retrofit"]
     compile rootProject.ext.dependencies["converter-fastjson-android"]
     compile rootProject.ext.dependencies["adapter-rxjava"]
-    compile 'com.squareup.picasso:picasso:2.4.0'
+    compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:v2.1.2'
     compile 'com.github.chrisbanes:PhotoView:1.2.7'
     compile 'com.tbruyelle.rxpermissions:rxpermissions:0.7.0@aar'

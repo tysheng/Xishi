@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.LinearLayoutManager;
@@ -92,9 +91,9 @@ public class MainActivity extends BaseMainActivity {
                 String id = mAdapter.getData().get(i).id;
                 if (!TextUtils.isEmpty(id)) {
                     Intent intent = AlbumActivity.newIntent(MainActivity.this, mAdapter.getData().get(i).id);
-                    ActivityOptionsCompat options =
-                            ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this, view, getString(R.string.app_name));
-                    ActivityCompat.startActivity(MainActivity.this, intent, options.toBundle());
+//                    ActivityOptionsCompat options =
+//                            ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this, view, getString(R.string.app_name));
+                    ActivityCompat.startActivity(MainActivity.this, intent, null);
                 }
             }
         });
@@ -219,12 +218,5 @@ public class MainActivity extends BaseMainActivity {
                         }
                     }
                 });
-    }
-
-
-    @Override
-    public void finish() {
-        super.finish();
-        overridePendingTransition(0, R.anim.zoom_out);
     }
 }
