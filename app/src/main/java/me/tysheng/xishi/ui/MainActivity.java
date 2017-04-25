@@ -1,6 +1,5 @@
 package me.tysheng.xishi.ui;
 
-import android.Manifest;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
@@ -17,7 +16,6 @@ import android.view.View;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.listener.OnItemChildClickListener;
-import com.tbruyelle.rxpermissions.RxPermissions;
 import com.trello.rxlifecycle.android.ActivityEvent;
 
 import javax.inject.Inject;
@@ -36,7 +34,6 @@ import me.tysheng.xishi.utils.StySubscriber;
 import me.tysheng.xishi.utils.SystemUtil;
 import me.tysheng.xishi.view.RecycleViewDivider;
 import rx.functions.Action0;
-import rx.functions.Action1;
 
 public class MainActivity extends BaseMainActivity {
     @Inject
@@ -114,26 +111,27 @@ public class MainActivity extends BaseMainActivity {
                 getMains(binding.getPage(), 0);
             }
         });
-        RxPermissions.getInstance(this)
-                .request(Manifest.permission.READ_PHONE_STATE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                .subscribe(new Action1<Boolean>() {
-                    @Override
-                    public void call(Boolean aBoolean) {
-                        if (!aBoolean) {
-                            SnackBarUtil.show(binding.coordinatorLayout, "没有这些权限可能会出现问题:(");
-                        } else {
-                            binding.swipeRefreshLayout.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    binding.swipeRefreshLayout.setRefreshing(true);
-                                    binding.setPage(1);
-                                    getMains(binding.getPage(), 0);
-                                }
-                            });
-                        }
-                    }
-                });
+        binding.swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                binding.swipeRefreshLayout.setRefreshing(true);
+                binding.setPage(1);
+                getMains(binding.getPage(), 0);
+            }
+        });
+//        RxPermissions.getInstance(this)
+//                .request(Manifest.permission.READ_PHONE_STATE,
+//                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//                .subscribe(new Action1<Boolean>() {
+//                    @Override
+//                    public void call(Boolean aBoolean) {
+//                        if (!aBoolean) {
+//                            SnackBarUtil.show(binding.coordinatorLayout, "没有这些权限可能会出现问题:(");
+//                        } else {
+//
+//                        }
+//                    }
+//                });
     }
 
     public void showAlipayFail() {
