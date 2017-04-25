@@ -1,11 +1,10 @@
 package me.tysheng.xishi.adapter;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.BaseViewHolder;
 
 import java.util.List;
 
@@ -15,35 +14,28 @@ import me.tysheng.xishi.R;
  * Created by Sty
  * Date: 16/9/18 09:18.
  */
-public abstract class BaseLoadMoreRecyclerViewAdapter<T> extends BaseQuickAdapter<T> {
-    private Context context;
+public abstract class BaseLoadMoreRecyclerViewAdapter<T> extends BaseQuickAdapter<T, BaseViewHolder> {
 
-    public BaseLoadMoreRecyclerViewAdapter(int layoutResId, List<T> data, Context context, int loadCount) {
+    public BaseLoadMoreRecyclerViewAdapter(int layoutResId, List<T> data) {
         super(layoutResId, data);
-        init(context, loadCount);
     }
 
-    private void init(Context context, int loadCount) {
-//        View v = LayoutInflater.from(mContext).inflate(R.layout.item_page_empty, null, false);
-//        setEmptyView(v);
-        this.context = context;
-        openLoadMore(loadCount);
-        View view = LayoutInflater.from(context).inflate(R.layout.item_loading_more, null, false);
-        setLoadingView(view);
+    @Override
+    protected BaseViewHolder createBaseViewHolder(View view) {
+        return new BaseViewHolder(view);
+    }
+
+    public void onEmptyView() {
+        View v = LayoutInflater.from(getRecyclerView().getContext()).inflate(R.layout.item_loading_more, getRecyclerView(), false);
+        setEmptyView(v);
     }
 
     public void onEnd() {
-        loadComplete();
-        View view = LayoutInflater.from(context).inflate(R.layout.item_loading_error, null, false);
-        TextView textView = (TextView) view.findViewById(R.id.textView);
-        textView.setText("已到末尾,无更多内容");
-        addFooterView(view);
+        loadMoreEnd();
     }
 
     public void onError() {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_loading_error, null, false);
-        setLoadMoreFailedView(view);
-        showLoadMoreFailedView();
+        loadMoreFail();
     }
 
 

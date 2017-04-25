@@ -22,16 +22,18 @@ import com.trello.rxlifecycle.android.ActivityEvent;
 
 import javax.inject.Inject;
 
+import me.tysheng.xishi.BuildConfig;
 import me.tysheng.xishi.R;
 import me.tysheng.xishi.adapter.MainsAdapter;
 import me.tysheng.xishi.base.BaseMainActivity;
 import me.tysheng.xishi.bean.Mains;
 import me.tysheng.xishi.databinding.ActivityMainBinding;
 import me.tysheng.xishi.net.XishiService;
-import me.tysheng.xishi.utils.LogUtil;
+import me.tysheng.xishi.utils.AlipayZeroSdk;
 import me.tysheng.xishi.utils.RxHelper;
 import me.tysheng.xishi.utils.SnackBarUtil;
 import me.tysheng.xishi.utils.StySubscriber;
+import me.tysheng.xishi.utils.SystemUtil;
 import me.tysheng.xishi.view.RecycleViewDivider;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -41,7 +43,6 @@ public class MainActivity extends BaseMainActivity {
     MainsAdapter mAdapter;
     @Inject
     XishiService mXishiService;
-    private int page;
     private LinearLayoutManager mLayoutManager;
     private ActivityMainBinding binding;
 
@@ -57,8 +58,9 @@ public class MainActivity extends BaseMainActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         injectAppComponent().inject(this);
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        binding.setPage(1);
         binding.toolBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -83,14 +85,13 @@ public class MainActivity extends BaseMainActivity {
         });
         mLayoutManager = new LinearLayoutManager(this);
         binding.recyclerView.setLayoutManager(mLayoutManager);
-
-        binding.recyclerView.setAdapter(mAdapter);
+        mAdapter.bindToRecyclerView(binding.recyclerView);
         binding.recyclerView.addOnItemTouchListener(new OnItemChildClickListener() {
             @Override
-            public void SimpleOnItemChildClick(BaseQuickAdapter baseQuickAdapter, View view, int i) {
-                String id = mAdapter.getData().get(i).id;
+            public void onSimpleItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                String id = mAdapter.getItem(position).id;
                 if (!TextUtils.isEmpty(id)) {
-                    Intent intent = AlbumActivity.newIntent(MainActivity.this, mAdapter.getData().get(i).id);
+                    Intent intent = AlbumActivity.newIntent(MainActivity.this, id);
 //                    ActivityOptionsCompat options =
 //                            ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this, view, getString(R.string.app_name));
                     ActivityCompat.startActivity(MainActivity.this, intent, null);
@@ -100,12 +101,8 @@ public class MainActivity extends BaseMainActivity {
         mAdapter.setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
             @Override
             public void onLoadMoreRequested() {
-                binding.recyclerView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        getMains(++page, 1);
-                    }
-                });
+                binding.setPage(binding.getPage() + 1);
+                getMains(binding.getPage(), 1);
             }
         });
         binding.recyclerView.addItemDecoration(new RecycleViewDivider(this));
@@ -113,10 +110,10 @@ public class MainActivity extends BaseMainActivity {
         binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getMains(page = 1, 0);
+                binding.setPage(1);
+                getMains(binding.getPage(), 0);
             }
         });
-
         RxPermissions.getInstance(this)
                 .request(Manifest.permission.READ_PHONE_STATE,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -130,11 +127,11 @@ public class MainActivity extends BaseMainActivity {
                                 @Override
                                 public void run() {
                                     binding.swipeRefreshLayout.setRefreshing(true);
-                                    getMains(page = 1, 0);
+                                    binding.setPage(1);
+                                    getMains(binding.getPage(), 0);
                                 }
                             });
                         }
-
                     }
                 });
     }
@@ -201,7 +198,6 @@ public class MainActivity extends BaseMainActivity {
                 .subscribe(new StySubscriber<Mains>() {
                     @Override
                     public void onError(Throwable e) {
-                        LogUtil.d(e.getMessage());
                         if (TextUtils.equals("HTTP 404 Not Found", e.getMessage())) {
                             mAdapter.onEnd();
                         } else {
@@ -216,7 +212,35 @@ public class MainActivity extends BaseMainActivity {
                         } else {
                             mAdapter.addData(mains.album);
                         }
+                        mAdapter.loadMoreComplete();
                     }
                 });
+    }
+
+    public void onItemClick(int position) {
+        switch (position) {
+            case 0:
+                SystemUtil.sendEmail(this);
+                break;
+            case 1:
+                SystemUtil.shareAppShop(this, BuildConfig.APPLICATION_ID);
+                break;
+            case 2:
+                if (AlipayZeroSdk.hasInstalledAlipayClient(this)) {
+                    if (!AlipayZeroSdk.startAlipayClient(this, "aex07650apwol9ijoslnm39")) {
+                        showAlipayFail();
+                    }
+                } else
+                    showAlipayFail();
+                break;
+            case 3:
+                copyEmailAddress();
+                break;
+            case 4:
+                setDayNightMode();
+                break;
+            default:
+                break;
+        }
     }
 }

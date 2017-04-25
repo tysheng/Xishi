@@ -27,7 +27,7 @@ public class MainsAdapter extends BaseLoadMoreRecyclerViewAdapter<Album> {
 
     @Inject
     public MainsAdapter(Context context) {
-        super(R.layout.item_mains, null, context, 10);
+        super(R.layout.item_mains, null);
         DaggerAdapterComponent.builder()
                 .applicationComponent(((App) context.getApplicationContext()).getApplicationComponent())
                 .build().inject(this);
@@ -48,7 +48,6 @@ public class MainsAdapter extends BaseLoadMoreRecyclerViewAdapter<Album> {
         int day = Integer.valueOf(s.substring(8));
         SpannableString string = new SpannableString(day + "/" + month);
         string.setSpan(span, 0, String.valueOf(day).length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-
         return string;
     }
 
