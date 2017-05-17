@@ -16,9 +16,9 @@
     </style>
 
     <style name="BlackDialog" parent="Theme.AppCompat.DayNight.Dialog">
-        <item name="android:textColor">@color/textColor</item>
-        <item name="android:background">@color/backgroundColor</item>
-        <item name="textColorAlertDialogListItem">@color/textColor</item>
+        <!--<item name="android:textColor">@color/textColor</item>-->
+        <!--<item name="android:background">@color/backgroundColor</item>-->
+        <!--<item name="textColorAlertDialogListItem">@color/textColor</item>-->
     </style>
 
 

@@ -15,7 +15,6 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.chad.library.adapter.base.listener.OnItemChildClickListener;
 import com.trello.rxlifecycle.android.ActivityEvent;
 
 import javax.inject.Inject;
@@ -83,14 +82,12 @@ public class MainActivity extends BaseMainActivity {
         mLayoutManager = new LinearLayoutManager(this);
         binding.recyclerView.setLayoutManager(mLayoutManager);
         mAdapter.bindToRecyclerView(binding.recyclerView);
-        binding.recyclerView.addOnItemTouchListener(new OnItemChildClickListener() {
+        mAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
-            public void onSimpleItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 String id = mAdapter.getItem(position).id;
                 if (!TextUtils.isEmpty(id)) {
                     Intent intent = AlbumActivity.newIntent(MainActivity.this, id);
-//                    ActivityOptionsCompat options =
-//                            ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this, view, getString(R.string.app_name));
                     ActivityCompat.startActivity(MainActivity.this, intent, null);
                 }
             }
