@@ -29,31 +29,15 @@ public class XishiRetrofit {
     private Interceptor REWRITE_CACHE_CONTROL_INTERCEPTOR = new Interceptor() {
         @Override
         public Response intercept(Chain chain) throws IOException {
-            CacheControl.Builder cacheBuilder = new CacheControl.Builder();
-            cacheBuilder.maxAge(0, TimeUnit.SECONDS);
-            cacheBuilder.maxStale(365, TimeUnit.DAYS);
-            CacheControl cacheControl = cacheBuilder.build();
-
             Request request = chain.request();
-            if (!SystemUtil.isNetworkAvailable(mContext)) {
-                request = request.newBuilder()
-                        .cacheControl(cacheControl)
-                        .build();
-            }
+            CacheControl cacheControl = SystemUtil.isNetworkAvailable(mContext) ?
+                    CacheControl.FORCE_NETWORK : CacheControl.FORCE_CACHE;
+            request = request.newBuilder()
+                    .cacheControl(cacheControl)
+                    .build();
             Response originalResponse = chain.proceed(request);
-            if (SystemUtil.isNetworkAvailable(mContext)) {
-                int maxAge = 0; // read from cache
-                return originalResponse.newBuilder()
-                        .removeHeader("Pragma")
-                        .header("Cache-Control", "public ,max-age=" + maxAge)
-                        .build();
-            } else {
-                int maxStale = 60 * 60 * 24 * 28; // tolerate 4-weeks stale
-                return originalResponse.newBuilder()
-                        .removeHeader("Pragma")
-                        .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
-                        .build();
-            }
+            return originalResponse.newBuilder()
+                    .build();
         }
     };
 
@@ -95,12 +79,6 @@ public class XishiRetrofit {
     }
 
     public XishiService get() {
-//        if (sService == null) {
-//            synchronized (XishiRetrofit.class) {
-//                if (sService == null)
-//
-//            }
-//        }
         init();
         sService = retrofit.create(XishiService.class);
         return sService;

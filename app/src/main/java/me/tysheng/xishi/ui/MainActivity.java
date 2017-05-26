@@ -27,6 +27,7 @@ import me.tysheng.xishi.bean.Mains;
 import me.tysheng.xishi.databinding.ActivityMainBinding;
 import me.tysheng.xishi.net.XishiService;
 import me.tysheng.xishi.utils.AlipayZeroSdk;
+import me.tysheng.xishi.utils.LogUtil;
 import me.tysheng.xishi.utils.RxHelper;
 import me.tysheng.xishi.utils.SnackBarUtil;
 import me.tysheng.xishi.utils.StySubscriber;
@@ -193,6 +194,7 @@ public class MainActivity extends BaseMainActivity {
                 .subscribe(new StySubscriber<Mains>() {
                     @Override
                     public void onError(Throwable e) {
+                        LogUtil.d(e.getMessage());
                         if (TextUtils.equals("HTTP 404 Not Found", e.getMessage())) {
                             mAdapter.onEnd();
                         } else {
@@ -203,8 +205,10 @@ public class MainActivity extends BaseMainActivity {
                     @Override
                     public void next(Mains mains) {
                         if (type == 0) {
+                            LogUtil.d("setNewData");
                             mAdapter.setNewData(mains.album);
                         } else {
+                            LogUtil.d("addData");
                             mAdapter.addData(mains.album);
                         }
                         mAdapter.loadMoreComplete();
