@@ -1,9 +1,6 @@
 package me.tysheng.xishi.utils
 
-import org.reactivestreams.Publisher
-
-import io.reactivex.Flowable
-import io.reactivex.FlowableTransformer
+import io.reactivex.ObservableTransformer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
@@ -18,8 +15,8 @@ object RxHelper {
      * @param <T>
      * @return
     </T> */
-    fun <T> ioToMain(): FlowableTransformer<T, T> {
-        return FlowableTransformer { upstream ->
+    fun <T> ioToMain(): ObservableTransformer<T, T> {
+        return ObservableTransformer { upstream ->
             upstream
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())

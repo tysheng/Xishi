@@ -57,7 +57,7 @@ class MainActivity : BaseMainActivity() {
         binding.recyclerView.layoutManager = mLayoutManager
         mAdapter.bindToRecyclerView(binding.recyclerView)
         mAdapter.onItemClickListener = BaseQuickAdapter.OnItemClickListener { adapter, view, position ->
-            val id = mAdapter.getItem(position).id
+            val id = mAdapter.getItem(position)?.id
             if (!TextUtils.isEmpty(id)) {
                 val intent = AlbumActivity.newIntent(this@MainActivity, id!!)
                 ActivityCompat.startActivity(this@MainActivity, intent, null)
@@ -146,7 +146,7 @@ class MainActivity : BaseMainActivity() {
                 }
                 .subscribe(object : StySubscriber<Mains>() {
                     override fun onError(e: Throwable) {
-                        LogUtil.d(e.message)
+                        super.onError(e)
                         if (TextUtils.equals("HTTP 404 Not Found", e.message)) {
                             mAdapter.onEnd()
                         } else {
@@ -156,10 +156,8 @@ class MainActivity : BaseMainActivity() {
 
                     override fun next(mains: Mains) {
                         if (type == 0) {
-                            LogUtil.d("setNewData")
                             mAdapter.setNewData(mains.album)
                         } else {
-                            LogUtil.d("addData")
                             mAdapter.addData(mains.album)
                         }
                         mAdapter.loadMoreComplete()

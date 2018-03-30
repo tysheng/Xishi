@@ -6,9 +6,11 @@ import okhttp3.Cache
 import okhttp3.CacheControl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.fastjson.FastJsonConverterFactory
+import timber.log.Timber
 import java.io.File
 import java.util.concurrent.TimeUnit
 
@@ -40,7 +42,7 @@ class XishiRetrofit(private val mContext: Context) {
         if (baseDir != null) {
             val cacheDir = File(baseDir, "HttpCache")
             //设置缓存 10M
-            cache = Cache(cacheDir, (10 * 1024 * 1024).toLong())
+            cache = Cache(cacheDir, (100 * 1024 * 1024).toLong())
         }
 
         val builder = OkHttpClient.Builder()
@@ -53,6 +55,10 @@ class XishiRetrofit(private val mContext: Context) {
         builder.retryOnConnectionFailure(true)
         //网络拦截
         builder.addInterceptor(REWRITE_CACHE_CONTROL_INTERCEPTOR)
+        builder.addInterceptor(HttpLoggingInterceptor(
+                HttpLoggingInterceptor.Logger { message -> Timber.tag("OkHttp").d(message) }).apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        })
         //缓存设置
         builder.cache(cache)
 

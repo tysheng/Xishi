@@ -2,7 +2,6 @@ package me.tysheng.xishi.base
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import com.baidu.mobstat.StatService
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import me.tysheng.xishi.App
 import me.tysheng.xishi.dagger.component.ActivityComponent
@@ -28,12 +27,12 @@ abstract class BaseActivity : RxAppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        StatService.onPause(this)
+//        StatService.onPause(this)
     }
 
     override fun onResume() {
         super.onResume()
-        StatService.onResume(this)
+//        StatService.onResume(this)
     }
 
     protected fun injectAppComponent(): ActivityComponent {

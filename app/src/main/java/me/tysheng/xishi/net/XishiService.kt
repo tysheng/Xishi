@@ -1,6 +1,6 @@
 package me.tysheng.xishi.net
 
-import io.reactivex.Flowable
+import io.reactivex.Observable
 import me.tysheng.xishi.bean.DayAlbums
 import me.tysheng.xishi.bean.Mains
 import retrofit2.http.GET
@@ -14,9 +14,9 @@ interface XishiService {
 
 
     @GET("mains/p{page}.html")
-    fun getMains(@Path("page") page: Int): Flowable<Mains>
+    fun getMains(@Path("page") page: Int): Observable<Mains>
 
     @GET("albums/a{id}.html")
-    fun getDayAlbums(@Path("id") id: Int): Flowable<DayAlbums>
+    fun getDayAlbums(@Path("id") id: Int): Observable<DayAlbums>
 
 }

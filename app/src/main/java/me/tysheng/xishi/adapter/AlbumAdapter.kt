@@ -3,10 +3,10 @@ package me.tysheng.xishi.adapter
 import android.app.Activity
 import android.support.v7.app.AlertDialog
 import android.view.View
+import com.github.chrisbanes.photoview.PhotoView
 import me.tysheng.xishi.R
 import me.tysheng.xishi.bean.Picture
 import me.tysheng.xishi.ui.AlbumActivity
-import uk.co.senab.photoview.PhotoViewAttacher
 import java.util.*
 import javax.inject.Inject
 
@@ -25,8 +25,8 @@ constructor(activity: Activity) : BaseGalleryAdapter<Picture>(ArrayList(), activ
 
     }
 
-    override fun initAttacher(attacher: PhotoViewAttacher, position: Int) {
-        attacher.setOnLongClickListener {
+    override fun initPhotoView(photoView: PhotoView, position: Int) {
+        photoView.setOnLongClickListener {
             AlertDialog.Builder(mActivity, R.style.BlackDialog)
                     .setItems(arrayOf("保存", "分享", "分享给微信好友")) { dialogInterface, i ->
                         dialogInterface.dismiss()
@@ -34,7 +34,7 @@ constructor(activity: Activity) : BaseGalleryAdapter<Picture>(ArrayList(), activ
                     }.show()
             true
         }
-        attacher.setOnViewTapListener { view, x, y -> (mActivity as AlbumActivity).hideOrShow() }
+        photoView.setOnViewTapListener { view, x, y -> (mActivity as AlbumActivity).hideOrShow() }
     }
 
     override fun setItemUrl(position: Int): String {

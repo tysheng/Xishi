@@ -6,24 +6,21 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
-
 import com.squareup.picasso.Picasso
-
+import io.reactivex.Observable
+import io.reactivex.functions.Function
+import me.tysheng.xishi.R
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-
-import io.reactivex.Flowable
-import io.reactivex.functions.Function
-import me.tysheng.xishi.R
 
 /**
  * Created by Sty
  * Date: 16/8/23 21:37.
  */
 object ImageUtil {
-    fun saveImageToGallery(context: Context, url: String): Flowable<Uri> {
-        return Flowable.just(url)
+    fun saveImageToGallery(context: Context, url: String): Observable<Uri> {
+        return Observable.just(url)
                 .map(Function { s ->
                     var bitmap: Bitmap? = null
                     try {

@@ -5,12 +5,11 @@ import android.support.v4.view.PagerAdapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.ProgressBar
+import com.github.chrisbanes.photoview.PhotoView
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import me.tysheng.xishi.R
-import uk.co.senab.photoview.PhotoViewAttacher
 
 /**
  * Created by shengtianyang on 16/4/30.
@@ -26,20 +25,15 @@ abstract class BaseGalleryAdapter<T>(protected var mImages: List<T>, protected v
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val view = LayoutInflater.from(mActivity).inflate(setLayoutId(), container, false) as ViewGroup
-        val mAttacher: PhotoViewAttacher
-        val imageView = view.findViewById<View>(R.id.imageView) as ImageView
+        val imageView = view.findViewById<View>(R.id.imageView) as PhotoView
         val progressBar = view.findViewById<View>(setProgressBarId()) as ProgressBar
         initOtherView(view, position)
-        mAttacher = PhotoViewAttacher(imageView)
-        mAttacher.scaleType = ImageView.ScaleType.FIT_CENTER
-        mAttacher.minimumScale = 1f
-        initAttacher(mAttacher, position)
+        imageView.minimumScale = 1f
         Picasso.get()
                 .load(setItemUrl(position))
                 .into(imageView, object : Callback {
                     override fun onSuccess() {
                         progressBar.visibility = View.GONE
-                        mAttacher.update()
                     }
 
                     override fun onError(e: Exception) {
@@ -50,15 +44,19 @@ abstract class BaseGalleryAdapter<T>(protected var mImages: List<T>, protected v
         return view
     }
 
-    protected abstract fun initOtherView(view: View, position: Int)
+    protected open fun initOtherView(view: View, position: Int){
 
-    protected abstract fun initAttacher(attacher: PhotoViewAttacher, position: Int)
+    }
+
+    protected open fun initPhotoView(photoView: PhotoView, position: Int){
+
+    }
 
     protected abstract fun setItemUrl(position: Int): String
 
     protected abstract fun setLayoutId(): Int
 
-    protected fun setProgressBarId(): Int {
+    protected open fun setProgressBarId(): Int {
         return R.id.progressBar
     }
 

@@ -20,5 +20,5 @@ data class Picture(
         var yourshotlink: String = "",
         var copyright: String = "",
         var pmd5: String = "",
-        var sort: String
+        var sort: String = ""
 )

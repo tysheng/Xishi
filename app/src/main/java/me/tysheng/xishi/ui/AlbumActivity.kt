@@ -18,7 +18,6 @@ import android.view.View
 import android.widget.Toast
 import com.tbruyelle.rxpermissions2.RxPermissions
 import com.trello.rxlifecycle2.android.ActivityEvent
-import io.reactivex.BackpressureStrategy
 import me.tysheng.xishi.R
 import me.tysheng.xishi.adapter.AlbumAdapter
 import me.tysheng.xishi.base.BaseSwipeActivity
@@ -26,6 +25,7 @@ import me.tysheng.xishi.bean.DayAlbums
 import me.tysheng.xishi.databinding.ActivityAlbumBinding
 import me.tysheng.xishi.net.XishiService
 import me.tysheng.xishi.utils.*
+import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
@@ -42,9 +42,9 @@ class AlbumActivity : BaseSwipeActivity() {
     }
 
     private fun setScrollViewParams(orientation: Int) {
-        val params = binding!!.scrollView.layoutParams
+        val params = binding.scrollView.layoutParams
         params.height = ScreenUtil.dip2px((if (orientation == Configuration.ORIENTATION_LANDSCAPE) 60 else 120).toFloat())
-        binding!!.scrollView.layoutParams = params
+        binding.scrollView.layoutParams = params
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,17 +58,17 @@ class AlbumActivity : BaseSwipeActivity() {
 
         injectAppComponent().inject(this)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_album)
-        binding!!.visible = true
+        binding.visible = true
         parseIntent()
 
         /**
          * 横屏
          */
         setScrollViewParams(this.resources.configuration.orientation)
-        binding!!.viewPager.adapter = mAdapter
-        binding!!.viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
+        binding.viewPager.adapter = mAdapter
+        binding.viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
-                if (position == binding!!.amount - 1 && positionOffsetPixels == 0) {
+                if (position == binding.amount - 1 && positionOffsetPixels == 0) {
                     binding!!.countForFinish = binding!!.countForFinish + 1
                     if (binding!!.countForFinish > 8) {
                         finish()
@@ -83,13 +83,14 @@ class AlbumActivity : BaseSwipeActivity() {
             }
         })
 
-        mXishiService!!.getDayAlbums(binding!!.id)
+        mXishiService.getDayAlbums(binding.id)
                 .compose(this.bindUntilEvent(ActivityEvent.DESTROY))
                 .compose(RxHelper.ioToMain())
                 .subscribe(object : StySubscriber<DayAlbums>() {
                     override fun next(dayAlbums: DayAlbums) {
-                        binding!!.amount = dayAlbums.picture.size
-                        mAdapter!!.data = dayAlbums.picture
+                        Timber.d(dayAlbums.toString())
+                        binding.amount = dayAlbums.picture.size
+                        mAdapter.data = dayAlbums.picture
                         selected(0)
                     }
                 })
@@ -119,13 +120,12 @@ class AlbumActivity : BaseSwipeActivity() {
     }
 
     private fun parseIntent() {
-        binding!!.id = intent.getIntExtra("albums", 1322)
+        binding.id = intent.getIntExtra("albums", 1322)
     }
 
     fun saveImageToGallery(position: Int, i: Int) {
         RxPermissions(this)
                 .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                .toFlowable(BackpressureStrategy.BUFFER)
                 .subscribe(object : StySubscriber<Boolean>() {
                     override fun next(aBoolean: Boolean) {
                         if (aBoolean) {

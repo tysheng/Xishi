@@ -1,19 +1,20 @@
 package me.tysheng.xishi.utils
 
-import io.reactivex.subscribers.ResourceSubscriber
+import io.reactivex.observers.ResourceObserver
+import timber.log.Timber
 
 /**
  * Created by Sty
  * Date: 16/9/16 09:09.
  */
-abstract class StySubscriber<T> : ResourceSubscriber<T>() {
+abstract class StySubscriber<T> : ResourceObserver<T>() {
 
     override fun onComplete() {
 
     }
 
     override fun onError(e: Throwable) {
-
+        Timber.e(e)
     }
 
     override fun onNext(t: T) {
