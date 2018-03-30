@@ -1,8 +1,11 @@
 package me.tysheng.xishi.utils;
 
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import org.reactivestreams.Publisher;
+
+import io.reactivex.Flowable;
+import io.reactivex.FlowableTransformer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Sty
@@ -15,11 +18,12 @@ public class RxHelper {
      * @param <T>
      * @return
      */
-    public static <T> Observable.Transformer<T, T> ioToMain() {
-        return new Observable.Transformer<T, T>() {
+    public static <T> FlowableTransformer<T, T> ioToMain() {
+        return new FlowableTransformer<T, T>() {
+
             @Override
-            public Observable<T> call(Observable<T> observable) {
-                return observable
+            public Publisher<T> apply(Flowable<T> upstream) {
+                return upstream
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread());
             }

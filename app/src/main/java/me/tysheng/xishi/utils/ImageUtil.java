@@ -13,23 +13,23 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import io.reactivex.Flowable;
+import io.reactivex.functions.Function;
 import me.tysheng.xishi.R;
-import rx.Observable;
-import rx.functions.Func1;
 
 /**
  * Created by Sty
  * Date: 16/8/23 21:37.
  */
 public class ImageUtil {
-    public static Observable<Uri> saveImageToGallery(final Context context, String url) {
-        return Observable.just(url)
-                .map(new Func1<String, Uri>() {
+    public static Flowable<Uri> saveImageToGallery(final Context context, String url) {
+        return Flowable.just(url)
+                .map(new Function<String, Uri>() {
                     @Override
-                    public Uri call(String s) {
+                    public Uri apply(String s) throws Exception {
                         Bitmap bitmap = null;
                         try {
-                            bitmap = Picasso.with(context).load(s).get();
+                            bitmap = Picasso.get().load(s).get();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

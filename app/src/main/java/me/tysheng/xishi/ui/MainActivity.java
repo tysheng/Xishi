@@ -15,10 +15,11 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.trello.rxlifecycle.android.ActivityEvent;
+import com.trello.rxlifecycle2.android.ActivityEvent;
 
 import javax.inject.Inject;
 
+import io.reactivex.functions.Action;
 import me.tysheng.xishi.BuildConfig;
 import me.tysheng.xishi.R;
 import me.tysheng.xishi.adapter.MainsAdapter;
@@ -33,7 +34,6 @@ import me.tysheng.xishi.utils.SnackBarUtil;
 import me.tysheng.xishi.utils.StySubscriber;
 import me.tysheng.xishi.utils.SystemUtil;
 import me.tysheng.xishi.view.RecycleViewDivider;
-import rx.functions.Action0;
 
 public class MainActivity extends BaseMainActivity {
     @Inject
@@ -176,9 +176,11 @@ public class MainActivity extends BaseMainActivity {
 
     private void getMains(final int page, final int type) {
         mXishiService.getMains(page)
-                .doAfterTerminate(new Action0() {
+                .compose(this.<Mains>bindUntilEvent(ActivityEvent.DESTROY))
+                .compose(RxHelper.<Mains>ioToMain())
+                .doOnTerminate(new Action() {
                     @Override
-                    public void call() {
+                    public void run() throws Exception {
                         binding.swipeRefreshLayout.post(new Runnable() {
                             @Override
                             public void run() {
@@ -189,8 +191,6 @@ public class MainActivity extends BaseMainActivity {
                         });
                     }
                 })
-                .compose(this.<Mains>bindUntilEvent(ActivityEvent.DESTROY))
-                .compose(RxHelper.<Mains>ioToMain())
                 .subscribe(new StySubscriber<Mains>() {
                     @Override
                     public void onError(Throwable e) {

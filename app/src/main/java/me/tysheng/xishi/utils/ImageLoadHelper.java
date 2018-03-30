@@ -28,7 +28,7 @@ public class ImageLoadHelper {
     }
 
     public void into(ImageView target) {
-        RequestCreator requestCreator = Picasso.with(mContext)
+        RequestCreator requestCreator = Picasso.get()
                 .load(mUrl);
         if (mPlaceholder != 0)
             requestCreator.placeholder(mPlaceholder);
@@ -36,7 +36,7 @@ public class ImageLoadHelper {
     }
 
     public void into(ImageView target, Callback callback) {
-        RequestCreator requestCreator = Picasso.with(mContext)
+        RequestCreator requestCreator = Picasso.get()
                 .load(mUrl);
         if (mPlaceholder != 0)
             requestCreator.placeholder(mPlaceholder);

@@ -1,15 +1,15 @@
 package me.tysheng.xishi.utils;
 
-import rx.Subscriber;
+import io.reactivex.subscribers.ResourceSubscriber;
 
 /**
  * Created by Sty
  * Date: 16/9/16 09:09.
  */
-public abstract class StySubscriber<T> extends Subscriber<T> {
+public abstract class StySubscriber<T> extends ResourceSubscriber<T> {
 
     @Override
-    public void onCompleted() {
+    public void onComplete() {
 
     }
 

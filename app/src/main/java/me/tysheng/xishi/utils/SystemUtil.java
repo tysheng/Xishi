@@ -10,12 +10,11 @@ import android.text.TextUtils;
 import java.io.File;
 import java.io.IOException;
 
+import io.reactivex.Flowable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import me.tysheng.xishi.BuildConfig;
-import rx.Single;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 
 /**
@@ -175,20 +174,15 @@ public class SystemUtil {
     }
 
     public static void clearCache(Context context) {
-        Single.just(context)
-                .map(new Func1<Context, Boolean>() {
+        Flowable.just(context)
+                .map(new Function<Context, Boolean>() {
                     @Override
-                    public Boolean call(Context o) {
-                        return SystemUtil.deleteFile(o.getCacheDir().getPath());
+                    public Boolean apply(Context context) throws Exception {
+                        return SystemUtil.deleteFile(context.getCacheDir().getPath());
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(new Action1<Boolean>() {
-                    @Override
-                    public void call(Boolean aBoolean) {
-
-                    }
-                });
+                .subscribe();
     }
 }

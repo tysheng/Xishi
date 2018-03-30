@@ -63,7 +63,7 @@ public abstract class BaseGalleryAdapter<T> extends PagerAdapter {
                     }
 
                     @Override
-                    public void onError() {
+                    public void onError(Exception e) {
 
                     }
                 });

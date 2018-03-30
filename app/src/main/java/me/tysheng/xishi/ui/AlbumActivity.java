@@ -17,15 +17,15 @@ import android.text.style.RelativeSizeSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
-import com.tbruyelle.rxpermissions.RxPermissions;
-import com.trello.rxlifecycle.android.ActivityEvent;
+import com.tbruyelle.rxpermissions2.RxPermissions;
+import com.trello.rxlifecycle2.android.ActivityEvent;
 
 import java.io.File;
 import java.util.Locale;
 
 import javax.inject.Inject;
 
+import io.reactivex.BackpressureStrategy;
 import me.tysheng.xishi.R;
 import me.tysheng.xishi.adapter.AlbumAdapter;
 import me.tysheng.xishi.base.BaseSwipeActivity;
@@ -37,7 +37,6 @@ import me.tysheng.xishi.utils.RxHelper;
 import me.tysheng.xishi.utils.ScreenUtil;
 import me.tysheng.xishi.utils.StySubscriber;
 import me.tysheng.xishi.utils.SystemUtil;
-import rx.functions.Action1;
 
 public class AlbumActivity extends BaseSwipeActivity {
     @Inject
@@ -145,17 +144,18 @@ public class AlbumActivity extends BaseSwipeActivity {
     }
 
     public void saveImageToGallery(final int position, final int i) {
-        RxPermissions.getInstance(this)
+        new RxPermissions(this)
                 .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .toFlowable(BackpressureStrategy.BUFFER)
                 .subscribe(new StySubscriber<Boolean>() {
                     @Override
                     public void next(Boolean aBoolean) {
                         if (aBoolean) {
                             ImageUtil.saveImageToGallery(AlbumActivity.this, mAdapter.getData().get(position).url)
                                     .compose(RxHelper.<Uri>ioToMain())
-                                    .subscribe(new Action1<Uri>() {
+                                    .subscribe(new StySubscriber<Uri>() {
                                         @Override
-                                        public void call(Uri uri) {
+                                        public void next(Uri uri) {
                                             File appDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
                                             String msg = String.format(getString(R.string.picture_has_save_to),
                                                     appDir.getAbsolutePath());

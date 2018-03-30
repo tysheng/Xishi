@@ -38,7 +38,7 @@ public class BindingAdapters {
 
     @BindingAdapter("loadImage")
     public static void loadImage(ImageView view, String url) {
-        RequestCreator requestCreator = Picasso.with(view.getContext()).load(url);
+        RequestCreator requestCreator = Picasso.get().load(url);
         requestCreator.into(view);
     }
 
