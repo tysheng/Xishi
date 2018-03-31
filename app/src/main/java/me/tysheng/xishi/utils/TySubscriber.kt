@@ -7,7 +7,7 @@ import timber.log.Timber
  * Created by Sty
  * Date: 16/9/16 09:09.
  */
-abstract class StySubscriber<T> : ResourceObserver<T>() {
+abstract class TySubscriber<T> : ResourceObserver<T>() {
 
     override fun onComplete() {
 

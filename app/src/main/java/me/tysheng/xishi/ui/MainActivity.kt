@@ -12,6 +12,7 @@ import android.text.TextUtils
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.trello.rxlifecycle2.android.ActivityEvent
 import me.tysheng.xishi.BuildConfig
+import me.tysheng.xishi.Constants
 import me.tysheng.xishi.R
 import me.tysheng.xishi.adapter.MainsAdapter
 import me.tysheng.xishi.base.BaseMainActivity
@@ -24,13 +25,13 @@ import javax.inject.Inject
 
 class MainActivity : BaseMainActivity() {
     @Inject
-    lateinit var mAdapter: MainsAdapter
+    lateinit var mainsAdapter: MainsAdapter
     @Inject
-    lateinit var mXishiService: XishiService
-    private lateinit var mLayoutManager: LinearLayoutManager
+    lateinit var service: XishiService
+    private lateinit var layoutManager: LinearLayoutManager
     private lateinit var binding: ActivityMainBinding
 
-    fun setDayNightMode() {
+    private fun setDayNightMode() {
         if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES)
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         else
@@ -49,21 +50,26 @@ class MainActivity : BaseMainActivity() {
         binding.toolBar.setOnMenuItemClickListener { item ->
             if (item.itemId == R.id.action_send) {
                 val dialog = EmailDialog()
+                dialog.dialogCallback = object : DialogCallback {
+                    override fun itemClick(position: Int) {
+                        onItemClick(position)
+                    }
+                }
                 dialog.show(supportFragmentManager, "")
             }
             false
         }
-        mLayoutManager = LinearLayoutManager(this)
-        binding.recyclerView.layoutManager = mLayoutManager
-        mAdapter.bindToRecyclerView(binding.recyclerView)
-        mAdapter.onItemClickListener = BaseQuickAdapter.OnItemClickListener { adapter, view, position ->
-            val id = mAdapter.getItem(position)?.id
+        layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.layoutManager = layoutManager
+        mainsAdapter.bindToRecyclerView(binding.recyclerView)
+        mainsAdapter.onItemClickListener = BaseQuickAdapter.OnItemClickListener { _, _, position ->
+            val id = mainsAdapter.getItem(position)?.id
             if (!TextUtils.isEmpty(id)) {
                 val intent = AlbumActivity.newIntent(this@MainActivity, id!!)
                 ActivityCompat.startActivity(this@MainActivity, intent, null)
             }
         }
-        mAdapter.setOnLoadMoreListener {
+        mainsAdapter.setOnLoadMoreListener {
             binding.page = binding.page + 1
             getMains(binding.page, 1)
         }
@@ -78,40 +84,27 @@ class MainActivity : BaseMainActivity() {
             binding.page = 1
             getMains(binding.page, 0)
         }
-        //        RxPermissions.getInstance(this)
-        //                .request(Manifest.permission.READ_PHONE_STATE,
-        //                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        //                .subscribe(new Action1<Boolean>() {
-        //                    @Override
-        //                    public void call(Boolean aBoolean) {
-        //                        if (!aBoolean) {
-        //                            SnackBarUtil.show(binding.coordinatorLayout, "没有这些权限可能会出现问题:(");
-        //                        } else {
-        //
-        //                        }
-        //                    }
-        //                });
     }
 
-    fun showAlipayFail() {
-        SnackBarUtil.show(binding.coordinatorLayout, "支付宝账号已复制到剪贴板")
+    private fun showAlipayFail() {
+        SnackBarUtil.show(binding.coordinatorLayout, getString(R.string.alipay_copied))
         val c = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        c.primaryClip = ClipData.newPlainText("alipay", "353491983@qq.com")//设置Clipboard 的内容
+        c.primaryClip = ClipData.newPlainText("alipay", getString(R.string.email_address))
     }
 
-    fun copyEmailAddress() {
-        SnackBarUtil.show(binding.coordinatorLayout, "邮箱地址已复制到剪贴板")
+    private fun copyEmailAddress() {
+        SnackBarUtil.show(binding.coordinatorLayout, getString(R.string.email_copied))
         val c = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        c.primaryClip = ClipData.newPlainText("email", "353491983@qq.com")//设置Clipboard 的内容
+        c.primaryClip = ClipData.newPlainText("email", getString(R.string.email_address))
     }
 
     override fun onBackPressed() {
-        if (mAdapter.data == null || mAdapter.data.size == 0) {
+        if (mainsAdapter.data.size == 0) {
             super.onBackPressed()
             return
         }
         binding.recyclerView.stopScroll()
-        val pos = mLayoutManager.findFirstCompletelyVisibleItemPosition()
+        val pos = layoutManager.findFirstCompletelyVisibleItemPosition()
         if (pos == 0) {
             super.onBackPressed()
         } else {
@@ -120,9 +113,9 @@ class MainActivity : BaseMainActivity() {
     }
 
     private fun scrollToTop() {
-        val pos = mLayoutManager.findFirstCompletelyVisibleItemPosition()
+        val pos = layoutManager.findFirstCompletelyVisibleItemPosition()
         if (pos > 15) {
-            mLayoutManager.scrollToPosition(5)
+            layoutManager.scrollToPosition(5)
         }
         binding.appBarLayout.setExpanded(true, true)
         binding.recyclerView.smoothScrollToPosition(0)
@@ -134,7 +127,7 @@ class MainActivity : BaseMainActivity() {
     }
 
     private fun getMains(page: Int, type: Int) {
-        mXishiService.getMains(page)
+        service.getMains(page)
                 .compose(this.bindUntilEvent(ActivityEvent.DESTROY))
                 .compose(RxHelper.ioToMain())
                 .doOnTerminate {
@@ -144,41 +137,40 @@ class MainActivity : BaseMainActivity() {
                         }
                     }
                 }
-                .subscribe(object : StySubscriber<Mains>() {
+                .subscribe(object : TySubscriber<Mains>() {
                     override fun onError(e: Throwable) {
                         super.onError(e)
                         if (TextUtils.equals("HTTP 404 Not Found", e.message)) {
-                            mAdapter.onEnd()
+                            mainsAdapter.onEnd()
                         } else {
-                            mAdapter.onError()
+                            mainsAdapter.onError()
                         }
                     }
 
                     override fun next(mains: Mains) {
                         if (type == 0) {
-                            mAdapter.setNewData(mains.album)
+                            mainsAdapter.setNewData(mains.album)
                         } else {
-                            mAdapter.addData(mains.album)
+                            mainsAdapter.addData(mains.album)
                         }
-                        mAdapter.loadMoreComplete()
+                        mainsAdapter.loadMoreComplete()
                     }
                 })
     }
 
-    fun onItemClick(position: Int) {
+    private fun onItemClick(position: Int) {
         when (position) {
             0 -> SystemUtil.sendEmail(this)
             1 -> SystemUtil.shareAppShop(this, BuildConfig.APPLICATION_ID)
             2 -> if (AlipayZeroSdk.hasInstalledAlipayClient(this)) {
-                if (!AlipayZeroSdk.startAlipayClient(this, "aex07650apwol9ijoslnm39")) {
+                if (!AlipayZeroSdk.startAlipayClient(this, Constants.AliPayCode)) {
                     showAlipayFail()
                 }
-            } else
+            } else {
                 showAlipayFail()
+            }
             3 -> copyEmailAddress()
             4 -> setDayNightMode()
-            else -> {
-            }
         }
     }
 }

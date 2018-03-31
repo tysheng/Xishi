@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.support.v7.widget.RecyclerView
 import me.tysheng.xishi.R
+import me.tysheng.xishi.ext.drawable
 
 /**
  * Created by Sty
@@ -12,11 +13,7 @@ import me.tysheng.xishi.R
  */
 class RecycleViewDivider(context: Context) : RecyclerView.ItemDecoration() {
 
-    private val mDivider: Drawable
-
-    init {
-        mDivider = context.resources.getDrawable(R.drawable.recyclerview_divider)
-    }
+    private val divider: Drawable = context.drawable(R.drawable.recyclerview_divider)
 
     override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State?) {
         val left = parent.paddingLeft
@@ -29,10 +26,10 @@ class RecycleViewDivider(context: Context) : RecyclerView.ItemDecoration() {
             val params = child.layoutParams as RecyclerView.LayoutParams
 
             val top = child.bottom + params.bottomMargin
-            val bottom = top + mDivider.intrinsicHeight
+            val bottom = top + divider.intrinsicHeight
 
-            mDivider.setBounds(left, top, right, bottom)
-            mDivider.draw(c)
+            divider.setBounds(left, top, right, bottom)
+            divider.draw(c)
         }
     }
 }

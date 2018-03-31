@@ -63,7 +63,7 @@ object ImageUtil {
 
     }
 
-    fun shareImage(context: Context, path: Uri) {
+    fun shareImage2Wechat(context: Context, path: Uri) {
         val intent = Intent(Intent.ACTION_SEND)
         intent.type = "image/png"
         intent.putExtra(Intent.EXTRA_STREAM, path)

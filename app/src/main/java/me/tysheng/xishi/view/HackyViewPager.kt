@@ -9,9 +9,9 @@ import android.view.MotionEvent
  */
 class HackyViewPager : android.support.v4.view.ViewPager {
 
-    constructor(context: Context) : super(context) {}
+    constructor(context: Context) : super(context)
 
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {}
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
 
     override fun onTouchEvent(ev: MotionEvent): Boolean {
         try {

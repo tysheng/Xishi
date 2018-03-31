@@ -6,4 +6,22 @@
     <string name="email_me">问题反馈请发邮件(长按复制):\n\n 353491983@qq.com\n\n捐赠点击下方按钮</string>
     <string name="more">更多</string>
     <string name="theme">主题</string>
+    <string name="choose_broswer">请选择浏览器</string>
+    <string name="email_address">353491983@qq.com</string>
+    <string name="feedback_about">关于西施的问题反馈</string>
+    <string name="send_email">发送邮件…</string>
+    <string name="feedback_by_email">邮件反馈</string>
+    <string name="check_update">检查更新</string>
+    <string name="donate">捐赠支持</string>
+    <string name="copy_email">复制邮箱</string>
+    <string name="change_theme">主题切换</string>
+    <string name="version">版本</string>
+    <string name="permission_denied_hint">Oops permission denied</string>
+    <string name="share_text">来自西施App的图片分享</string>
+    <string name="share_to">分享到</string>
+    <string name="save">保存</string>
+    <string name="share">分享</string>
+    <string name="share_to_wechat_friends">分享给微信好友</string>
+    <string name="alipay_copied">支付宝账号已复制到剪贴板</string>
+    <string name="email_copied">邮箱地址已复制到剪贴板</string>
 </resources>

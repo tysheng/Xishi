@@ -80,8 +80,7 @@ class XishiRetrofit(private val mContext: Context) {
     }
 
     companion object {
-
-        private val BASE_URL = "http://dili.bdatu.com/jiekou/"
+        private const val BASE_URL = "http://dili.bdatu.com/jiekou/"
     }
 
 }

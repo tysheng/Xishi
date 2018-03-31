@@ -18,8 +18,7 @@ object SnackBarUtil {
         val viewGroup = snackbar.view as ViewGroup
         for (i in 0 until viewGroup.childCount) {
             val v = viewGroup.getChildAt(i)
-            if (v is TextView)
-                v.setTextColor(Color.WHITE)
+            (v as? TextView)?.setTextColor(Color.WHITE)
         }
         snackbar.show()
 

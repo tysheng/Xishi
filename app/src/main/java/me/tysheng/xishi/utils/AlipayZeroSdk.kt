@@ -4,18 +4,16 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
-
 import java.net.URISyntaxException
 
 object AlipayZeroSdk {
 
     // 支付宝包名
-    private val ALIPAY_PACKAGE_NAME = "com.eg.android.AlipayGphone"
+    private const val ALIPAY_PACKAGE_NAME = "com.eg.android.AlipayGphone"
 
     // 旧版支付宝二维码通用 Intent Scheme Url 格式
-    private val INTENT_URL_FORMAT = "intent://platformapi/startapp?saId=10000007&" +
+    private const val INTENT_URL_FORMAT = "intent://platformapi/startapp?saId=10000007&" +
             "clientVersion=3.7.0.0718&qrcode=https%3A%2F%2Fqr.alipay.com%2F{urlCode}%3F_s" +
             "%3Dweb-other&_t=1472443966571#Intent;" +
             "scheme=alipayqr;package=com.eg.android.AlipayGphone;end"

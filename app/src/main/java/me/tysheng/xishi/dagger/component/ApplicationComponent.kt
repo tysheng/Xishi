@@ -16,7 +16,7 @@ import javax.inject.Singleton
 @Singleton
 @Component(modules = arrayOf(ApplicationModule::class))
 interface ApplicationComponent {
-//    fun app(): Context
+//    fun instance(): Context
 //
     fun service(): XishiService
 

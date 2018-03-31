@@ -16,7 +16,7 @@ class SwipeBackActivityHelper(private val mActivity: Activity) {
 
     fun onActivityCreate() {
         mActivity.window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        mActivity.window.decorView.setBackgroundDrawable(null)
+        mActivity.window.decorView.background = null
         swipeBackLayout = SwipeBackLayout(mActivity)
         //        mSwipeBackLayout.addSwipeListener(new SwipeBackLayout.SwipeListener() {
         //            @Override
