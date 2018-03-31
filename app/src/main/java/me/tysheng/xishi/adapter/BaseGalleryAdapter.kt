@@ -28,6 +28,7 @@ abstract class BaseGalleryAdapter<T>(protected var images: List<T>) : PagerAdapt
         val progressBar = view.findViewById<View>(setProgressBarId()) as ProgressBar
         initOtherView(view, position)
         imageView.minimumScale = 1f
+        initPhotoView(imageView,position)
         Picasso.get()
                 .load(setItemUrl(position))
                 .into(imageView, object : Callback {

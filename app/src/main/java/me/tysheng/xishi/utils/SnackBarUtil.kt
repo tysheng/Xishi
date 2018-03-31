@@ -1,6 +1,7 @@
 package me.tysheng.xishi.utils
 
 import android.graphics.Color
+import android.support.design.internal.SnackbarContentLayout
 import android.support.design.widget.Snackbar
 import android.view.View
 import android.view.ViewGroup
@@ -16,9 +17,12 @@ object SnackBarUtil {
     fun show(view: View, msg: String, time: Int = Snackbar.LENGTH_SHORT) {
         val snackbar = Snackbar.make(view, msg, time)
         val viewGroup = snackbar.view as ViewGroup
-        for (i in 0 until viewGroup.childCount) {
-            val v = viewGroup.getChildAt(i)
-            (v as? TextView)?.setTextColor(Color.WHITE)
+        val child = viewGroup.getChildAt(0)
+        if (child is SnackbarContentLayout) {
+            val messageView = child.getChildAt(0)
+            if (messageView is TextView) {
+                messageView.setTextColor(Color.WHITE)
+            }
         }
         snackbar.show()
 

@@ -51,7 +51,7 @@ class AlbumActivity : BaseSwipeActivity() {
 
     private fun setScrollViewParams(orientation: Int) {
         val params = binding.scrollView.layoutParams
-        params.height = (if (orientation == Configuration.ORIENTATION_LANDSCAPE) 60 else 120).dp2Px()
+        params.height = (if (orientation == Configuration.ORIENTATION_LANDSCAPE) 50 else 100).dp2Px()
         binding.scrollView.layoutParams = params
     }
 

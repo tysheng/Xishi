@@ -59,8 +59,8 @@
                     android:gravity="center_vertical|left"
                     android:textColor="@color/white"
                     android:textSize="20sp"
-                    android:typeface="monospace"
-                    tools:text="dasd" />
+                    android:fontFamily="sans-serif-medium"
+                    tools:text="阿萨德" />
 
                 <TextView
                     android:id="@+id/indicator"
@@ -88,7 +88,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
-                    tools:text="dasdaddasdaddasdaddasdaddasdaddasdaddasdaddasdaddasdad" />
+                    android:fontFamily="sans-serif-medium"
+                    tools:text="阿斯达23方法手段" />
             </ScrollView>
         </LinearLayout>
 
