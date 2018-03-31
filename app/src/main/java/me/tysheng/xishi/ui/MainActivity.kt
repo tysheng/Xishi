@@ -15,15 +15,14 @@ import me.tysheng.xishi.BuildConfig
 import me.tysheng.xishi.Constants
 import me.tysheng.xishi.R
 import me.tysheng.xishi.adapter.MainsAdapter
-import me.tysheng.xishi.base.BaseMainActivity
 import me.tysheng.xishi.bean.Mains
 import me.tysheng.xishi.databinding.ActivityMainBinding
 import me.tysheng.xishi.net.XishiService
 import me.tysheng.xishi.utils.*
-import me.tysheng.xishi.view.RecycleViewDivider
+import me.tysheng.xishi.widget.RecycleViewDivider
 import javax.inject.Inject
 
-class MainActivity : BaseMainActivity() {
+class MainActivity : BaseActivity() {
     @Inject
     lateinit var mainsAdapter: MainsAdapter
     @Inject

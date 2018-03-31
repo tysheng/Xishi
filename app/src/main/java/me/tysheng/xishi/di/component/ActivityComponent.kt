@@ -1,10 +1,10 @@
-package me.tysheng.xishi.dagger.component
+package me.tysheng.xishi.di.component
 
 import android.app.Activity
 import dagger.Component
 import me.tysheng.xishi.adapter.MainsAdapter
-import me.tysheng.xishi.dagger.module.ActivityModule
-import me.tysheng.xishi.dagger.module.PerActivity
+import me.tysheng.xishi.di.module.ActivityModule
+import me.tysheng.xishi.di.module.PerActivity
 import me.tysheng.xishi.ui.AlbumActivity
 import me.tysheng.xishi.ui.MainActivity
 

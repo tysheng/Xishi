@@ -1,4 +1,4 @@
-package me.tysheng.xishi.dagger.module
+package me.tysheng.xishi.di.module
 
 import android.app.Application
 import android.content.Context

@@ -1,4 +1,4 @@
-package me.tysheng.xishi.view
+package me.tysheng.xishi.widget
 
 import android.content.Context
 import android.util.AttributeSet

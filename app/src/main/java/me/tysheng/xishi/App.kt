@@ -2,9 +2,9 @@ package me.tysheng.xishi
 
 import android.app.Application
 import io.reactivex.plugins.RxJavaPlugins
-import me.tysheng.xishi.dagger.component.ApplicationComponent
-import me.tysheng.xishi.dagger.component.DaggerApplicationComponent
-import me.tysheng.xishi.dagger.module.ApplicationModule
+import me.tysheng.xishi.di.component.ApplicationComponent
+import me.tysheng.xishi.di.component.DaggerApplicationComponent
+import me.tysheng.xishi.di.module.ApplicationModule
 import timber.log.Timber
 
 

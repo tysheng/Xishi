@@ -23,7 +23,6 @@ import io.reactivex.schedulers.Schedulers
 import me.tysheng.xishi.R
 import me.tysheng.xishi.adapter.AlbumAdapter
 import me.tysheng.xishi.adapter.PhotoViewListener
-import me.tysheng.xishi.base.BaseSwipeActivity
 import me.tysheng.xishi.bean.DayAlbums
 import me.tysheng.xishi.bean.Picture
 import me.tysheng.xishi.databinding.ActivityAlbumBinding
@@ -37,7 +36,7 @@ import me.tysheng.xishi.utils.TySubscriber
 import java.util.*
 import javax.inject.Inject
 
-class AlbumActivity : BaseSwipeActivity() {
+class AlbumActivity : BaseActivity() {
     @Inject
     lateinit var service: XishiService
     @Inject

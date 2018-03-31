@@ -1,11 +1,11 @@
-package me.tysheng.xishi.base
+package me.tysheng.xishi.ui
 
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import me.tysheng.xishi.App
-import me.tysheng.xishi.dagger.component.ActivityComponent
-import me.tysheng.xishi.dagger.component.ApplicationComponent
-import me.tysheng.xishi.dagger.component.DaggerActivityComponent
-import me.tysheng.xishi.dagger.module.ActivityModule
+import me.tysheng.xishi.di.component.ActivityComponent
+import me.tysheng.xishi.di.component.ApplicationComponent
+import me.tysheng.xishi.di.component.DaggerActivityComponent
+import me.tysheng.xishi.di.module.ActivityModule
 
 /**
  * Created by shengtianyang on 16/7/11.
