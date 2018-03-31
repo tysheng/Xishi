@@ -1,6 +1,5 @@
 package me.tysheng.xishi.adapter
 
-import android.content.Context
 import com.github.chrisbanes.photoview.PhotoView
 import me.tysheng.xishi.R
 import me.tysheng.xishi.bean.Picture
@@ -12,7 +11,7 @@ import javax.inject.Inject
  * Date: 16/8/23 20:17.
  */
 class AlbumAdapter @Inject
-constructor(context: Context) : BaseGalleryAdapter<Picture>(ArrayList(), context) {
+constructor() : BaseGalleryAdapter<Picture>(ArrayList()) {
 
     var photoViewListener: PhotoViewListener? = null
 

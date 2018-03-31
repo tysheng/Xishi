@@ -1,6 +1,5 @@
 package me.tysheng.xishi.adapter
 
-import android.content.Context
 import android.support.v4.view.PagerAdapter
 import android.view.LayoutInflater
 import android.view.View
@@ -14,8 +13,7 @@ import me.tysheng.xishi.R
 /**
  * Created by shengtianyang on 16/4/30.
  */
-abstract class BaseGalleryAdapter<T>(protected var images: List<T>
-                                     , protected var context: Context) : PagerAdapter() {
+abstract class BaseGalleryAdapter<T>(protected var images: List<T>) : PagerAdapter() {
 
     var data: List<T>
         get() = images
@@ -25,7 +23,7 @@ abstract class BaseGalleryAdapter<T>(protected var images: List<T>
         }
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
-        val view = LayoutInflater.from(context).inflate(setLayoutId(), container, false) as ViewGroup
+        val view = LayoutInflater.from(container.context).inflate(setLayoutId(), container, false) as ViewGroup
         val imageView = view.findViewById<View>(R.id.imageView) as PhotoView
         val progressBar = view.findViewById<View>(setProgressBarId()) as ProgressBar
         initOtherView(view, position)
