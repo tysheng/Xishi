@@ -38,20 +38,20 @@ object AlipayZeroSdk {
      * @param intentFullUrl Intent 跳转地址
      * @return 是否成功调用
      */
-    fun startIntentUrl(activity: Activity, intentFullUrl: String): Boolean {
-        try {
+    private fun startIntentUrl(activity: Activity, intentFullUrl: String): Boolean {
+        return try {
             val intent = Intent.parseUri(
                     intentFullUrl,
                     Intent.URI_INTENT_SCHEME
             )
             activity.startActivity(intent)
-            return true
+            true
         } catch (e: URISyntaxException) {
             e.printStackTrace()
-            return false
+            false
         } catch (e: ActivityNotFoundException) {
             e.printStackTrace()
-            return false
+            false
         }
 
     }
@@ -63,29 +63,11 @@ object AlipayZeroSdk {
      */
     fun hasInstalledAlipayClient(context: Context): Boolean {
         val pm = context.packageManager
-        try {
+        return try {
             val info = pm.getPackageInfo(ALIPAY_PACKAGE_NAME, 0)
-            return info != null
+            info != null
         } catch (e: PackageManager.NameNotFoundException) {
-            e.printStackTrace()
-            return false
-        }
-
-    }
-
-    /**
-     * 获取支付宝客户端版本名称，作用不大
-     * @param context Context
-     * @return 版本名称
-     */
-    fun getAlipayClientVersion(context: Context): String? {
-        val pm = context.packageManager
-        try {
-            val info = pm.getPackageInfo(ALIPAY_PACKAGE_NAME, 0)
-            return info.versionName
-        } catch (e: PackageManager.NameNotFoundException) {
-            e.printStackTrace()
-            return null
+            false
         }
 
     }

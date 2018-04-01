@@ -19,6 +19,10 @@ import java.io.IOException
  * Date: 16/8/23 21:37.
  */
 object ImageUtil {
+
+    val saveDir: File
+        get() = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+
     fun saveImageToGallery(context: Context, url: String): Observable<Uri> {
         return Observable.just(url)
                 .map(Function { s ->
@@ -30,7 +34,7 @@ object ImageUtil {
                     }
 
                     // 首先保存图片
-                    val appDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                    val appDir = saveDir
                     if (!appDir.exists()) {
                         appDir.mkdir()
                     }
@@ -69,7 +73,6 @@ object ImageUtil {
         intent.putExtra(Intent.EXTRA_STREAM, path)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         intent.component = ComponentName("com.tencent.mm", "com.tencent.mm.ui.tools.ShareImgUI")
-        //            intent.setComponent(new ComponentName("com.tencent.mm", "com.tencent.mm.ui.tools.ShareToTimeLineUI"));
         context.startActivity(Intent.createChooser(intent, context.getString(R.string.share_title)))
     }
 

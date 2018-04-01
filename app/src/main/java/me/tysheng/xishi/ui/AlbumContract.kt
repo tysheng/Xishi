@@ -3,7 +3,6 @@ package me.tysheng.xishi.ui
 import android.Manifest
 import android.content.Intent
 import android.net.Uri
-import android.os.Environment
 import android.support.v4.view.ViewPager
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -103,7 +102,7 @@ class AlbumPresenter @Inject constructor(
                 .compose(RxHelper.ioToMain())
                 .subscribe(object : TySubscriber<Uri>() {
                     override fun next(uri: Uri) {
-                        val appDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                        val appDir = ImageUtil.saveDir
                         val msg = String.format(activity.getString(R.string.picture_has_save_to),
                                 appDir.absolutePath)
                         when (positionInDialog) {
@@ -114,6 +113,4 @@ class AlbumPresenter @Inject constructor(
                     }
                 })
     }
-
-
 }
