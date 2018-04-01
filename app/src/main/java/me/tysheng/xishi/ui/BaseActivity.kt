@@ -12,10 +12,10 @@ import me.tysheng.xishi.di.module.ActivityModule
  */
 abstract class BaseActivity : RxAppCompatActivity() {
 
-    private val applicationComponent: ApplicationComponent?
+    protected val applicationComponent: ApplicationComponent?
         get() = (application as App).applicationComponent
 
-    private val activityModule: ActivityModule
+    protected val activityModule: ActivityModule
         get() = ActivityModule(this)
 
     protected fun injectAppComponent(): ActivityComponent {

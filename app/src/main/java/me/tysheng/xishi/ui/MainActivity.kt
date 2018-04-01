@@ -3,96 +3,103 @@ package me.tysheng.xishi.ui
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatDelegate
 import android.support.v7.widget.LinearLayoutManager
 import android.text.TextUtils
 import com.chad.library.adapter.base.BaseQuickAdapter
-import com.trello.rxlifecycle2.android.ActivityEvent
-import me.tysheng.xishi.BuildConfig
-import me.tysheng.xishi.Constants
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.view.*
 import me.tysheng.xishi.R
 import me.tysheng.xishi.adapter.MainsAdapter
-import me.tysheng.xishi.bean.Mains
-import me.tysheng.xishi.databinding.ActivityMainBinding
-import me.tysheng.xishi.net.XishiService
-import me.tysheng.xishi.utils.*
+import me.tysheng.xishi.data.Album
+import me.tysheng.xishi.di.component.DaggerMainComponent
+import me.tysheng.xishi.di.module.MainModule
+import me.tysheng.xishi.utils.SnackBarUtil
 import me.tysheng.xishi.widget.RecycleViewDivider
 import javax.inject.Inject
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(), MainContract.View {
+
     @Inject
     lateinit var mainsAdapter: MainsAdapter
     @Inject
-    lateinit var service: XishiService
+    lateinit var presenter: MainContract.Presenter
     private lateinit var layoutManager: LinearLayoutManager
-    private lateinit var binding: ActivityMainBinding
 
-    private fun setDayNightMode() {
+    override fun setDayNightMode() {
         if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES)
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-        else
+        else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        }
         recreate()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        injectAppComponent().inject(this)
-
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        binding.page = 1
-        binding.toolBar.setOnClickListener { binding.toolBar.post { scrollToTop() } }
-        binding.toolBar.inflateMenu(R.menu.menu_toolbar)
-        binding.toolBar.setOnMenuItemClickListener { item ->
-            if (item.itemId == R.id.action_send) {
-                val dialog = EmailDialog()
-                dialog.dialogCallback = object : DialogCallback {
-                    override fun itemClick(position: Int) {
-                        onItemClick(position)
+        DaggerMainComponent.builder()
+                .applicationComponent(applicationComponent)
+                .mainModule(MainModule(this))
+                .build()
+                .inject(this)
+        setContentView(R.layout.activity_main)
+        toolBar.apply {
+            setOnClickListener { toolBar.post { scrollToTop() } }
+            inflateMenu(R.menu.menu_toolbar)
+            setOnMenuItemClickListener { item ->
+                if (item.itemId == R.id.action_send) {
+                    EmailDialog().apply {
+                        dialogCallback = object : DialogCallback {
+                            override fun itemClick(position: Int) {
+                                presenter.onItemClick(position, this@MainActivity)
+                            }
+                        }
+                        show(supportFragmentManager, EmailDialog.TAG)
                     }
                 }
-                dialog.show(supportFragmentManager, "")
+                false
             }
-            false
         }
         layoutManager = LinearLayoutManager(this)
-        binding.recyclerView.layoutManager = layoutManager
-        mainsAdapter.bindToRecyclerView(binding.recyclerView)
-        mainsAdapter.onItemClickListener = BaseQuickAdapter.OnItemClickListener { _, _, position ->
-            val id = mainsAdapter.getItem(position)?.id
-            if (!TextUtils.isEmpty(id)) {
-                val intent = AlbumActivity.newIntent(this@MainActivity, id!!)
-                ActivityCompat.startActivity(this@MainActivity, intent, null)
+        recyclerView.apply {
+            layoutManager = this@MainActivity.layoutManager
+            addItemDecoration(RecycleViewDivider(this@MainActivity))
+            adapter = mainsAdapter
+        }
+        mainsAdapter.apply {
+            setOnLoadMoreListener({
+                presenter.fetchData(false)
+            }, recyclerView)
+            onItemClickListener = BaseQuickAdapter.OnItemClickListener { _, _, position ->
+                val id = mainsAdapter.getItem(position)?.id
+                if (!TextUtils.isEmpty(id)) {
+                    val intent = AlbumActivity.newIntent(this@MainActivity, id!!)
+                    ActivityCompat.startActivity(this@MainActivity, intent, null)
+                }
             }
         }
-        mainsAdapter.setOnLoadMoreListener {
-            binding.page = binding.page + 1
-            getMains(binding.page, 1)
-        }
-        binding.recyclerView.addItemDecoration(RecycleViewDivider(this))
-        binding.swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent)
-        binding.swipeRefreshLayout.setOnRefreshListener {
-            binding.page = 1
-            getMains(binding.page, 0)
-        }
-        binding.swipeRefreshLayout.post {
-            binding.swipeRefreshLayout.isRefreshing = true
-            binding.page = 1
-            getMains(binding.page, 0)
+        swipeRefreshLayout.apply {
+            setColorSchemeResources(R.color.colorAccent)
+            setOnRefreshListener {
+                presenter.fetchData(true)
+            }
+            post {
+                swipeRefreshLayout.isRefreshing = true
+                presenter.fetchData(true)
+            }
         }
     }
 
-    private fun showAlipayFail() {
-        SnackBarUtil.show(binding.coordinatorLayout, getString(R.string.alipay_copied))
+    override fun showAlipayFail() {
+        SnackBarUtil.show(coordinatorLayout, getString(R.string.alipay_copied))
         val c = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         c.primaryClip = ClipData.newPlainText("alipay", getString(R.string.email_address))
     }
 
-    private fun copyEmailAddress() {
-        SnackBarUtil.show(binding.coordinatorLayout, getString(R.string.email_copied))
+    override fun copyEmailAddress() {
+        SnackBarUtil.show(coordinatorLayout, getString(R.string.email_copied))
         val c = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         c.primaryClip = ClipData.newPlainText("email", getString(R.string.email_address))
     }
@@ -102,8 +109,8 @@ class MainActivity : BaseActivity() {
             super.onBackPressed()
             return
         }
-        binding.recyclerView.stopScroll()
-        val pos = layoutManager.findFirstCompletelyVisibleItemPosition()
+        recyclerView.stopScroll()
+        val pos = layoutManager.findFirstVisibleItemPosition()
         if (pos == 0) {
             super.onBackPressed()
         } else {
@@ -116,60 +123,40 @@ class MainActivity : BaseActivity() {
         if (pos > 15) {
             layoutManager.scrollToPosition(5)
         }
-        binding.appBarLayout.setExpanded(true, true)
-        binding.recyclerView.smoothScrollToPosition(0)
+        appBarLayout.setExpanded(true, true)
+        recyclerView.smoothScrollToPosition(0)
     }
 
     override fun onPause() {
         super.onPause()
-        binding.recyclerView.stopScroll()
+        recyclerView.stopScroll()
     }
 
-    private fun getMains(page: Int, type: Int) {
-        service.getMains(page)
-                .compose(this.bindUntilEvent(ActivityEvent.DESTROY))
-                .compose(RxHelper.ioToMain())
-                .doOnTerminate {
-                    binding.swipeRefreshLayout.post {
-                        if (binding.swipeRefreshLayout.isRefreshing) {
-                            binding.swipeRefreshLayout.isRefreshing = false
-                        }
-                    }
-                }
-                .subscribe(object : TySubscriber<Mains>() {
-                    override fun onError(e: Throwable) {
-                        super.onError(e)
-                        if (TextUtils.equals("HTTP 404 Not Found", e.message)) {
-                            mainsAdapter.onEnd()
-                        } else {
-                            mainsAdapter.onError()
-                        }
-                    }
-
-                    override fun next(mains: Mains) {
-                        if (type == 0) {
-                            mainsAdapter.setNewData(mains.album)
-                        } else {
-                            mainsAdapter.addData(mains.album)
-                        }
-                        mainsAdapter.loadMoreComplete()
-                    }
-                })
+    override fun onEnd() {
+        mainsAdapter.onEnd()
     }
 
-    private fun onItemClick(position: Int) {
-        when (position) {
-            0 -> SystemUtil.sendEmail(this)
-            1 -> SystemUtil.shareAppShop(this, BuildConfig.APPLICATION_ID)
-            2 -> if (AlipayZeroSdk.hasInstalledAlipayClient(this)) {
-                if (!AlipayZeroSdk.startAlipayClient(this, Constants.AliPayCode)) {
-                    showAlipayFail()
-                }
-            } else {
-                showAlipayFail()
+    override fun onError() {
+        mainsAdapter.onError()
+    }
+
+    override fun setNewData(album: List<Album>) {
+        mainsAdapter.setNewData(album)
+    }
+
+    override fun addData(album: List<Album>) {
+        mainsAdapter.addData(album)
+    }
+
+    override fun loadMoreComplete() {
+        mainsAdapter.loadMoreComplete()
+    }
+
+    override fun stopRefresh() {
+        swipeRefreshLayout.post {
+            if (swipeRefreshLayout.isRefreshing) {
+                swipeRefreshLayout.isRefreshing = false
             }
-            3 -> copyEmailAddress()
-            4 -> setDayNightMode()
         }
     }
 }

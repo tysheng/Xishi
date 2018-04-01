@@ -1,98 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
 
-        <import type="android.view.View" />
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="@color/black">
 
-        <variable
-            name="id"
-            type="int" />
-
-        <variable
-            name="amount"
-            type="int" />
-
-        <variable
-            name="countForFinish"
-            type="int" />
-
-        <variable
-            name="visible"
-            type="boolean" />
-    </data>
-
-    <RelativeLayout
+    <me.tysheng.xishi.widget.HackyViewPager
+        android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/black"
-        android:animateLayoutChanges="true">
+        android:tag="@string/app_name">
 
-        <me.tysheng.xishi.widget.HackyViewPager
-            android:id="@+id/viewPager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:tag="@string/app_name">
+    </me.tysheng.xishi.widget.HackyViewPager>
 
-        </me.tysheng.xishi.widget.HackyViewPager>
+    <LinearLayout
+        android:id="@+id/bottomLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/gradient_light_to_dark_black"
+        android:orientation="vertical">
 
         <LinearLayout
+            android:id="@+id/ll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:background="@drawable/gradient_light_to_dark_black"
-            android:orientation="vertical"
-            android:visibility="@{visible?View.VISIBLE:View.GONE}">
+            android:orientation="horizontal"
+            android:padding="16dp">
 
-            <LinearLayout
-                android:id="@+id/ll"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="16dp">
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center_vertical|left"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                tools:text="阿萨德" />
 
-                <TextView
-                    android:id="@+id/title"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical|left"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    android:fontFamily="sans-serif-medium"
-                    tools:text="阿萨德" />
-
-                <TextView
-                    android:id="@+id/indicator"
-                    android:layout_width="80dp"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical|right"
-                    android:textColor="@color/white"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    android:typeface="monospace"
-                    tools:text="1/9" />
-            </LinearLayout>
-
-
-            <ScrollView
-                android:id="@+id/scrollView"
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:scrollbars="vertical">
-
-                <TextView
-                    android:id="@+id/content"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:fontFamily="sans-serif-medium"
-                    tools:text="阿斯达23方法手段" />
-            </ScrollView>
+            <TextView
+                android:id="@+id/indicator"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical|right"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                tools:text="1/9" />
         </LinearLayout>
 
-    </RelativeLayout>
-</layout>
+
+        <ScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:scrollbars="vertical">
+
+            <TextView
+                android:id="@+id/content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/white"
+                tools:text="阿斯达23方法手段" />
+        </ScrollView>
+    </LinearLayout>
+
+</RelativeLayout>

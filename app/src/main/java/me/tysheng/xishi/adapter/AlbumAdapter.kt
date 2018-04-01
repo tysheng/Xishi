@@ -2,7 +2,7 @@ package me.tysheng.xishi.adapter
 
 import com.github.chrisbanes.photoview.PhotoView
 import me.tysheng.xishi.R
-import me.tysheng.xishi.bean.Picture
+import me.tysheng.xishi.data.Picture
 import java.util.*
 import javax.inject.Inject
 

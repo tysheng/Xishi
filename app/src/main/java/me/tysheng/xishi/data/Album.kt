@@ -1,4 +1,4 @@
-package me.tysheng.xishi.bean
+package me.tysheng.xishi.data
 
 /**
  * Created by Sty

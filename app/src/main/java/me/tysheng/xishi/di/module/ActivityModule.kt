@@ -4,6 +4,7 @@ import android.app.Activity
 
 import dagger.Module
 import dagger.Provides
+import me.tysheng.xishi.ui.BaseActivity
 
 /**
  * Created by tysheng
@@ -12,7 +13,7 @@ import dagger.Provides
  */
 
 @Module
-class ActivityModule(private val activity: Activity) {
+class ActivityModule(private val activity: BaseActivity) {
 
     @Provides
     @PerActivity

@@ -1,8 +1,8 @@
 package me.tysheng.xishi.net
 
 import io.reactivex.Observable
-import me.tysheng.xishi.bean.DayAlbums
-import me.tysheng.xishi.bean.Mains
+import me.tysheng.xishi.data.DayAlbums
+import me.tysheng.xishi.data.Mains
 import retrofit2.http.GET
 import retrofit2.http.Path
 
