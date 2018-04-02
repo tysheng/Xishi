@@ -4,7 +4,6 @@ import dagger.Component
 import me.tysheng.xishi.di.module.AlbumModule
 import me.tysheng.xishi.di.module.PerActivity
 import me.tysheng.xishi.ui.AlbumActivity
-import me.tysheng.xishi.ui.AlbumContract
 
 /**
  * Created by tysheng
@@ -14,7 +13,6 @@ import me.tysheng.xishi.ui.AlbumContract
 @Component(dependencies = [ApplicationComponent::class], modules = [AlbumModule::class])
 @PerActivity
 interface AlbumComponent {
-    fun presenter(): AlbumContract.Presenter
     fun inject(albumActivity: AlbumActivity)
 
 }

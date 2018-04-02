@@ -13,4 +13,4 @@ fun Context.drawable(resId: Int) =
 
 
 fun Context.color(resId: Int) =
-        ContextCompat.getColor(this, resId)!!
+        ContextCompat.getColor(this, resId)

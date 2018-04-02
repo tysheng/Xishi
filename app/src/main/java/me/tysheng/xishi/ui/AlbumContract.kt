@@ -16,7 +16,6 @@ import me.tysheng.xishi.utils.ImageUtil
 import me.tysheng.xishi.utils.RxHelper
 import me.tysheng.xishi.utils.SystemUtil
 import me.tysheng.xishi.utils.TySubscriber
-import javax.inject.Inject
 
 /**
  * Created by tysheng
@@ -41,7 +40,7 @@ interface AlbumContract {
     }
 }
 
-class AlbumPresenter @Inject constructor(
+class AlbumPresenter constructor(
         val service: XishiService,
         val view: AlbumContract.View) :
         AlbumContract.Presenter {
@@ -83,7 +82,7 @@ class AlbumPresenter @Inject constructor(
                 })
     }
 
-    override fun saveImageToGallery(activity: BaseActivity, imgUrl: String, positionInDialog: Int) {
+    override fun saveImageToGallery(activity: BaseActivity, url: String, position: Int) {
         RxPermissions(activity)
                 .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -97,18 +96,18 @@ class AlbumPresenter @Inject constructor(
                     it
                 }
                 .flatMap {
-                    ImageUtil.saveImageToGallery(activity, imgUrl)
+                    ImageUtil.saveImageToGallery(activity, url)
                 }
                 .compose(RxHelper.ioToMain())
                 .subscribe(object : TySubscriber<Uri>() {
-                    override fun next(uri: Uri) {
+                    override fun next(t: Uri) {
                         val appDir = ImageUtil.saveDir
                         val msg = String.format(activity.getString(R.string.picture_has_save_to),
                                 appDir.absolutePath)
-                        when (positionInDialog) {
+                        when (position) {
                             0 -> msg.toast()
-                            1 -> SystemUtil.shareVia(activity, activity.getString(R.string.share_text), activity.getString(R.string.share_to), uri)
-                            2 -> ImageUtil.shareImage2Wechat(activity, uri)
+                            1 -> SystemUtil.shareVia(activity, activity.getString(R.string.share_text), activity.getString(R.string.share_to), t)
+                            2 -> ImageUtil.shareImage2Wechat(activity, t)
                         }
                     }
                 })

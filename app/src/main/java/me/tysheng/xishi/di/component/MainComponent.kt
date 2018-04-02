@@ -15,7 +15,6 @@ import me.tysheng.xishi.ui.MainContract
 @PerActivity
 interface MainComponent {
 
-    fun presenter(): MainContract.Presenter
 
     fun inject(activity: MainActivity)
 

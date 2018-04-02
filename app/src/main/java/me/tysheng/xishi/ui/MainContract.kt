@@ -11,7 +11,6 @@ import me.tysheng.xishi.utils.AlipayZeroSdk
 import me.tysheng.xishi.utils.RxHelper
 import me.tysheng.xishi.utils.SystemUtil
 import me.tysheng.xishi.utils.TySubscriber
-import javax.inject.Inject
 
 /**
  * Created by tysheng
@@ -34,11 +33,11 @@ interface MainContract {
     interface Presenter {
         fun onItemClick(position: Int, activity: Activity)
 
-        fun fetchData( firstTime: Boolean)
+        fun fetchData(firstTime: Boolean)
     }
 }
 
-class MainPresenter @Inject constructor(
+class MainPresenter constructor(
         val view: MainContract.View,
         val service: XishiService
 ) : MainContract.Presenter {
@@ -66,11 +65,11 @@ class MainPresenter @Inject constructor(
                         }
                     }
 
-                    override fun next(mains: Mains) {
+                    override fun next(t: Mains) {
                         if (firstTime) {
-                            view.setNewData(mains.album)
+                            view.setNewData(t.album)
                         } else {
-                            view.addData(mains.album)
+                            view.addData(t.album)
                         }
                         view.loadMoreComplete()
                     }
