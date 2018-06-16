@@ -3,8 +3,8 @@ package me.tysheng.xishi.di.module
 import dagger.Module
 import dagger.Provides
 import me.tysheng.xishi.net.XishiService
-import me.tysheng.xishi.ui.MainContract
-import me.tysheng.xishi.ui.MainPresenter
+import me.tysheng.xishi.ui.main.MainContract
+import me.tysheng.xishi.ui.main.MainPresenter
 
 /**
  * Created by tysheng
@@ -20,5 +20,7 @@ class MainModule(val view: MainContract.View) {
 
     @Provides
     @PerActivity
-    fun providePresenter(view: MainContract.View, service: XishiService): MainContract.Presenter = MainPresenter(view, service)
+    fun providePresenter(view: MainContract.View, service: XishiService): MainContract.Presenter {
+        return MainPresenter(view, service)
+    }
 }

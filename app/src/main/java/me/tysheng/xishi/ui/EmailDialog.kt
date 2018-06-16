@@ -1,5 +1,6 @@
 package me.tysheng.xishi.ui
 
+import android.app.Activity
 import android.app.Dialog
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
@@ -27,7 +28,7 @@ class EmailDialog : BottomSheetDialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
-        customView = activity!!.layoutInflater.inflate(R.layout.dialog_bottom_sheet, null)
+        customView = requireActivity().layoutInflater.inflate(R.layout.dialog_bottom_sheet, null)
         dialog.setContentView(customView)
         behavior = BottomSheetBehavior.from(customView.parent as View)
         return dialog
@@ -49,8 +50,9 @@ class EmailDialog : BottomSheetDialogFragment() {
         }.apply {
             bindToRecyclerView(customView.shareRecyclerView)
             setOnItemClickListener { _, _, position ->
+                dismissAllowingStateLoss()
+
                 dialogCallback?.itemClick(position)
-                dismiss()
             }
         }
     }
@@ -63,3 +65,10 @@ class EmailDialog : BottomSheetDialogFragment() {
 interface DialogCallback {
     fun itemClick(position: Int)
 }
+
+sealed class MainDialogActionListener
+class SendEmail(val activity: Activity) : MainDialogActionListener()
+class ShareToStore(val activity: Activity) : MainDialogActionListener()
+class JumpToAlipay(val activity: Activity) : MainDialogActionListener()
+class CopyEmail(val activity: Activity) : MainDialogActionListener()
+class SwitchDayNightMode(val activity: Activity) : MainDialogActionListener()

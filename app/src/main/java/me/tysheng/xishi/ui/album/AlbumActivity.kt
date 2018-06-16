@@ -1,4 +1,4 @@
-package me.tysheng.xishi.ui
+package me.tysheng.xishi.ui.album
 
 import android.content.Context
 import android.content.Intent
@@ -21,6 +21,7 @@ import me.tysheng.xishi.di.module.AlbumModule
 import me.tysheng.xishi.ext.dp2Px
 import me.tysheng.xishi.ext.toast
 import me.tysheng.xishi.ext.toggleInVisible
+import me.tysheng.xishi.ui.BaseActivity
 import java.util.*
 import javax.inject.Inject
 
@@ -56,13 +57,13 @@ class AlbumActivity : BaseActivity(), AlbumContract.View {
                 .build()
                 .inject(this)
         setContentView(R.layout.activity_album)
-        presenter.parseIntent(intent)
+        presenter.setAlbumId(intent?.getIntExtra(AlbumActivity.KEY_ALBUMS, 1322) ?: 0)
         /**
          * Landscape
          */
         setScrollViewParams(this.resources.configuration.orientation)
         viewPager.adapter = albumAdapter
-        viewPager.addOnPageChangeListener(presenter)
+        viewPager.addOnPageChangeListener(presenter.viewPagerScrollListener)
         albumAdapter.photoViewListener = object : PhotoViewListener {
             override fun longClick(picture: Picture) {
                 AlertDialog.Builder(this@AlbumActivity, R.style.BlackDialog)
@@ -108,9 +109,13 @@ class AlbumActivity : BaseActivity(), AlbumContract.View {
         bottomLayout.toggleInVisible()
     }
 
+    override fun onDestroy() {
+        presenter.onDestroy()
+        super.onDestroy()
+    }
+
     override fun showPermissionDenied() {
         getString(R.string.permission_denied_hint).toast()
-
     }
 
     companion object {

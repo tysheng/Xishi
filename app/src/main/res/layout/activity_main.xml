@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".ui.MainActivity">
+    tools:context=".ui.main.MainActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBarLayout"
@@ -20,8 +20,16 @@
             android:layout_height="wrap_content"
             app:layout_scrollFlags="scroll|enterAlways|snap"
             app:title="@string/app_name"
-            app:titleTextColor="@color/white">
+            app:titleTextColor="@color/toolbarTitle">
 
+            <ImageView
+                android:layout_width="48dp"
+                android:padding="12dp"
+                android:id="@+id/toolBarMore"
+                android:layout_height="48dp"
+                android:layout_gravity="right"
+                android:src="@drawable/ic_more_vert_white_24dp"
+                android:tint="@color/toolbarTitle" />
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>

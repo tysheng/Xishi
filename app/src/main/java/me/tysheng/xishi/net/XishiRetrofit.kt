@@ -1,6 +1,7 @@
 package me.tysheng.xishi.net
 
 import android.content.Context
+import io.reactivex.schedulers.Schedulers
 import me.tysheng.xishi.utils.SystemUtil
 import okhttp3.Cache
 import okhttp3.CacheControl
@@ -9,7 +10,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import retrofit2.converter.fastjson.FastJsonConverterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 import timber.log.Timber
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -67,8 +68,8 @@ class XishiRetrofit(private val mContext: Context) {
         retrofit = Retrofit.Builder()
                 .client(client)
                 .baseUrl(BASE_URL)
-                .addConverterFactory(FastJsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .build()
 
     }

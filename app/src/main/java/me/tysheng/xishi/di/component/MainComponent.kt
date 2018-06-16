@@ -3,8 +3,7 @@ package me.tysheng.xishi.di.component
 import dagger.Component
 import me.tysheng.xishi.di.module.MainModule
 import me.tysheng.xishi.di.module.PerActivity
-import me.tysheng.xishi.ui.MainActivity
-import me.tysheng.xishi.ui.MainContract
+import me.tysheng.xishi.ui.main.MainActivity
 
 /**
  * Created by tysheng
@@ -15,7 +14,5 @@ import me.tysheng.xishi.ui.MainContract
 @PerActivity
 interface MainComponent {
 
-
     fun inject(activity: MainActivity)
-
 }

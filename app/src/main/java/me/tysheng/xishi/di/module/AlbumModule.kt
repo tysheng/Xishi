@@ -3,8 +3,8 @@ package me.tysheng.xishi.di.module
 import dagger.Module
 import dagger.Provides
 import me.tysheng.xishi.net.XishiService
-import me.tysheng.xishi.ui.AlbumContract
-import me.tysheng.xishi.ui.AlbumPresenter
+import me.tysheng.xishi.ui.album.AlbumContract
+import me.tysheng.xishi.ui.album.AlbumPresenter
 
 /**
  * Created by tysheng

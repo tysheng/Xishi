@@ -1,13 +1,13 @@
 package me.tysheng.xishi.ui
 
-import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
+import android.support.v7.app.AppCompatActivity
 import me.tysheng.xishi.App
 import me.tysheng.xishi.di.component.ApplicationComponent
 
 /**
  * Created by shengtianyang on 16/7/11.
  */
-abstract class BaseActivity : RxAppCompatActivity() {
+abstract class BaseActivity : AppCompatActivity() {
 
     protected val applicationComponent: ApplicationComponent?
         get() = (application as App).applicationComponent

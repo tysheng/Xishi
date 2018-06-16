@@ -23,7 +23,7 @@ constructor() : BaseGalleryAdapter<Picture>(ArrayList()) {
         photoView.setOnViewTapListener { _, _, _ -> photoViewListener?.tap() }
     }
 
-    override fun setItemUrl(position: Int): String {
+    override fun setItemUrl(position: Int): String? {
         return images[position].url
     }
 

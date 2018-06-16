@@ -3,7 +3,7 @@ package me.tysheng.xishi.di.component
 import dagger.Component
 import me.tysheng.xishi.di.module.AlbumModule
 import me.tysheng.xishi.di.module.PerActivity
-import me.tysheng.xishi.ui.AlbumActivity
+import me.tysheng.xishi.ui.album.AlbumActivity
 
 /**
  * Created by tysheng

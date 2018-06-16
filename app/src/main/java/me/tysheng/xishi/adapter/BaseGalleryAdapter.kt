@@ -52,7 +52,7 @@ abstract class BaseGalleryAdapter<T>(protected var images: List<T>) : PagerAdapt
 
     }
 
-    protected abstract fun setItemUrl(position: Int): String
+    protected abstract fun setItemUrl(position: Int): String?
 
     protected abstract fun setLayoutId(): Int
 

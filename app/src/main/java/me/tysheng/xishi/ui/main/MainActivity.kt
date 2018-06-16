@@ -1,4 +1,4 @@
-package me.tysheng.xishi.ui
+package me.tysheng.xishi.ui.main
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -16,6 +16,8 @@ import me.tysheng.xishi.adapter.MainsAdapter
 import me.tysheng.xishi.data.Album
 import me.tysheng.xishi.di.component.DaggerMainComponent
 import me.tysheng.xishi.di.module.MainModule
+import me.tysheng.xishi.ui.*
+import me.tysheng.xishi.ui.album.AlbumActivity
 import me.tysheng.xishi.utils.SnackBarUtil
 import me.tysheng.xishi.widget.RecycleViewDivider
 import javax.inject.Inject
@@ -47,19 +49,32 @@ class MainActivity : BaseActivity(), MainContract.View {
         setContentView(R.layout.activity_main)
         toolBar.apply {
             setOnClickListener { toolBar.post { scrollToTop() } }
-            inflateMenu(R.menu.menu_toolbar)
-            setOnMenuItemClickListener { item ->
-                if (item.itemId == R.id.action_send) {
-                    EmailDialog().apply {
-                        dialogCallback = object : DialogCallback {
-                            override fun itemClick(position: Int) {
-                                presenter.onItemClick(position, this@MainActivity)
+        }
+        toolBarMore.setOnClickListener {
+            EmailDialog().apply {
+                dialogCallback = object : DialogCallback {
+                    override fun itemClick(position: Int) {
+                        when (position) {
+                            0 -> {
+                                presenter.onItemClick(SendEmail(this@MainActivity))
+                            }
+                            1 -> {
+                                presenter.onItemClick(ShareToStore(this@MainActivity))
+                            }
+                            2 -> {
+                                presenter.onItemClick(JumpToAlipay(this@MainActivity))
+                            }
+                            3 -> {
+                                presenter.onItemClick(CopyEmail(this@MainActivity))
+                            }
+                            4 -> {
+                                presenter.onItemClick(SwitchDayNightMode(this@MainActivity))
                             }
                         }
-                        show(supportFragmentManager, EmailDialog.TAG)
+
                     }
                 }
-                false
+                show(supportFragmentManager, EmailDialog.TAG)
             }
         }
         layoutManager = LinearLayoutManager(this)

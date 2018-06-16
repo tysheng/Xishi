@@ -1,18 +1,26 @@
 package me.tysheng.xishi.ui
 
-import com.trello.rxlifecycle2.LifecycleTransformer
-import com.trello.rxlifecycle2.android.ActivityEvent
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 
 /**
  * Created by tysheng
  * Date: 31/3/18 22:47.
  * Email: tyshengsx@gmail.com
  */
-interface BasePresenter {
+abstract class BasePresenter {
+    private val subscription: CompositeDisposable by lazy {
+        CompositeDisposable()
+    }
 
+    protected fun addToSubscription(disposable: Disposable) {
+        subscription.add(disposable)
+    }
+
+    fun onDestroy() {
+        subscription.clear()
+    }
 }
 
 interface BaseView {
-    fun <T> bindUntilEvent(event: ActivityEvent): LifecycleTransformer<T>
-    fun <T> bindUntilDestroy() = bindUntilEvent<T>(ActivityEvent.DESTROY)
 }

@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-
     <color name="colorPrimary">#212121</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#FFC107</color>
@@ -17,4 +15,5 @@
     <color name="transparent_background">#cc000000</color>
     <color name="textColor">#ffffff</color>
     <color name="backgroundColor">#212121</color>
+    <color name="toolbarTitle">@color/white</color>
 </resources>

@@ -1,8 +1,8 @@
 package me.tysheng.xishi.net
 
 import io.reactivex.Observable
-import me.tysheng.xishi.data.DayAlbums
-import me.tysheng.xishi.data.Mains
+import me.tysheng.xishi.data.AlbumListResponse
+import me.tysheng.xishi.data.MainListResponese
 import retrofit2.http.GET
 import retrofit2.http.Path
 
@@ -14,9 +14,9 @@ interface XishiService {
 
 
     @GET("mains/p{page}.html")
-    fun getMains(@Path("page") page: Int): Observable<Mains>
+    fun getMains(@Path("page") page: Int): Observable<MainListResponese>
 
     @GET("albums/a{id}.html")
-    fun getDayAlbums(@Path("id") id: Int): Observable<DayAlbums>
+    fun getDayAlbums(@Path("id") id: Int): Observable<AlbumListResponse>
 
 }
