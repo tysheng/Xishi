@@ -1,7 +1,7 @@
 package me.tysheng.xishi.ui.main
 
 import me.tysheng.xishi.data.Album
-import me.tysheng.xishi.ui.BasePresenter
+import me.tysheng.xishi.ui.AbstractPresenter
 import me.tysheng.xishi.ui.BaseView
 import me.tysheng.xishi.ui.MainDialogActionListener
 
@@ -11,7 +11,7 @@ import me.tysheng.xishi.ui.MainDialogActionListener
  * Email: tyshengsx@gmail.com
  */
 interface MainContract {
-    interface View : BaseView {
+    interface View : BaseView<MainContract.Presenter> {
         fun stopRefresh()
         fun onEnd()
         fun onError()
@@ -23,7 +23,8 @@ interface MainContract {
         fun setDayNightMode()
     }
 
-    abstract class Presenter : BasePresenter() {
+    abstract class Presenter : AbstractPresenter<MainContract.View, MainContract.Presenter>() {
+        override lateinit var view: MainContract.View
         abstract fun onItemClick(action: MainDialogActionListener)
 
         abstract fun fetchData(firstTime: Boolean)

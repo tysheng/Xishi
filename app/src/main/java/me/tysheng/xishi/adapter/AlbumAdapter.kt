@@ -4,14 +4,13 @@ import com.github.chrisbanes.photoview.PhotoView
 import me.tysheng.xishi.R
 import me.tysheng.xishi.data.Picture
 import java.util.*
-import javax.inject.Inject
 
 /**
  * Created by Sty
  * Date: 16/8/23 20:17.
  */
-class AlbumAdapter @Inject
-constructor() : BaseGalleryAdapter<Picture>(ArrayList()) {
+class AlbumAdapter
+    : BaseGalleryAdapter<Picture>(ArrayList()) {
 
     var photoViewListener: PhotoViewListener? = null
 

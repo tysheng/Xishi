@@ -14,20 +14,16 @@ import kotlinx.android.synthetic.main.activity_main.view.*
 import me.tysheng.xishi.R
 import me.tysheng.xishi.adapter.MainsAdapter
 import me.tysheng.xishi.data.Album
-import me.tysheng.xishi.di.component.DaggerMainComponent
-import me.tysheng.xishi.di.module.MainModule
 import me.tysheng.xishi.ui.*
 import me.tysheng.xishi.ui.album.AlbumActivity
 import me.tysheng.xishi.utils.SnackBarUtil
 import me.tysheng.xishi.widget.RecycleViewDivider
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
 class MainActivity : BaseActivity(), MainContract.View {
 
-    @Inject
-    lateinit var mainsAdapter: MainsAdapter
-    @Inject
-    lateinit var presenter: MainContract.Presenter
+    private val mainsAdapter: MainsAdapter by inject()
+    override val presenter: MainContract.Presenter by inject()
     private lateinit var layoutManager: LinearLayoutManager
 
     override fun setDayNightMode() {
@@ -41,12 +37,8 @@ class MainActivity : BaseActivity(), MainContract.View {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        DaggerMainComponent.builder()
-                .applicationComponent(applicationComponent)
-                .mainModule(MainModule(this))
-                .build()
-                .inject(this)
         setContentView(R.layout.activity_main)
+        presenter.view = this
         toolBar.apply {
             setOnClickListener { toolBar.post { scrollToTop() } }
         }

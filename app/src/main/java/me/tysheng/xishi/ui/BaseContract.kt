@@ -8,7 +8,18 @@ import io.reactivex.disposables.Disposable
  * Date: 31/3/18 22:47.
  * Email: tyshengsx@gmail.com
  */
-abstract class BasePresenter {
+interface BasePresenter<T> {
+    var view: T
+}
+
+interface BaseView<out T : BasePresenter<*>> {
+
+    val presenter: T
+
+}
+
+abstract class AbstractPresenter<V : BaseView<P>, out P : BasePresenter<V>> : BasePresenter<V> {
+
     private val subscription: CompositeDisposable by lazy {
         CompositeDisposable()
     }
@@ -22,5 +33,3 @@ abstract class BasePresenter {
     }
 }
 
-interface BaseView {
-}

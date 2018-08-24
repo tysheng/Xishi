@@ -9,14 +9,12 @@ import com.chad.library.adapter.base.BaseViewHolder
 import com.squareup.picasso.Picasso
 import me.tysheng.xishi.R
 import me.tysheng.xishi.data.Album
-import javax.inject.Inject
 
 /**
  * Created by Sty
  * Date: 16/8/22 22:27.
  */
-class MainsAdapter @Inject
-constructor() : BaseLoadMoreRecyclerViewAdapter<Album>(R.layout.item_mains, arrayListOf()) {
+class MainsAdapter : BaseLoadMoreRecyclerViewAdapter<Album>(R.layout.item_mains, arrayListOf()) {
     override fun convert(helper: BaseViewHolder?, item: Album?) {
         helper?.setText(R.id.time, item?.addtime)
         loadImage(helper?.getView(R.id.imageView), item?.url)

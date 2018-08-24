@@ -9,9 +9,9 @@ import me.tysheng.xishi.utils.AlipayZeroSdk
 import me.tysheng.xishi.utils.SystemUtil
 
 class MainPresenter constructor(
-        private val view: MainContract.View,
         private val service: XishiService
 ) : MainContract.Presenter() {
+
     private var page = 1
     override fun fetchData(firstTime: Boolean) {
         if (firstTime) {

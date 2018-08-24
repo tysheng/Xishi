@@ -2,8 +2,8 @@ package me.tysheng.xishi.ui.album
 
 import android.support.v4.view.ViewPager
 import me.tysheng.xishi.data.Picture
+import me.tysheng.xishi.ui.AbstractPresenter
 import me.tysheng.xishi.ui.BaseActivity
-import me.tysheng.xishi.ui.BasePresenter
 import me.tysheng.xishi.ui.BaseView
 
 /**
@@ -12,14 +12,15 @@ import me.tysheng.xishi.ui.BaseView
  * Email: tyshengsx@gmail.com
  */
 interface AlbumContract {
-    interface View : BaseView {
+    interface View : BaseView<Presenter> {
         fun selected(amount: Int, position: Int)
         fun setData(picture: List<Picture>)
         fun showPermissionDenied()
     }
 
-    abstract class Presenter : BasePresenter() {
+    abstract class Presenter : AbstractPresenter<View, Presenter>() {
 
+        override lateinit var view: View
         abstract fun fetchData()
         abstract fun saveImageToGallery(activity: BaseActivity, url: String, position: Int)
 

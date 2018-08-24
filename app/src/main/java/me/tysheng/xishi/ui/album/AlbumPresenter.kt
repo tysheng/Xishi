@@ -14,8 +14,7 @@ import me.tysheng.xishi.utils.RxHelper
 import me.tysheng.xishi.utils.SystemUtil
 
 class AlbumPresenter constructor(
-        val service: XishiService,
-        val view: AlbumContract.View) :
+        private val service: XishiService) :
         AlbumContract.Presenter() {
     private var amount = 0
     private var id = 0

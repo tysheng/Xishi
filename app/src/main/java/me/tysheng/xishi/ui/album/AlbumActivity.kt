@@ -16,21 +16,17 @@ import me.tysheng.xishi.R
 import me.tysheng.xishi.adapter.AlbumAdapter
 import me.tysheng.xishi.adapter.PhotoViewListener
 import me.tysheng.xishi.data.Picture
-import me.tysheng.xishi.di.component.DaggerAlbumComponent
-import me.tysheng.xishi.di.module.AlbumModule
 import me.tysheng.xishi.ext.dp2Px
 import me.tysheng.xishi.ext.toast
 import me.tysheng.xishi.ext.toggleInVisible
 import me.tysheng.xishi.ui.BaseActivity
+import org.koin.android.ext.android.inject
 import java.util.*
-import javax.inject.Inject
 
 class AlbumActivity : BaseActivity(), AlbumContract.View {
 
-    @Inject
-    lateinit var albumAdapter: AlbumAdapter
-    @Inject
-    lateinit var presenter: AlbumContract.Presenter
+    private val albumAdapter: AlbumAdapter by inject()
+    override val presenter: AlbumContract.Presenter by inject()
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -51,12 +47,10 @@ class AlbumActivity : BaseActivity(), AlbumContract.View {
             decorView.systemUiVisibility = option
             window.statusBarColor = Color.TRANSPARENT
         }
-        DaggerAlbumComponent.builder()
-                .applicationComponent(applicationComponent)
-                .albumModule(AlbumModule(this))
-                .build()
-                .inject(this)
+
         setContentView(R.layout.activity_album)
+        presenter.view = this
+
         presenter.setAlbumId(intent?.getIntExtra(AlbumActivity.KEY_ALBUMS, 1322) ?: 0)
         /**
          * Landscape
