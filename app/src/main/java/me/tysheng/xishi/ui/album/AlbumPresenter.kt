@@ -32,49 +32,47 @@ class AlbumPresenter constructor(
     }
 
     override fun fetchData() {
-        service.getDayAlbums(id)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe {
-                    it.picture?.run {
-                        amount = size
-                        view.setData(this)
-                        view.selected(amount, 0)
+        addToSubscription {
+            service.getDayAlbums(id)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe {
+                        it.picture?.run {
+                            amount = size
+                            view.setData(this)
+                            view.selected(amount, 0)
+                        }
                     }
-                }
-                .also {
-                    addToSubscription(it)
-                }
+        }
     }
 
     override fun saveImageToGallery(activity: BaseActivity, url: String, position: Int) {
-        RxPermissions(activity)
-                .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext {
-                    if (!it) {
-                        view.showPermissionDenied()
+        addToSubscription {
+            RxPermissions(activity)
+                    .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnNext {
+                        if (!it) {
+                            view.showPermissionDenied()
+                        }
                     }
-                }
-                .observeOn(Schedulers.io())
-                .filter {
-                    it
-                }
-                .flatMap {
-                    ImageUtil.saveImageToGallery(activity, url)
-                }
-                .compose(RxHelper.ioToMain())
-                .subscribe {
-                    val appDir = ImageUtil.saveDir
-                    val msg = String.format(activity.getString(R.string.picture_has_save_to),
-                            appDir.absolutePath)
-                    when (position) {
-                        0 -> msg.toast()
-                        1 -> SystemUtil.shareVia(activity, activity.getString(R.string.share_text), activity.getString(R.string.share_to), it)
-                        2 -> ImageUtil.shareImage2Wechat(activity, it)
+                    .observeOn(Schedulers.io())
+                    .filter {
+                        it
                     }
-                }
-                .also {
-                    addToSubscription(it)
-                }
+                    .flatMap {
+                        ImageUtil.saveImageToGallery(activity, url)
+                    }
+                    .compose(RxHelper.ioToMain())
+                    .subscribe {
+                        val appDir = ImageUtil.saveDir
+                        val msg = String.format(activity.getString(R.string.picture_has_save_to),
+                                appDir.absolutePath)
+                        when (position) {
+                            0 -> msg.toast()
+                            1 -> SystemUtil.shareVia(activity, activity.getString(R.string.share_text), activity.getString(R.string.share_to), it)
+                            2 -> ImageUtil.shareImage2Wechat(activity, it)
+                        }
+                    }
+        }
     }
 }

@@ -19,31 +19,30 @@ class MainPresenter constructor(
         } else {
             page++
         }
-        service.getMains(page)
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnTerminate {
-                    view.stopRefresh()
-                }
-                .doOnError {
-                    if (HTTP_404 == it.message) {
-                        view.onEnd()
-                    } else {
-                        view.onError()
+        addToSubscription {
+            service.getMains(page)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnTerminate {
+                        view.stopRefresh()
                     }
-                }
-                .subscribe {
-                    it.album?.run {
-                        if (firstTime) {
-                            view.setNewData(this)
+                    .doOnError {
+                        if (HTTP_404 == it.message) {
+                            view.onEnd()
                         } else {
-                            view.addData(this)
+                            view.onError()
                         }
                     }
-                    view.loadMoreComplete()
-                }
-                .also {
-                    addToSubscription(it)
-                }
+                    .subscribe {
+                        it.album?.run {
+                            if (firstTime) {
+                                view.setNewData(this)
+                            } else {
+                                view.addData(this)
+                            }
+                        }
+                        view.loadMoreComplete()
+                    }
+        }
     }
 
     override fun onItemClick(action: MainDialogActionListener) {

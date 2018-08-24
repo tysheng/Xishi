@@ -24,8 +24,8 @@ abstract class AbstractPresenter<V : BaseView<P>, out P : BasePresenter<V>> : Ba
         CompositeDisposable()
     }
 
-    protected fun addToSubscription(disposable: Disposable) {
-        subscription.add(disposable)
+    fun addToSubscription(job: () -> Disposable) {
+        subscription.add(job())
     }
 
     fun onDestroy() {

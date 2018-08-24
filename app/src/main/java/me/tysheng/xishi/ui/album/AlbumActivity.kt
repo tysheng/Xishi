@@ -16,11 +16,13 @@ import me.tysheng.xishi.R
 import me.tysheng.xishi.adapter.AlbumAdapter
 import me.tysheng.xishi.adapter.PhotoViewListener
 import me.tysheng.xishi.data.Picture
+import me.tysheng.xishi.di.ModuleName
 import me.tysheng.xishi.ext.dp2Px
 import me.tysheng.xishi.ext.toast
 import me.tysheng.xishi.ext.toggleInVisible
 import me.tysheng.xishi.ui.BaseActivity
 import org.koin.android.ext.android.inject
+import org.koin.android.ext.android.release
 import java.util.*
 
 class AlbumActivity : BaseActivity(), AlbumContract.View {
@@ -91,10 +93,12 @@ class AlbumActivity : BaseActivity(), AlbumContract.View {
                 string.setSpan(sizeSpan0, 0, 1, Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
             }
             indicator.text = string
-            val spannableString = SpannableString(albumAdapter.data[position].title + "    " + albumAdapter.data[position].author)
-            spannableString.setSpan(sizeSpan2, albumAdapter.data[position].title.length, spannableString.length, Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
+
+            val picture = albumAdapter.data[position]
+            val spannableString = SpannableString("${picture.title}    ${picture.author}")
+            spannableString.setSpan(sizeSpan2, picture.title.length, spannableString.length, Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
             tvTitle.text = spannableString
-            content.text = albumAdapter.data[position].content
+            content.text = picture.content
         }
     }
 
@@ -105,6 +109,7 @@ class AlbumActivity : BaseActivity(), AlbumContract.View {
 
     override fun onDestroy() {
         presenter.onDestroy()
+        release(ModuleName.ALBUM)
         super.onDestroy()
     }
 

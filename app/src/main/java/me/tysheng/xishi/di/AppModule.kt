@@ -15,17 +15,22 @@ import org.koin.dsl.module.module
  * Date: 24/8/18 11:52 AM.
  * Email: tyshengsx@gmail.com
  */
+object ModuleName{
+    const val ALBUM="album"
+    const val MAIN="main"
+}
 val appModule = module {
     single { XishiRetrofit(androidContext()).get() }
 }
 
 val funcModules = module {
-    module("album") {
+    module(ModuleName.ALBUM) {
         single { AlbumPresenter(get()) as AlbumContract.Presenter }
         factory { AlbumAdapter() }
     }
-    module("main") {
+    module(ModuleName.MAIN) {
         single { MainPresenter(get()) as MainContract.Presenter }
         factory { MainsAdapter() }
     }
 }
+
