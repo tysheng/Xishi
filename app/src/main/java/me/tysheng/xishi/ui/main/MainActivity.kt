@@ -10,17 +10,21 @@ import android.support.v7.widget.LinearLayoutManager
 import android.text.TextUtils
 import com.chad.library.adapter.base.BaseQuickAdapter
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_main.view.*
 import me.tysheng.xishi.R
 import me.tysheng.xishi.adapter.MainsAdapter
 import me.tysheng.xishi.data.Album
-import me.tysheng.xishi.ui.*
+import me.tysheng.xishi.ext.mainThreadPost
+import me.tysheng.xishi.ui.BaseActivity
+import me.tysheng.xishi.ui.DialogCallback
+import me.tysheng.xishi.ui.EmailDialog
+import me.tysheng.xishi.ui.MainDialogAction
 import me.tysheng.xishi.ui.album.AlbumActivity
 import me.tysheng.xishi.utils.SnackBarUtil
 import me.tysheng.xishi.widget.RecycleViewDivider
 import org.koin.android.ext.android.inject
 
-class MainActivity : BaseActivity(), MainContract.View {
+class MainActivity : BaseActivity(), MainContract.View, DialogCallback {
+
 
     private val mainsAdapter: MainsAdapter by inject()
     override val presenter: MainContract.Presenter by inject()
@@ -39,35 +43,11 @@ class MainActivity : BaseActivity(), MainContract.View {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         presenter.view = this
-        toolBar.apply {
-            setOnClickListener { toolBar.post { scrollToTop() } }
+        toolBar.setOnClickListener {
+            mainThreadPost { scrollToTop() }
         }
         toolBarMore.setOnClickListener {
-            EmailDialog().apply {
-                dialogCallback = object : DialogCallback {
-                    override fun itemClick(position: Int) {
-                        when (position) {
-                            0 -> {
-                                presenter.onItemClick(SendEmail(this@MainActivity))
-                            }
-                            1 -> {
-                                presenter.onItemClick(ShareToStore(this@MainActivity))
-                            }
-                            2 -> {
-                                presenter.onItemClick(JumpToAlipay(this@MainActivity))
-                            }
-                            3 -> {
-                                presenter.onItemClick(CopyEmail(this@MainActivity))
-                            }
-                            4 -> {
-                                presenter.onItemClick(SwitchDayNightMode(this@MainActivity))
-                            }
-                        }
-
-                    }
-                }
-                show(supportFragmentManager, EmailDialog.TAG)
-            }
+            EmailDialog().show(supportFragmentManager, EmailDialog.TAG)
         }
         layoutManager = LinearLayoutManager(this)
         recyclerView.apply {
@@ -92,11 +72,15 @@ class MainActivity : BaseActivity(), MainContract.View {
             setOnRefreshListener {
                 presenter.fetchData(true)
             }
-            post {
-                swipeRefreshLayout.isRefreshing = true
-                presenter.fetchData(true)
-            }
         }
+        mainThreadPost {
+            swipeRefreshLayout.isRefreshing = true
+            presenter.fetchData(true)
+        }
+    }
+
+    override fun itemClick(action: MainDialogAction) {
+        presenter.onItemClick(action = action)
     }
 
     override fun showAlipayFail() {

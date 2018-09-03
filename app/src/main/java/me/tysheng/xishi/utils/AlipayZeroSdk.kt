@@ -1,6 +1,5 @@
 package me.tysheng.xishi.utils
 
-import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -23,12 +22,12 @@ object AlipayZeroSdk {
      * 旧版支付宝二维码方法，需要使用 https://fama.alipay.com/qrcode/index.htm 网站生成的二维码
      * 这个方法最好，但在 2016 年 8 月发现新用户可能无法使用
      *
-     * @param activity Parent Activity
+     * @param context Parent Activity
      * @param urlCode 手动解析二维码获得地址中的参数，例如 https://qr.alipay.com/aehvyvf4taua18zo6e 最后那段
      * @return 是否成功调用
      */
-    fun startAlipayClient(activity: Activity, urlCode: String): Boolean {
-        return startIntentUrl(activity, INTENT_URL_FORMAT.replace("{urlCode}", urlCode))
+    fun startAlipayClient(context: Context, urlCode: String): Boolean {
+        return startIntentUrl(context, INTENT_URL_FORMAT.replace("{urlCode}", urlCode))
     }
 
     /**
@@ -38,13 +37,13 @@ object AlipayZeroSdk {
      * @param intentFullUrl Intent 跳转地址
      * @return 是否成功调用
      */
-    private fun startIntentUrl(activity: Activity, intentFullUrl: String): Boolean {
+    private fun startIntentUrl(context: Context, intentFullUrl: String): Boolean {
         return try {
             val intent = Intent.parseUri(
                     intentFullUrl,
                     Intent.URI_INTENT_SCHEME
             )
-            activity.startActivity(intent)
+            context.startActivity(intent)
             true
         } catch (e: URISyntaxException) {
             e.printStackTrace()

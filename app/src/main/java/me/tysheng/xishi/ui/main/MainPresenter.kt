@@ -19,38 +19,37 @@ class MainPresenter constructor(
         } else {
             page++
         }
-        addToSubscription {
-            service.getMains(page)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnTerminate {
-                        view.stopRefresh()
+        service.getMains(page)
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnTerminate {
+                    view.stopRefresh()
+                }
+                .doOnError {
+                    if (HTTP_404 == it.message) {
+                        view.onEnd()
+                    } else {
+                        view.onError()
                     }
-                    .doOnError {
-                        if (HTTP_404 == it.message) {
-                            view.onEnd()
+                }
+                .subscribe {
+                    it.album?.run {
+                        if (firstTime) {
+                            view.setNewData(this)
                         } else {
-                            view.onError()
+                            view.addData(this)
                         }
                     }
-                    .subscribe {
-                        it.album?.run {
-                            if (firstTime) {
-                                view.setNewData(this)
-                            } else {
-                                view.addData(this)
-                            }
-                        }
-                        view.loadMoreComplete()
-                    }
-        }
+                    view.loadMoreComplete()
+                }
+                .addToSubscription()
     }
 
-    override fun onItemClick(action: MainDialogActionListener) {
+    override fun onItemClick(action: MainDialogAction) {
         when (action) {
-            is SendEmail -> SystemUtil.sendEmail(action.activity)
-            is ShareToStore -> SystemUtil.shareAppShop(action.activity, BuildConfig.APPLICATION_ID)
-            is JumpToAlipay -> if (AlipayZeroSdk.hasInstalledAlipayClient(action.activity)) {
-                if (!AlipayZeroSdk.startAlipayClient(action.activity, Constants.AliPayCode)) {
+            is SendEmail -> SystemUtil.sendEmail(action.context)
+            is ShareToStore -> SystemUtil.shareAppShop(action.context, BuildConfig.APPLICATION_ID)
+            is JumpToAlipay -> if (AlipayZeroSdk.hasInstalledAlipayClient(action.context)) {
+                if (!AlipayZeroSdk.startAlipayClient(action.context, Constants.AliPayCode)) {
                     view.showAlipayFail()
                 }
             } else {

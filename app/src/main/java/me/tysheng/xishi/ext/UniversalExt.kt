@@ -4,6 +4,7 @@ package me.tysheng.xishi.ext
 
 import android.content.res.Resources
 import android.widget.Toast
+import io.reactivex.android.schedulers.AndroidSchedulers
 import me.tysheng.xishi.App
 
 /**
@@ -22,4 +23,10 @@ inline fun Int.dp2Px() = dp2PxInternal(this.toFloat())
 
 inline fun String.toast() {
     Toast.makeText(App.instance, this, Toast.LENGTH_SHORT).show()
+}
+
+inline fun mainThreadPost(crossinline action: () -> Unit) {
+    AndroidSchedulers.mainThread().scheduleDirect {
+        action()
+    }
 }

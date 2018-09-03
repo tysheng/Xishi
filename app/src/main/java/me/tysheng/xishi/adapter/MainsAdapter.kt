@@ -23,12 +23,10 @@ class MainsAdapter : BaseLoadMoreRecyclerViewAdapter<Album>(R.layout.item_mains,
     }
 
     private fun titleConvert(view: TextView?, title: String?) {
-        if (title?.isEmpty() == true) {
-            return
+        title?.apply {
+            val s = if (title.startsWith("20")) title.substring(10).trim { it <= ' ' } else title
+            view?.text = s
         }
-        title!!
-        val s = if (title.startsWith("20")) title.substring(10).trim({ it <= ' ' }) else title
-        view?.text = s
     }
 
     private fun loadImage(view: ImageView?, url: String?) {
@@ -37,15 +35,13 @@ class MainsAdapter : BaseLoadMoreRecyclerViewAdapter<Album>(R.layout.item_mains,
     }
 
     private fun timeConvert(view: TextView?, time: String?) {
-        if (time?.isEmpty() == true) {
-            return
+        time?.apply {
+            val str = substring(0, 10)
+            val month = str.substring(5, 7).toInt()
+            val day = str.substring(8).toInt()
+            val string = SpannableString("$day/$month")
+            string.setSpan(RelativeSizeSpan(1.4f), 0, day.toString().length, Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
+            view?.text = string
         }
-        time!!
-        val str = time.substring(0, 10)
-        val month = Integer.valueOf(str.substring(5, 7))
-        val day = Integer.valueOf(str.substring(8))
-        val string = SpannableString("$day/$month")
-        string.setSpan(RelativeSizeSpan(1.4f), 0, day.toString().length, Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
-        view?.text = string
     }
 }

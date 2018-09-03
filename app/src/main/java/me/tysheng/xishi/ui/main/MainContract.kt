@@ -3,7 +3,7 @@ package me.tysheng.xishi.ui.main
 import me.tysheng.xishi.data.Album
 import me.tysheng.xishi.ui.AbstractPresenter
 import me.tysheng.xishi.ui.BaseView
-import me.tysheng.xishi.ui.MainDialogActionListener
+import me.tysheng.xishi.ui.MainDialogAction
 
 /**
  * Created by tysheng
@@ -25,7 +25,7 @@ interface MainContract {
 
     abstract class Presenter : AbstractPresenter<MainContract.View, MainContract.Presenter>() {
         override lateinit var view: MainContract.View
-        abstract fun onItemClick(action: MainDialogActionListener)
+        abstract fun onItemClick(action: MainDialogAction)
 
         abstract fun fetchData(firstTime: Boolean)
 

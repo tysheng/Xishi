@@ -1,7 +1,7 @@
 package me.tysheng.xishi.ui
 
-import android.app.Activity
 import android.app.Dialog
+import android.content.Context
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.BottomSheetDialog
@@ -19,8 +19,16 @@ import me.tysheng.xishi.adapter.BaseLoadMoreRecyclerViewAdapter
  */
 class EmailDialog : BottomSheetDialogFragment() {
     private var behavior: BottomSheetBehavior<*>? = null
-    var dialogCallback: DialogCallback? = null
+    private var dialogCallback: DialogCallback? = null
     private lateinit var customView: View
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        if (context is DialogCallback) {
+            dialogCallback = context
+        }
+    }
+
     override fun onStart() {
         super.onStart()
         behavior?.state = BottomSheetBehavior.STATE_EXPANDED
@@ -51,8 +59,24 @@ class EmailDialog : BottomSheetDialogFragment() {
             bindToRecyclerView(customView.shareRecyclerView)
             setOnItemClickListener { _, _, position ->
                 dismissAllowingStateLoss()
-
-                dialogCallback?.itemClick(position)
+                val action = when (position) {
+                    0 -> {
+                        SendEmail(requireContext())
+                    }
+                    1 -> {
+                        ShareToStore(requireContext())
+                    }
+                    2 -> {
+                        JumpToAlipay(requireContext())
+                    }
+                    3 -> {
+                        CopyEmail()
+                    }
+                    else -> {
+                        SwitchDayNightMode()
+                    }
+                }
+                dialogCallback?.itemClick(action)
             }
         }
     }
@@ -63,12 +87,12 @@ class EmailDialog : BottomSheetDialogFragment() {
 }
 
 interface DialogCallback {
-    fun itemClick(position: Int)
+    fun itemClick(action: MainDialogAction)
 }
 
-sealed class MainDialogActionListener
-class SendEmail(val activity: Activity) : MainDialogActionListener()
-class ShareToStore(val activity: Activity) : MainDialogActionListener()
-class JumpToAlipay(val activity: Activity) : MainDialogActionListener()
-class CopyEmail(val activity: Activity) : MainDialogActionListener()
-class SwitchDayNightMode(val activity: Activity) : MainDialogActionListener()
+sealed class MainDialogAction
+class SendEmail(val context: Context) : MainDialogAction()
+class ShareToStore(val context: Context) : MainDialogAction()
+class JumpToAlipay(val context: Context) : MainDialogAction()
+class CopyEmail : MainDialogAction()
+class SwitchDayNightMode() : MainDialogAction()
