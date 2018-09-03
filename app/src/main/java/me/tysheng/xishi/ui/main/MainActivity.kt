@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatDelegate
 import android.support.v7.widget.LinearLayoutManager
-import android.text.TextUtils
 import com.chad.library.adapter.base.BaseQuickAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import me.tysheng.xishi.R
@@ -43,12 +42,8 @@ class MainActivity : BaseActivity(), MainContract.View, DialogCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         presenter.view = this
-        toolBar.setOnClickListener {
-            mainThreadPost { scrollToTop() }
-        }
-        toolBarMore.setOnClickListener {
-            EmailDialog().show(supportFragmentManager, EmailDialog.TAG)
-        }
+        toolBar.setOnClickListener { mainThreadPost { scrollToTop() } }
+        toolBarMore.setOnClickListener { EmailDialog().show(supportFragmentManager, EmailDialog.TAG) }
         layoutManager = LinearLayoutManager(this)
         recyclerView.apply {
             layoutManager = this@MainActivity.layoutManager
@@ -60,9 +55,8 @@ class MainActivity : BaseActivity(), MainContract.View, DialogCallback {
                 presenter.fetchData(false)
             }, recyclerView)
             onItemClickListener = BaseQuickAdapter.OnItemClickListener { _, _, position ->
-                val id = mainsAdapter.getItem(position)?.id
-                if (!TextUtils.isEmpty(id)) {
-                    val intent = AlbumActivity.newIntent(this@MainActivity, id!!)
+                mainsAdapter.getItem(position)?.id?.also {
+                    val intent = AlbumActivity.newIntent(this@MainActivity, it)
                     ActivityCompat.startActivity(this@MainActivity, intent, null)
                 }
             }
@@ -111,6 +105,7 @@ class MainActivity : BaseActivity(), MainContract.View, DialogCallback {
 
     private fun scrollToTop() {
         val pos = layoutManager.findFirstCompletelyVisibleItemPosition()
+        // smooth scroll
         if (pos > 15) {
             layoutManager.scrollToPosition(5)
         }
@@ -144,10 +139,8 @@ class MainActivity : BaseActivity(), MainContract.View, DialogCallback {
     }
 
     override fun stopRefresh() {
-        swipeRefreshLayout.post {
-            if (swipeRefreshLayout.isRefreshing) {
-                swipeRefreshLayout.isRefreshing = false
-            }
+        mainThreadPost {
+            swipeRefreshLayout.isRefreshing = false
         }
     }
 }

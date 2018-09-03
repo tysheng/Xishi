@@ -16,14 +16,11 @@ import me.tysheng.xishi.R
 import me.tysheng.xishi.adapter.AlbumAdapter
 import me.tysheng.xishi.adapter.PhotoViewListener
 import me.tysheng.xishi.data.Picture
-import me.tysheng.xishi.di.ModuleName
 import me.tysheng.xishi.ext.dp2Px
 import me.tysheng.xishi.ext.toast
 import me.tysheng.xishi.ext.toggleInVisible
 import me.tysheng.xishi.ui.BaseActivity
 import org.koin.android.ext.android.inject
-import org.koin.android.ext.android.release
-import java.util.*
 
 class AlbumActivity : BaseActivity(), AlbumContract.View {
 
@@ -51,6 +48,7 @@ class AlbumActivity : BaseActivity(), AlbumContract.View {
         }
 
         setContentView(R.layout.activity_album)
+
         presenter.view = this
 
         presenter.setAlbumId(intent?.getIntExtra(AlbumActivity.KEY_ALBUMS, 1322) ?: 0)
@@ -84,7 +82,7 @@ class AlbumActivity : BaseActivity(), AlbumContract.View {
 
     override fun selected(amount: Int, position: Int) {
         if (amount != 0) {
-            val string = SpannableString(String.format(Locale.getDefault(), "%d/%d", 1 + position, amount))
+            val string = SpannableString("${1 + position}/$amount")
             val sizeSpan0 = RelativeSizeSpan(1.4f)
             val sizeSpan2 = RelativeSizeSpan(0.7f)
             if (position >= 9) {
@@ -109,7 +107,6 @@ class AlbumActivity : BaseActivity(), AlbumContract.View {
 
     override fun onDestroy() {
         presenter.onDestroy()
-        release(ModuleName.ALBUM)
         super.onDestroy()
     }
 
@@ -118,7 +115,7 @@ class AlbumActivity : BaseActivity(), AlbumContract.View {
     }
 
     companion object {
-        const val KEY_ALBUMS = "KEY_ALBUMS"
+        private const val KEY_ALBUMS = "KEY_ALBUMS"
         fun newIntent(context: Context, id: String): Intent {
             val intent = Intent(context, AlbumActivity::class.java)
             intent.putExtra(KEY_ALBUMS, Integer.valueOf(id))
