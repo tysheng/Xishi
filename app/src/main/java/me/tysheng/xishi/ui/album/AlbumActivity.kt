@@ -48,7 +48,6 @@ class AlbumActivity : BaseActivity(), AlbumContract.View {
         }
 
         setContentView(R.layout.activity_album)
-
         presenter.view = this
 
         presenter.setAlbumId(intent?.getIntExtra(AlbumActivity.KEY_ALBUMS, 1322) ?: 0)
