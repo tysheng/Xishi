@@ -34,7 +34,7 @@ class AlbumActivity : BaseActivity(), AlbumContract.View {
 
     private fun setScrollViewParams(orientation: Int) {
         val params = scrollView.layoutParams
-        params.height = (if (orientation == Configuration.ORIENTATION_LANDSCAPE) 50 else 100).dp2Px()
+        params.height = (if (orientation == Configuration.ORIENTATION_LANDSCAPE) INTRO_LANDSCAPE_HEIGHT else INTRO_PORTRAIT_HEIGHT).dp2Px()
         scrollView.layoutParams = params
     }
 
@@ -50,7 +50,7 @@ class AlbumActivity : BaseActivity(), AlbumContract.View {
         setContentView(R.layout.activity_album)
         presenter.view = this
 
-        presenter.setAlbumId(intent?.getIntExtra(AlbumActivity.KEY_ALBUMS, 1322) ?: 0)
+        presenter.setAlbumId(intent?.getIntExtra(AlbumActivity.KEY_ALBUMS, 0) ?: 0)
         /**
          * Landscape
          */
@@ -62,7 +62,6 @@ class AlbumActivity : BaseActivity(), AlbumContract.View {
                 AlertDialog.Builder(this@AlbumActivity, R.style.BlackDialog)
                         .setItems(arrayOf(getString(R.string.save), getString(R.string.share), getString(R.string.share_to_wechat_friends))) { dialogInterface, i ->
                             dialogInterface.dismiss()
-
                             presenter.saveImageToGallery(this@AlbumActivity, picture.url, i)
                         }.show()
             }
@@ -115,6 +114,8 @@ class AlbumActivity : BaseActivity(), AlbumContract.View {
 
     companion object {
         private const val KEY_ALBUMS = "KEY_ALBUMS"
+        private const val INTRO_LANDSCAPE_HEIGHT = 50
+        private const val INTRO_PORTRAIT_HEIGHT = 100
         fun newIntent(context: Context, id: String): Intent {
             val intent = Intent(context, AlbumActivity::class.java)
             intent.putExtra(KEY_ALBUMS, Integer.valueOf(id))
