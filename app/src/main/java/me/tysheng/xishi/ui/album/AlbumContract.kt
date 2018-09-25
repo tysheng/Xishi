@@ -1,9 +1,10 @@
 package me.tysheng.xishi.ui.album
 
-import android.support.v4.view.ViewPager
+import androidx.appcompat.app.AppCompatActivity
+import androidx.viewpager.widget.ViewPager
 import me.tysheng.xishi.data.Picture
+import me.tysheng.xishi.net.data.CommonResponse
 import me.tysheng.xishi.ui.AbstractPresenter
-import me.tysheng.xishi.ui.BaseActivity
 import me.tysheng.xishi.ui.BaseView
 
 /**
@@ -16,15 +17,19 @@ interface AlbumContract {
         fun selected(amount: Int, position: Int)
         fun setData(picture: List<Picture>)
         fun showPermissionDenied()
+        fun bookmarkSuccess(it: CommonResponse<Any>)
     }
 
     abstract class Presenter : AbstractPresenter<View, Presenter>() {
 
         override lateinit var view: View
         abstract fun fetchData()
-        abstract fun saveImageToGallery(activity: BaseActivity, url: String, position: Int)
 
         abstract fun setAlbumId(id: Int)
+        abstract fun saveImage(activity: AppCompatActivity, url: String)
+        abstract fun shareImage(activity: AppCompatActivity, url: String)
+        abstract fun bookmarkShot(picture: Picture)
+
         abstract val viewPagerScrollListener: ViewPager.OnPageChangeListener
     }
 }

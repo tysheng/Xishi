@@ -24,4 +24,8 @@
     <string name="share_to_wechat_friends">分享给微信好友</string>
     <string name="alipay_copied">支付宝账号已复制到剪贴板</string>
     <string name="email_copied">邮箱地址已复制到剪贴板</string>
+    <string name="register">注册</string>
+    <string name="content_bookmark_album">收藏这部作品集吗?</string>
+    <string name="confirm">确定</string>
+    <string name="bookmark_successfully">收藏成功</string>
 </resources>

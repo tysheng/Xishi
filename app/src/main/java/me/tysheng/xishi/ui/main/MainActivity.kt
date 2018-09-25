@@ -4,19 +4,22 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
-import android.support.v7.app.AppCompatDelegate
-import android.support.v7.widget.LinearLayoutManager
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.app.ActivityCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.chad.library.adapter.base.BaseQuickAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import me.tysheng.xishi.R
 import me.tysheng.xishi.adapter.MainsAdapter
 import me.tysheng.xishi.data.Album
 import me.tysheng.xishi.ext.mainThreadPost
+import me.tysheng.xishi.ext.toast
+import me.tysheng.xishi.net.data.CommonResponse
 import me.tysheng.xishi.ui.BaseActivity
 import me.tysheng.xishi.ui.DialogCallback
-import me.tysheng.xishi.ui.EmailDialog
 import me.tysheng.xishi.ui.MainDialogAction
+import me.tysheng.xishi.ui.MenuMoreDialog
 import me.tysheng.xishi.ui.album.AlbumActivity
 import me.tysheng.xishi.utils.SnackBarUtil
 import me.tysheng.xishi.widget.RecycleViewDivider
@@ -43,7 +46,7 @@ class MainActivity : BaseActivity(), MainContract.View, DialogCallback {
         setContentView(R.layout.activity_main)
         presenter.view = this
         toolBar.setOnClickListener { mainThreadPost { scrollToTop() } }
-        toolBarMore.setOnClickListener { EmailDialog().show(supportFragmentManager, EmailDialog.TAG) }
+        toolBarMore.setOnClickListener { MenuMoreDialog().show(supportFragmentManager, MenuMoreDialog.TAG) }
         layoutManager = LinearLayoutManager(this)
         recyclerView.apply {
             layoutManager = this@MainActivity.layoutManager
@@ -59,6 +62,18 @@ class MainActivity : BaseActivity(), MainContract.View, DialogCallback {
                     val intent = AlbumActivity.newIntent(this@MainActivity, it)
                     ActivityCompat.startActivity(this@MainActivity, intent, null)
                 }
+            }
+            setOnItemLongClickListener { _, _, position ->
+                val album = mainsAdapter.getItem(position)
+                album?.also {
+                    AlertDialog.Builder(this@MainActivity)
+                            .setMessage(getString(R.string.content_bookmark_album))
+                            .setPositiveButton(getString(R.string.confirm)) { _, _ ->
+                                presenter.bookmarkAlbum(it, position)
+                            }
+                            .show()
+                }
+                true
             }
         }
         swipeRefreshLayout.apply {
@@ -136,6 +151,10 @@ class MainActivity : BaseActivity(), MainContract.View, DialogCallback {
 
     override fun loadMoreComplete() {
         mainsAdapter.loadMoreComplete()
+    }
+
+    override fun bookmarkSuccess(it: CommonResponse<Any>) {
+        getString(R.string.bookmark_successfully).toast()
     }
 
     override fun stopRefresh() {

@@ -3,11 +3,12 @@ package me.tysheng.xishi.widget
 import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
+import androidx.viewpager.widget.ViewPager
 
 /**
  * Created by shengtianyang on 16/4/30.
  */
-class HackyViewPager : android.support.v4.view.ViewPager {
+class HackyViewPager : ViewPager {
 
     constructor(context: Context) : super(context)
 

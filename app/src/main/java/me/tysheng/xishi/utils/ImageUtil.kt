@@ -64,7 +64,7 @@ object ImageUtil {
                     var uri = Uri.fromFile(file)
                     MediaScannerConnection.scanFile(
                             context,
-                            arrayOf(file.getAbsolutePath()),
+                            arrayOf(file.absolutePath),
                             null
                     ) { path, uri -> Timber.d("file $path was scanned successfully: $uri") }
                     uri

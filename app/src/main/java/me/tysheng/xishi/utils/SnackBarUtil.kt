@@ -1,11 +1,11 @@
 package me.tysheng.xishi.utils
 
 import android.graphics.Color
-import android.support.design.internal.SnackbarContentLayout
-import android.support.design.widget.Snackbar
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.snackbar.SnackbarContentLayout
 
 /**
  * Created by Sty

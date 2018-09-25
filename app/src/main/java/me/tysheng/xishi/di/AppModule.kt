@@ -15,21 +15,24 @@ import org.koin.dsl.module.module
  * Date: 24/8/18 11:52 AM.
  * Email: tyshengsx@gmail.com
  */
-object ModuleName{
-    const val ALBUM="album"
-    const val MAIN="main"
-}
-val appModule = module {
-    single { XishiRetrofit(androidContext()).get() }
+object ModuleName {
+    const val ALBUM = "album"
+    const val MAIN = "main"
 }
 
-val funcModules = module {
+val appModule = module(createOnStart = false) {
+    single { XishiRetrofit(androidContext()) }
+    single { get<XishiRetrofit>().createNgService() }
+    single { get<XishiRetrofit>().createXishiService() }
+}
+
+val funcModules = module(createOnStart = false) {
     module(ModuleName.ALBUM) {
-        single { AlbumPresenter(get()) as AlbumContract.Presenter }
+        single { AlbumPresenter(get(),get()) as AlbumContract.Presenter }
         factory { AlbumAdapter() }
     }
     module(ModuleName.MAIN) {
-        single { MainPresenter(get()) as MainContract.Presenter }
+        single { MainPresenter(get(), get()) as MainContract.Presenter }
         factory { MainsAdapter() }
     }
 }

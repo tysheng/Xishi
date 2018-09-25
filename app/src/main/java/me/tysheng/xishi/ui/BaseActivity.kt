@@ -1,6 +1,6 @@
 package me.tysheng.xishi.ui
 
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 
 /**
  * Created by shengtianyang on 16/7/11.

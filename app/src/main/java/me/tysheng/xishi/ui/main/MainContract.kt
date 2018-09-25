@@ -1,6 +1,7 @@
 package me.tysheng.xishi.ui.main
 
 import me.tysheng.xishi.data.Album
+import me.tysheng.xishi.net.data.CommonResponse
 import me.tysheng.xishi.ui.AbstractPresenter
 import me.tysheng.xishi.ui.BaseView
 import me.tysheng.xishi.ui.MainDialogAction
@@ -21,6 +22,7 @@ interface MainContract {
         fun showAlipayFail()
         fun copyEmailAddress()
         fun setDayNightMode()
+        fun bookmarkSuccess(it: CommonResponse<Any>)
     }
 
     abstract class Presenter : AbstractPresenter<MainContract.View, MainContract.Presenter>() {
@@ -28,6 +30,7 @@ interface MainContract {
         abstract fun onItemClick(action: MainDialogAction)
 
         abstract fun fetchData(firstTime: Boolean)
+        abstract fun bookmarkAlbum(album: Album, position: Int)
 
     }
 }

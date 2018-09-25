@@ -1,20 +1,25 @@
 package me.tysheng.xishi.ui.album
 
 import android.Manifest
-import android.support.v4.view.ViewPager
+import android.net.Uri
+import androidx.appcompat.app.AppCompatActivity
+import androidx.viewpager.widget.ViewPager
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import me.tysheng.xishi.R
+import me.tysheng.xishi.data.Picture
+import me.tysheng.xishi.ext.toShot
 import me.tysheng.xishi.ext.toast
+import me.tysheng.xishi.net.NgService
 import me.tysheng.xishi.net.XishiService
-import me.tysheng.xishi.ui.BaseActivity
 import me.tysheng.xishi.utils.ImageUtil
 import me.tysheng.xishi.utils.RxHelper
 import me.tysheng.xishi.utils.SystemUtil
 
 class AlbumPresenter constructor(
-        private val service: XishiService) :
+        private val service: NgService,
+        private val xishiService: XishiService) :
         AlbumContract.Presenter() {
     private var amount = 0
     private var id = 0
@@ -44,7 +49,22 @@ class AlbumPresenter constructor(
                 .addToSubscription()
     }
 
-    override fun saveImageToGallery(activity: BaseActivity, url: String, position: Int) {
+    override fun saveImage(activity: AppCompatActivity, url: String) {
+        saveImageInternal(activity, url) {
+            val appDir = ImageUtil.saveDir
+            val msg = String.format(activity.getString(R.string.picture_has_save_to),
+                    appDir.absolutePath)
+            msg.toast()
+        }
+    }
+
+    override fun shareImage(activity: AppCompatActivity, url: String) {
+        saveImageInternal(activity, url) {
+            SystemUtil.shareVia(activity, activity.getString(R.string.share_text), activity.getString(R.string.share_to), it)
+        }
+    }
+
+    private fun saveImageInternal(activity: AppCompatActivity, url: String, block: (uri: Uri) -> Unit) {
         RxPermissions(activity)
                 .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -62,15 +82,19 @@ class AlbumPresenter constructor(
                 }
                 .compose(RxHelper.ioToMain())
                 .subscribe {
-                    val appDir = ImageUtil.saveDir
-                    val msg = String.format(activity.getString(R.string.picture_has_save_to),
-                            appDir.absolutePath)
-                    when (position) {
-                        0 -> msg.toast()
-                        1 -> SystemUtil.shareVia(activity, activity.getString(R.string.share_text), activity.getString(R.string.share_to), it)
-                        2 -> ImageUtil.shareImage2Wechat(activity, it)
-                    }
+                    block(it)
                 }
                 .addToSubscription()
     }
+
+    override fun bookmarkShot(picture: Picture) {
+        xishiService.addShot(picture.toShot())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    view.bookmarkSuccess(it)
+                }
+                .addToSubscription()
+
+    }
+
 }

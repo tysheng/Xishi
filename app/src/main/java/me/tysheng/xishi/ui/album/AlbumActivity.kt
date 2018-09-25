@@ -6,11 +6,11 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.RelativeSizeSpan
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import kotlinx.android.synthetic.main.activity_album.*
 import me.tysheng.xishi.R
 import me.tysheng.xishi.adapter.AlbumAdapter
@@ -19,6 +19,7 @@ import me.tysheng.xishi.data.Picture
 import me.tysheng.xishi.ext.dp2Px
 import me.tysheng.xishi.ext.toast
 import me.tysheng.xishi.ext.toggleInVisible
+import me.tysheng.xishi.net.data.CommonResponse
 import me.tysheng.xishi.ui.BaseActivity
 import org.koin.android.ext.android.inject
 
@@ -60,9 +61,16 @@ class AlbumActivity : BaseActivity(), AlbumContract.View {
         albumAdapter.photoViewListener = object : PhotoViewListener {
             override fun longClick(picture: Picture) {
                 AlertDialog.Builder(this@AlbumActivity, R.style.BlackDialog)
-                        .setItems(arrayOf(getString(R.string.save), getString(R.string.share), getString(R.string.share_to_wechat_friends))) { dialogInterface, i ->
+                        .setItems(arrayOf(getString(R.string.save),
+                                getString(R.string.share)
+                                /*, getString(R.string.share_to_wechat_friends)*/))
+                        { dialogInterface, i ->
                             dialogInterface.dismiss()
-                            presenter.saveImageToGallery(this@AlbumActivity, picture.url, i)
+                            when (i) {
+                                0 -> presenter.saveImage(this@AlbumActivity, picture.url)
+                                1 -> presenter.shareImage(this@AlbumActivity, picture.url)
+                                2 -> presenter.bookmarkShot(picture)
+                            }
                         }.show()
             }
 
@@ -110,6 +118,10 @@ class AlbumActivity : BaseActivity(), AlbumContract.View {
 
     override fun showPermissionDenied() {
         getString(R.string.permission_denied_hint).toast()
+    }
+
+    override fun bookmarkSuccess(it: CommonResponse<Any>) {
+        getString(R.string.bookmark_successfully).toast()
     }
 
     companion object {

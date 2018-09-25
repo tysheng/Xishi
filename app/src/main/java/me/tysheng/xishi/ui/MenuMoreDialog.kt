@@ -3,11 +3,11 @@ package me.tysheng.xishi.ui
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
-import android.support.design.widget.BottomSheetBehavior
-import android.support.design.widget.BottomSheetDialog
-import android.support.design.widget.BottomSheetDialogFragment
 import android.view.View
 import com.chad.library.adapter.base.BaseViewHolder
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.dialog_bottom_sheet.view.*
 import me.tysheng.xishi.BuildConfig
 import me.tysheng.xishi.R
@@ -17,7 +17,7 @@ import me.tysheng.xishi.adapter.BaseLoadMoreRecyclerViewAdapter
  * Created by Sty
  * Date: 16/8/18 22:26.
  */
-class EmailDialog : BottomSheetDialogFragment() {
+class MenuMoreDialog : BottomSheetDialogFragment() {
     private var behavior: BottomSheetBehavior<*>? = null
     private var dialogCallback: DialogCallback? = null
     private lateinit var customView: View
@@ -48,7 +48,8 @@ class EmailDialog : BottomSheetDialogFragment() {
                 R.drawable.ic_update_black_24dp to getString(R.string.check_update),
                 R.drawable.ic_thumb_up_black_24dp to getString(R.string.donate),
                 R.drawable.ic_content_copy_black_24dp to getString(R.string.copy_email),
-                R.drawable.ic_compare_arrows_black_24dp to getString(R.string.change_theme))
+                R.drawable.ic_compare_arrows_black_24dp to getString(R.string.change_theme),
+                R.drawable.ic_person_black_24dp to getString(R.string.register))
         customView.title.text = ("${getString(R.string.version)} ${BuildConfig.VERSION_NAME}")
         object : BaseLoadMoreRecyclerViewAdapter<Pair<Int, String>>(R.layout.item_dialog_bottom_sheet, list) {
             override fun convert(holder: BaseViewHolder, item: Pair<Int, String>) {
@@ -72,8 +73,11 @@ class EmailDialog : BottomSheetDialogFragment() {
                     3 -> {
                         CopyEmail()
                     }
-                    else -> {
+                    4 -> {
                         SwitchDayNightMode()
+                    }
+                    else -> {
+                        Register()
                     }
                 }
                 dialogCallback?.itemClick(action)
@@ -82,7 +86,7 @@ class EmailDialog : BottomSheetDialogFragment() {
     }
 
     companion object {
-        const val TAG = "EmailDialog"
+        const val TAG = "MenuMoreDialog"
     }
 }
 
@@ -96,3 +100,4 @@ class ShareToStore(val context: Context) : MainDialogAction()
 class JumpToAlipay(val context: Context) : MainDialogAction()
 class CopyEmail : MainDialogAction()
 class SwitchDayNightMode() : MainDialogAction()
+class Register : MainDialogAction()
