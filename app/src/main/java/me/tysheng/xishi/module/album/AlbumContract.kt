@@ -1,11 +1,11 @@
-package me.tysheng.xishi.ui.album
+package me.tysheng.xishi.module.album
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
 import me.tysheng.xishi.data.Picture
 import me.tysheng.xishi.net.data.CommonResponse
-import me.tysheng.xishi.ui.AbstractPresenter
-import me.tysheng.xishi.ui.BaseView
+import me.tysheng.xishi.module.AbstractPresenter
+import me.tysheng.xishi.module.BaseView
 
 /**
  * Created by tysheng

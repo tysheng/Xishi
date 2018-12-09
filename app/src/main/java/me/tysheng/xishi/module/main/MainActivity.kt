@@ -1,4 +1,4 @@
-package me.tysheng.xishi.ui.main
+package me.tysheng.xishi.module.main
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -6,7 +6,6 @@ import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.chad.library.adapter.base.BaseQuickAdapter
 import kotlinx.android.synthetic.main.activity_main.*
@@ -15,12 +14,12 @@ import me.tysheng.xishi.adapter.MainsAdapter
 import me.tysheng.xishi.data.Album
 import me.tysheng.xishi.ext.mainThreadPost
 import me.tysheng.xishi.ext.toast
+import me.tysheng.xishi.module.BaseActivity
+import me.tysheng.xishi.module.DialogCallback
+import me.tysheng.xishi.module.MainDialogAction
+import me.tysheng.xishi.module.MenuMoreDialog
 import me.tysheng.xishi.net.data.CommonResponse
-import me.tysheng.xishi.ui.BaseActivity
-import me.tysheng.xishi.ui.DialogCallback
-import me.tysheng.xishi.ui.MainDialogAction
-import me.tysheng.xishi.ui.MenuMoreDialog
-import me.tysheng.xishi.ui.album.AlbumActivity
+import me.tysheng.xishi.utils.Navigator
 import me.tysheng.xishi.utils.SnackBarUtil
 import me.tysheng.xishi.widget.RecycleViewDivider
 import org.koin.android.ext.android.inject
@@ -47,6 +46,7 @@ class MainActivity : BaseActivity(), MainContract.View, DialogCallback {
         presenter.view = this
         toolBar.setOnClickListener { mainThreadPost { scrollToTop() } }
         toolBarMore.setOnClickListener { MenuMoreDialog().show(supportFragmentManager, MenuMoreDialog.TAG) }
+        toolBar.setNavigationOnClickListener { Navigator.openRegisterLogin(this) }
         layoutManager = LinearLayoutManager(this)
         recyclerView.apply {
             layoutManager = this@MainActivity.layoutManager
@@ -59,8 +59,7 @@ class MainActivity : BaseActivity(), MainContract.View, DialogCallback {
             }, recyclerView)
             onItemClickListener = BaseQuickAdapter.OnItemClickListener { _, _, position ->
                 mainsAdapter.getItem(position)?.id?.also {
-                    val intent = AlbumActivity.newIntent(this@MainActivity, it)
-                    ActivityCompat.startActivity(this@MainActivity, intent, null)
+                    Navigator.openAlbum(this@MainActivity, it.toInt())
                 }
             }
             setOnItemLongClickListener { _, _, position ->

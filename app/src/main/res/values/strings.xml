@@ -6,7 +6,7 @@
     <string name="email_me">问题反馈请发邮件(长按复制):\n\n 353491983@qq.com\n\n捐赠点击下方按钮</string>
     <string name="more">更多</string>
     <string name="theme">主题</string>
-    <string name="choose_broswer">请选择浏览器</string>
+    <string name="choose_browser">请选择浏览器</string>
     <string name="email_address">353491983@qq.com</string>
     <string name="feedback_about">关于西施的问题反馈</string>
     <string name="send_email">发送邮件…</string>
@@ -28,4 +28,8 @@
     <string name="content_bookmark_album">收藏这部作品集吗?</string>
     <string name="confirm">确定</string>
     <string name="bookmark_successfully">收藏成功</string>
+    <string name="user_name">用户名</string>
+    <string name="password">密码</string>
+    <string name="username_input_error">用户名长度为2到10个字符</string>
+    <string name="password_input_error">密码长度为4到16个字符</string>
 </resources>

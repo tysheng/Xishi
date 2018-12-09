@@ -4,9 +4,7 @@ import android.content.Context
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
 import io.reactivex.schedulers.Schedulers
-import me.tysheng.xishi.utils.SystemUtil
 import okhttp3.Cache
-import okhttp3.CacheControl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -25,19 +23,7 @@ class XishiRetrofit(private val mContext: Context) {
     private lateinit var ngService: NgService
     private lateinit var xishiService: XishiService
     private lateinit var okHttpClient: OkHttpClient
-    private val REWRITE_CACHE_CONTROL_INTERCEPTOR = Interceptor { chain ->
-        var request = chain.request()
-        val cacheControl = if (SystemUtil.isNetworkAvailable(mContext))
-            CacheControl.FORCE_NETWORK
-        else
-            CacheControl.FORCE_CACHE
-        request = request.newBuilder()
-                .cacheControl(cacheControl)
-                .build()
-        val originalResponse = chain.proceed(request)
-        originalResponse.newBuilder()
-                .build()
-    }
+
     private val gson= GsonBuilder()
             .setFieldNamingStrategy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .setExclusionStrategies()
@@ -57,7 +43,7 @@ class XishiRetrofit(private val mContext: Context) {
     fun createNgService(): NgService {
         retrofit = Retrofit.Builder()
                 .client(okHttpClient)
-                .baseUrl(BASE_URL)
+                .baseUrl(NG_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .build()
@@ -90,7 +76,6 @@ class XishiRetrofit(private val mContext: Context) {
         builder.connectTimeout(TIME_MAX.toLong(), TimeUnit.SECONDS)
         builder.writeTimeout(TIME_MAX.toLong(), TimeUnit.SECONDS)
         builder.retryOnConnectionFailure(true)
-        //builder.addInterceptor(REWRITE_CACHE_CONTROL_INTERCEPTOR)
         builder.addInterceptor(authInterceptor)
         builder.addInterceptor(HttpLoggingInterceptor(
                 HttpLoggingInterceptor.Logger { message -> Timber.tag("OkHttp").d(message) }).apply {
@@ -105,7 +90,7 @@ class XishiRetrofit(private val mContext: Context) {
     companion object {
         private const val TIME_MAX = 12
 
-        private const val BASE_URL = "http://dili.bdatu.com/jiekou/"
+        private const val NG_BASE_URL = "http://dili.bdatu.com/jiekou/"
         private const val XISHI_BASE_URL = "http://132.232.188.197:8080/"
     }
 

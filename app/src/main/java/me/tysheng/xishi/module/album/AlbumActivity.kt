@@ -1,7 +1,5 @@
-package me.tysheng.xishi.ui.album
+package me.tysheng.xishi.module.album
 
-import android.content.Context
-import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
@@ -19,8 +17,8 @@ import me.tysheng.xishi.data.Picture
 import me.tysheng.xishi.ext.dp2Px
 import me.tysheng.xishi.ext.toast
 import me.tysheng.xishi.ext.toggleInVisible
+import me.tysheng.xishi.module.BaseActivity
 import me.tysheng.xishi.net.data.CommonResponse
-import me.tysheng.xishi.ui.BaseActivity
 import org.koin.android.ext.android.inject
 
 class AlbumActivity : BaseActivity(), AlbumContract.View {
@@ -125,13 +123,9 @@ class AlbumActivity : BaseActivity(), AlbumContract.View {
     }
 
     companion object {
-        private const val KEY_ALBUMS = "KEY_ALBUMS"
+        const val KEY_ALBUMS = "KEY_ALBUMS"
         private const val INTRO_LANDSCAPE_HEIGHT = 50
         private const val INTRO_PORTRAIT_HEIGHT = 100
-        fun newIntent(context: Context, id: String): Intent {
-            val intent = Intent(context, AlbumActivity::class.java)
-            intent.putExtra(KEY_ALBUMS, Integer.valueOf(id))
-            return intent
-        }
+
     }
 }

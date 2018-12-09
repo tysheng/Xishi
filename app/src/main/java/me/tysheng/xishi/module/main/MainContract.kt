@@ -1,10 +1,10 @@
-package me.tysheng.xishi.ui.main
+package me.tysheng.xishi.module.main
 
 import me.tysheng.xishi.data.Album
 import me.tysheng.xishi.net.data.CommonResponse
-import me.tysheng.xishi.ui.AbstractPresenter
-import me.tysheng.xishi.ui.BaseView
-import me.tysheng.xishi.ui.MainDialogAction
+import me.tysheng.xishi.module.AbstractPresenter
+import me.tysheng.xishi.module.BaseView
+import me.tysheng.xishi.module.MainDialogAction
 
 /**
  * Created by tysheng

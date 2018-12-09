@@ -1,4 +1,4 @@
-package me.tysheng.xishi.ui
+package me.tysheng.xishi.module
 
 import android.app.Dialog
 import android.content.Context

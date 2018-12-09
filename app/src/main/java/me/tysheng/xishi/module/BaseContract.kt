@@ -1,4 +1,4 @@
-package me.tysheng.xishi.ui
+package me.tysheng.xishi.module
 
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable

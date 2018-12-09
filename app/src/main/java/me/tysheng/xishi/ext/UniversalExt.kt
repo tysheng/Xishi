@@ -6,6 +6,7 @@ import android.content.res.Resources
 import android.widget.Toast
 import io.reactivex.android.schedulers.AndroidSchedulers
 import me.tysheng.xishi.App
+import java.security.MessageDigest
 
 /**
  * Created by tysheng
@@ -28,5 +29,13 @@ inline fun String.toast() {
 inline fun mainThreadPost(crossinline action: () -> Unit) {
     AndroidSchedulers.mainThread().scheduleDirect {
         action()
+    }
+}
+
+inline fun String.md5(): String {
+    val md = MessageDigest.getInstance("MD5")
+    val digested = md.digest(toByteArray())
+    return digested.joinToString("") {
+        String.format("%02x", it)
     }
 }

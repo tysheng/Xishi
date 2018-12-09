@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".ui.main.MainActivity">
+    tools:context=".module.main.MainActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
@@ -19,8 +19,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_scrollFlags="scroll|enterAlways|snap"
-            app:title="@string/app_name"
-            app:titleTextColor="@color/toolbarTitle">
+            app:navigationIcon="@drawable/ic_person_black_24dp"
+            style="@style/Toolbar.Button.Navigation.Tinted">
 
             <ImageView
                 android:layout_width="48dp"

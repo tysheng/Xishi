@@ -1,13 +1,13 @@
-package me.tysheng.xishi.ui.main
+package me.tysheng.xishi.module.main
 
 import io.reactivex.android.schedulers.AndroidSchedulers
 import me.tysheng.xishi.BuildConfig
 import me.tysheng.xishi.Constants
 import me.tysheng.xishi.data.Album
 import me.tysheng.xishi.ext.toServerAlbum
+import me.tysheng.xishi.module.*
 import me.tysheng.xishi.net.NgService
 import me.tysheng.xishi.net.XishiService
-import me.tysheng.xishi.ui.*
 import me.tysheng.xishi.utils.AlipayZeroSdk
 import me.tysheng.xishi.utils.SystemUtil
 

@@ -2,11 +2,11 @@ package me.tysheng.xishi.di
 
 import me.tysheng.xishi.adapter.AlbumAdapter
 import me.tysheng.xishi.adapter.MainsAdapter
+import me.tysheng.xishi.module.album.AlbumContract
+import me.tysheng.xishi.module.album.AlbumPresenter
+import me.tysheng.xishi.module.main.MainContract
+import me.tysheng.xishi.module.main.MainPresenter
 import me.tysheng.xishi.net.XishiRetrofit
-import me.tysheng.xishi.ui.album.AlbumContract
-import me.tysheng.xishi.ui.album.AlbumPresenter
-import me.tysheng.xishi.ui.main.MainContract
-import me.tysheng.xishi.ui.main.MainPresenter
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module.module
 

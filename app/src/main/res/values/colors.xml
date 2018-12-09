@@ -16,4 +16,5 @@
     <color name="textColor">#000000</color>
     <color name="backgroundColor">#ffffff</color>
     <color name="toolbarTitle">@color/black</color>
+    <color name="helper_text_color">#43a047</color>
 </resources>

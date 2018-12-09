@@ -54,7 +54,7 @@ object SystemUtil {
             intent.action = Intent.ACTION_VIEW
             val uri = Uri.parse("http://www.coolapk.com/apk/$packageName")
             intent.data = uri
-            context.startActivity(Intent.createChooser(intent, context.getString(R.string.choose_broswer)))
+            context.startActivity(Intent.createChooser(intent, context.getString(R.string.choose_browser)))
         } catch (e: Exception) {
             Timber.e(e)
         }

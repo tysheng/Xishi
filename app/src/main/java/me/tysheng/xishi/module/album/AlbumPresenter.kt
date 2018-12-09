@@ -1,4 +1,4 @@
-package me.tysheng.xishi.ui.album
+package me.tysheng.xishi.module.album
 
 import android.Manifest
 import android.net.Uri
@@ -94,7 +94,6 @@ class AlbumPresenter constructor(
                     view.bookmarkSuccess(it)
                 }
                 .addToSubscription()
-
     }
 
 }
